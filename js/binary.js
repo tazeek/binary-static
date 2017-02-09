@@ -18291,6 +18291,7 @@
 	                        Client.set('jp_status', jpStatus.status);
 	                    }
 	                    if (response.get_settings.is_authenticated_payment_agent) {
+	                        Client.set('is_authenticated_payment_agent', true);
 	                        $('#topMenuPaymentAgent').removeClass('invisible');
 	                    }
 	                    Client.set('first_name', response.get_settings.first_name);
@@ -78577,9 +78578,7 @@
 	        }
 	
 	        $no_bal_err.addClass(hiddenClass);
-	        $pa_form.removeClass(hiddenClass);
-	        $('#paymentagent_transfer_notes').removeClass('invisible');
-	
+	        setFormVisibility(Client.get('is_authenticated_payment_agent'));
 	        PaymentAgentTransferUI.updateFormView(currency);
 	
 	        var $submitFormButton = $pa_form.find('button#submit');
@@ -78665,6 +78664,7 @@
 	    var error_if_virtual = function error_if_virtual() {
 	        if (Client.get('is_virtual')) {
 	            $('#virtual_error').removeClass('invisible');
+	            $('#pa_transfer_loading').remove();
 	            return true;
 	        }
 	        return false;
@@ -78672,12 +78672,26 @@
 	
 	    var error_if_not_pa = function error_if_not_pa(response) {
 	        if (response.get_settings.hasOwnProperty('is_authenticated_payment_agent') && response.get_settings.is_authenticated_payment_agent === 0) {
-	            $('#not_pa_error').removeClass('invisible');
+	            setFormVisibility(false);
 	        } else if (!error_if_virtual() && response.get_settings.is_authenticated_payment_agent) {
-	            $('#paymentagent_transfer').removeClass('invisible');
-	            $('#paymentagent_transfer_notes').removeClass('invisible');
+	            setFormVisibility(true);
 	            paymentagent = true;
 	            PaymentAgentTransfer.init(true);
+	        }
+	    };
+	
+	    var setFormVisibility = function setFormVisibility(is_visible) {
+	        if (is_visible) {
+	            $('#pa_transfer_loading').remove();
+	            PaymentAgentTransferUI.showForm();
+	            PaymentAgentTransferUI.showNotes();
+	        } else {
+	            PaymentAgentTransferUI.hideForm();
+	            PaymentAgentTransferUI.hideNotes();
+	            if (Client.get('values_set') && !Client.get('is_authenticated_payment_agent')) {
+	                $('#pa_transfer_loading').remove();
+	                $('#not_pa_error').removeClass('invisible');
+	            }
 	        }
 	    };
 	
@@ -78692,15 +78706,14 @@
 	        }
 	
 	        if (type === 'paymentagent_transfer') {
-	            PaymentAgentTransfer.paymentAgentTransferHandler(response);
+	            paymentAgentTransferHandler(response);
 	        }
 	    };
 	
 	    return {
 	        init: init,
 	        init_variable: init_variable,
-	        handleResponse: handleResponse,
-	        paymentAgentTransferHandler: paymentAgentTransferHandler
+	        handleResponse: handleResponse
 	    };
 	}();
 	

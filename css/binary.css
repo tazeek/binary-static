@@ -687,7 +687,7 @@ html.mm-right.mm-opening body .mm-page, html.mm-right.mm-opening body #mm-blocke
 }
 
 #reality-check-content, #balances-content {
-  padding: 0;
+  padding: 5px;
   text-align: left;
 }
 #reality-check-content td, #balances-content td {
