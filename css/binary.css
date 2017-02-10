@@ -546,6 +546,9 @@ body #topbar #select_language {
   max-width: 65%;
   margin: 0.3em auto;
 }
+#footer #footer-regulatory {
+  padding-top: 10px;
+}
 #footer #footer-regulatory a {
   display: inline-block;
   text-decoration: underline;
@@ -555,22 +558,11 @@ body #topbar #select_language {
   text-align: justify;
   font-size: 10px;
 }
-#footer #footer-regulatory #social-networks {
-  padding-top: 20px;
-}
 #footer #footer-regulatory #iom_icon_footer {
   max-width: 90px;
 }
 #footer #footer-regulatory #lga_icon_footer {
   max-width: 140px;
-}
-#footer #footer-regulatory #mfsa_logo {
-  max-width: 320px;
-  margin-top: 10px;
-}
-#footer #footer-regulatory #mifid_logo {
-  max-width: 150px;
-  margin-top: 15px;
 }
 #footer #footer-regulatory .social-icons {
   text-align: right;
@@ -578,8 +570,7 @@ body #topbar #select_language {
 #footer #footer-regulatory .social-icons .social-network-icon {
   width: 30px;
   height: 30px;
-  padding-right: 5px;
-  padding-top: 10px;
+  padding-left: 5px;
 }
 #footer #footer-regulatory #ratelimit-error-message {
   display: none;
@@ -5232,7 +5223,7 @@ body.TH .google-play-badge {
     overflow-x: auto;
   }
 
-  #footer-regulatory #social-networks {
+  #footer-regulatory #social-networks .social-icons {
     text-align: center;
   }
 
