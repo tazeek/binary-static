@@ -55,10 +55,10 @@
           <link rel="alternate" href="/zh_cn/user/settings/detailsws.html" hreflang="ZH_CN" /> 
           <link rel="alternate" href="/zh_tw/user/settings/detailsws.html" hreflang="ZH_TW" /> 
         
-         <link rel="stylesheet" href="/css/binary.min.css?x66taewp">
-         <link rel="stylesheet" href="https://style.binary.com/binary.css?x66taewp">
+         <link rel="stylesheet" href="/css/binary.min.css?qhei4mmw">
+         <link rel="stylesheet" href="https://style.binary.com/binary.css?qhei4mmw">
         
-        <script src='/js/binary.min.js?x66taewp'></script>  <script src='https://style.binary.com/binary.js?x66taewp'></script>
+        <script src='/js/binary.min.js?qhei4mmw'></script>  <script src='https://style.binary.com/binary.js?qhei4mmw'></script>
     </head>
 
 
@@ -334,6 +334,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <div>
     <h1>Persönliche Angaben</h1>
 
+    <p class="notice-msg center-text invisible" id="tax_information_notice">
+        Please complete the tax information before proceeding.
+    </p>
+
     <form class="form form gr-padding-10 hidden" id="frmPersonalDetails">
 
         <fieldset>
@@ -410,6 +414,37 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <option value="Unemployed">Unemployed</option>
                         <option value="Others">Others</option>
                     </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="hidden RealAcc ja-hide">
+            <legend>Tax Information</legend>
+
+            <div class="gr-padding-10 gr-row clear">
+                <div class="gr-4 form_label">
+                    <label for="place_of_birth">Place of birth</label>
+                </div>
+                <div class="gr-8">
+                    <select name="place_of_birth" id="place_of_birth" class="form_input"></select>
+                </div>
+            </div>
+
+            <div class="gr-padding-10 gr-row clear">
+                <div class="gr-4 form_label">
+                    <label for="tax_residence">Tax residence</label>
+                </div>
+                <div class="gr-8">
+                    <select name="tax_residence" id="tax_residence" class="form_input invisible" multiple="multiple"></select>
+                </div>
+            </div>
+
+            <div class="gr-padding-10 gr-row clear">
+                <div class="gr-4 form_label">
+                    <label for="tax_identification_number">Tax identification number</label>
+                </div>
+                <div class="gr-8">
+                    <input type="text" class="text form_input" id="tax_identification_number" name="tax_identification_number" maxlength="20"/>
                 </div>
             </div>
         </fieldset>
