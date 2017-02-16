@@ -2823,6 +2823,11 @@ div.kineticjs-content {
   opacity: 0;
 }
 
+#frmPersonalDetails fieldset .error-msg {
+  text-align: left;
+  margin-top: 5px;
+}
+
 /* static pages */
 @keyframes spinning {
   from {

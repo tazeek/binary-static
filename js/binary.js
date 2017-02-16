@@ -62,17 +62,17 @@
 	exportAllFunctions(__webpack_require__(301));
 	
 	// created for handling global onclick
-	exportAllFunctions(__webpack_require__(543));
-	// used by gtm to update page after a new release
 	exportAllFunctions(__webpack_require__(544));
+	// used by gtm to update page after a new release
+	exportAllFunctions(__webpack_require__(545));
 	
-	__webpack_require__(545);
 	__webpack_require__(546);
 	__webpack_require__(547);
-	
 	__webpack_require__(548);
+	
 	__webpack_require__(549);
-	__webpack_require__(574);
+	__webpack_require__(550);
+	__webpack_require__(575);
 
 /***/ },
 /* 1 */
@@ -18418,7 +18418,7 @@
 	    var timeouts = {};
 	    var socketUrl = getSocketURL() + '?app_id=' + getAppId() + '&l=' + getLanguage();
 	    var promises = {};
-	    var no_duplicate_requests = ['authorize', 'get_settings'];
+	    var no_duplicate_requests = ['authorize', 'get_settings', 'residence_list'];
 	    var waiting_list = {
 	        items: {},
 	        add: function add(msg_type, promise_obj) {
@@ -18728,7 +18728,6 @@
 	                } else if (type === 'reality_check') {
 	                    RealityCheck.realityCheckWSHandler(response);
 	                } else if (type === 'get_account_status' && response.get_account_status) {
-	                    Client.set('values_set_account', 1);
 	                    if (response.get_account_status.risk_classification === 'high' && qualify_for_risk_classification()) {
 	                        send({ get_financial_assessment: 1 });
 	                    } else {
@@ -19216,6 +19215,7 @@
 	'use strict';
 	
 	var getPropertyValue = __webpack_require__(307).getPropertyValue;
+	var objectNotEmpty = __webpack_require__(307).objectNotEmpty;
 	var Cookies = __webpack_require__(303);
 	
 	var isStorageSupported = function isStorageSupported(storage) {
@@ -19263,13 +19263,15 @@
 	        return getPropertyValue(this.store, key);
 	    },
 	    set: function set(key, value) {
-	        var obj = this.store;
-	        if (Array.isArray(key)) {
-	            key.forEach(function (k) {
-	                if (k in obj) obj = obj[k];else key = k;
-	            });
+	        var obj = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.store;
+	
+	        if (!Array.isArray(key)) key = [key];
+	        if (key.length > 1) {
+	            if (!(key[0] in obj) || !objectNotEmpty(obj[key[0]])) obj[key[0]] = {};
+	            this.set(key.slice(1), value, obj[key[0]]);
+	        } else {
+	            obj[key[0]] = value;
 	        }
-	        obj[key] = value;
 	    },
 	    remove: function remove(key) {
 	        delete this.store[key];
@@ -19450,13 +19452,17 @@
 	    return !isEmpty;
 	}
 	
+	function cloneObject(obj) {
+	    return objectNotEmpty(obj) ? $.extend({}, obj) : obj;
+	}
+	
 	function getPropertyValue(obj, keys) {
 	    if (!Array.isArray(keys)) keys = [keys];
 	    if (objectNotEmpty(obj) && keys[0] in obj && keys && keys.length > 1) {
 	        return getPropertyValue(obj[keys[0]], keys.slice(1));
 	    }
-	    // else
-	    return obj ? obj[keys[0]] : undefined;
+	    // else return clone of object to avoid overwriting data
+	    return obj ? cloneObject(obj[keys[0]]) : undefined;
 	}
 	
 	module.exports = {
@@ -76873,6 +76879,12 @@
 
 	'use strict';
 	
+	var _onesignal = __webpack_require__(538);
+	
+	var _onesignal2 = _interopRequireDefault(_onesignal);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	var Login = __webpack_require__(304).Login;
 	var template = __webpack_require__(307).template;
 	var LocalStore = __webpack_require__(306).LocalStore;
@@ -76885,17 +76897,17 @@
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
 	var Header = __webpack_require__(433).Header;
-	var Menu = __webpack_require__(538).Menu;
-	var Contents = __webpack_require__(539).Contents;
-	var TrafficSource = __webpack_require__(540).TrafficSource;
+	var Menu = __webpack_require__(539).Menu;
+	var Contents = __webpack_require__(540).Contents;
+	var TrafficSource = __webpack_require__(541).TrafficSource;
 	var checkLanguage = __webpack_require__(310).checkLanguage;
-	var ViewBalance = __webpack_require__(541).ViewBalance;
+	var ViewBalance = __webpack_require__(542).ViewBalance;
 	var Cookies = __webpack_require__(303);
 	var RealityCheck = __webpack_require__(532).RealityCheck;
 	var RealityCheckData = __webpack_require__(534).RealityCheckData;
 	__webpack_require__(535);
 	__webpack_require__(536);
-	__webpack_require__(542);
+	__webpack_require__(543);
 	
 	var Page = function Page() {
 	    State.set('is_loaded_by_pjax', false);
@@ -76938,6 +76950,7 @@
 	        this.endpoint_notification();
 	        BinarySocket.init();
 	        this.show_notification_outdated_browser();
+	        _onesignal2.default.checkSubscription();
 	    },
 	    on_unload: function on_unload() {
 	        Menu.on_unload();
@@ -77100,6 +77113,108 @@
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Client = __webpack_require__(308).Client;
+	var getLanguage = __webpack_require__(305).getLanguage;
+	var localize = __webpack_require__(426).localize;
+	var url_for_static = __webpack_require__(309).url_for_static;
+	
+	var BinaryOneSignal = function () {
+	    function BinaryOneSignal() {
+	        _classCallCheck(this, BinaryOneSignal);
+	
+	        this.OneSignal = window.OneSignal || [];
+	        this.options = {
+	            appId: '8e2d0514-4c65-424e-b87e-4ffaaa61da21',
+	            // safari_web_id: 'YOUR_SAFARI_WEB_ID',
+	            path: url_for_static('/'),
+	            autoRegister: true,
+	            notifyButton: {
+	                enable: false
+	            },
+	            persistNotification: false,
+	            welcomeNotification: {
+	                title: 'Binary.com',
+	                message: localize('Thank you for subscribing!')
+	            },
+	            allowLocalhostAsSecureOrigin: true
+	        };
+	        this.configure();
+	    }
+	
+	    /*
+	     * Initializes OneSignal SDK
+	     * Notes:
+	     *  - do not call 'init' twice
+	     *  - 'init' call is required before any function can be used
+	     *  - log level can be set to 'trace/debug/info/warn/error' or 'silent' to disable all but in production
+	     *     - refer https://www.npmjs.com/package/loglevel
+	     */
+	
+	
+	    _createClass(BinaryOneSignal, [{
+	        key: 'configure',
+	        value: function configure() {
+	            var _this = this;
+	
+	            this.OneSignal.log.setLevel('silent'); // Disable all error logging
+	            this.OneSignal.push(function () {
+	                // Register the worker at root scope, pushed before 'init'
+	                _this.OneSignal.SERVICE_WORKER_PARAM = { scope: url_for_static('/') };
+	            });
+	            this.OneSignal.push(['init', this.options]);
+	        }
+	
+	        /*
+	         * Checks if a user has already accepted push notifications,
+	         * then send the user website language and Binary login_id to OneSignal
+	         */
+	
+	    }, {
+	        key: 'checkSubscription',
+	        value: function checkSubscription() {
+	            var _this2 = this;
+	
+	            this.OneSignal.push(function () {
+	                if (window.location.hostname !== 'www.binary.com') return; // Use in production
+	                // If we're on an unsupported browser, do nothing
+	                if (!_this2.OneSignal.isPushNotificationsSupported()) {
+	                    return;
+	                }
+	                _this2.OneSignal.isPushNotificationsEnabled().then(function (isPushEnabled) {
+	                    if (isPushEnabled) {
+	                        _this2.OneSignal.getTags(function (tags) {
+	                            if (tags.language === undefined) {
+	                                _this2.OneSignal.sendTag('language', getLanguage().toLowerCase());
+	                            }
+	                            if (Client.is_logged_in() && tags.login_id === undefined) {
+	                                _this2.OneSignal.sendTag('login_id', Client.get('loginid'));
+	                            }
+	                        });
+	                    }
+	                });
+	            });
+	        }
+	    }]);
+	
+	    return BinaryOneSignal;
+	}();
+	
+	exports.default = new BinaryOneSignal();
+
+/***/ },
+/* 539 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
 	var Url = __webpack_require__(309).Url;
 	var Client = __webpack_require__(308).Client;
 	
@@ -77228,7 +77343,7 @@
 	};
 
 /***/ },
-/* 539 */
+/* 540 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77287,7 +77402,7 @@
 	};
 
 /***/ },
-/* 540 */
+/* 541 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77390,7 +77505,7 @@
 	};
 
 /***/ },
-/* 541 */
+/* 542 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -77410,7 +77525,7 @@
 	};
 
 /***/ },
-/* 542 */
+/* 543 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -77837,7 +77952,7 @@
 	}(jQuery);
 
 /***/ },
-/* 543 */
+/* 544 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77867,7 +77982,7 @@
 	};
 
 /***/ },
-/* 544 */
+/* 545 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77900,7 +78015,7 @@
 	};
 
 /***/ },
-/* 545 */
+/* 546 */
 /***/ function(module, exports) {
 
 	/** @license
@@ -78447,7 +78562,7 @@
 
 
 /***/ },
-/* 546 */
+/* 547 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81549,7 +81664,7 @@
 	})(document, Math);
 
 /***/ },
-/* 547 */
+/* 548 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -81765,7 +81880,7 @@
 
 
 /***/ },
-/* 548 */
+/* 549 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -81811,28 +81926,28 @@
 	if (typeof trackJs !== 'undefined') trackJs.configure(window._trackJs);
 
 /***/ },
-/* 549 */
+/* 550 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Endpoint = __webpack_require__(550).Endpoint;
-	var GetStartedJP = __webpack_require__(551).GetStartedJP;
-	var JobDetails = __webpack_require__(552).JobDetails;
-	var Platforms = __webpack_require__(553).Platforms;
-	var Regulation = __webpack_require__(554).Regulation;
-	var Scroll = __webpack_require__(555).Scroll;
-	var GetStarted = __webpack_require__(556).GetStarted;
-	var Contact = __webpack_require__(557).Contact;
-	var Careers = __webpack_require__(560).Careers;
-	var Home = __webpack_require__(561).Home;
-	var WhyUs = __webpack_require__(568).WhyUs;
-	var CharityPage = __webpack_require__(569).CharityPage;
-	var TermsAndConditions = __webpack_require__(570).TermsAndConditions;
+	var Endpoint = __webpack_require__(551).Endpoint;
+	var GetStartedJP = __webpack_require__(552).GetStartedJP;
+	var JobDetails = __webpack_require__(553).JobDetails;
+	var Platforms = __webpack_require__(554).Platforms;
+	var Regulation = __webpack_require__(555).Regulation;
+	var Scroll = __webpack_require__(556).Scroll;
+	var GetStarted = __webpack_require__(557).GetStarted;
+	var Contact = __webpack_require__(558).Contact;
+	var Careers = __webpack_require__(561).Careers;
+	var Home = __webpack_require__(562).Home;
+	var WhyUs = __webpack_require__(569).WhyUs;
+	var CharityPage = __webpack_require__(570).CharityPage;
+	var TermsAndConditions = __webpack_require__(571).TermsAndConditions;
 	var CashierJP = __webpack_require__(444).CashierJP;
-	var LoggedInHandler = __webpack_require__(571).LoggedInHandler;
-	var pjax_config_page_require_auth = __webpack_require__(572).pjax_config_page_require_auth;
-	var pjax_config_page = __webpack_require__(572).pjax_config_page;
+	var LoggedInHandler = __webpack_require__(572).LoggedInHandler;
+	var pjax_config_page_require_auth = __webpack_require__(573).pjax_config_page_require_auth;
+	var pjax_config_page = __webpack_require__(573).pjax_config_page;
 	
 	pjax_config_page('/home', function () {
 	    return {
@@ -82014,7 +82129,7 @@
 	});
 
 /***/ },
-/* 550 */
+/* 551 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82055,7 +82170,7 @@
 	};
 
 /***/ },
-/* 551 */
+/* 552 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82114,7 +82229,7 @@
 	};
 
 /***/ },
-/* 552 */
+/* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82223,7 +82338,7 @@
 	};
 
 /***/ },
-/* 553 */
+/* 554 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82299,7 +82414,7 @@
 	};
 
 /***/ },
-/* 554 */
+/* 555 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -82346,7 +82461,7 @@
 	};
 
 /***/ },
-/* 555 */
+/* 556 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82447,7 +82562,7 @@
 	};
 
 /***/ },
-/* 556 */
+/* 557 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -82523,14 +82638,14 @@
 	};
 
 /***/ },
-/* 557 */
+/* 558 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var email_rot13 = __webpack_require__(311).email_rot13;
-	var loadCSS = __webpack_require__(558).loadCSS;
-	var loadJS = __webpack_require__(559).loadJS;
+	var loadCSS = __webpack_require__(559).loadCSS;
+	var loadJS = __webpack_require__(560).loadJS;
 	var getLanguage = __webpack_require__(305).getLanguage;
 	var url_for_static = __webpack_require__(309).url_for_static;
 	
@@ -82646,7 +82761,7 @@
 	};
 
 /***/ },
-/* 558 */
+/* 559 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -82686,7 +82801,7 @@
 	};
 
 /***/ },
-/* 559 */
+/* 560 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -82707,7 +82822,7 @@
 	};
 
 /***/ },
-/* 560 */
+/* 561 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82728,12 +82843,12 @@
 	};
 
 /***/ },
-/* 561 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var VerifyEmail = __webpack_require__(562).VerifyEmail;
+	var VerifyEmail = __webpack_require__(563).VerifyEmail;
 	var Client = __webpack_require__(308).Client;
 	
 	var Home = function () {
@@ -82759,15 +82874,15 @@
 	};
 
 /***/ },
-/* 562 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
 	var url_for = __webpack_require__(309).url_for;
-	var bind_validation = __webpack_require__(565).bind_validation;
+	var bind_validation = __webpack_require__(566).bind_validation;
 	var localize = __webpack_require__(426).localize;
 	
 	var VerifyEmail = function VerifyEmail() {
@@ -82825,7 +82940,7 @@
 	};
 
 /***/ },
-/* 563 */
+/* 564 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82834,7 +82949,7 @@
 	
 	var template = __webpack_require__(307).template;
 	var moment = __webpack_require__(312);
-	var dv = __webpack_require__(564);
+	var dv = __webpack_require__(565);
 	var Content = __webpack_require__(429).Content;
 	var localize = __webpack_require__(426).localize;
 	
@@ -82957,7 +83072,7 @@
 	};
 
 /***/ },
-/* 564 */
+/* 565 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -83038,14 +83153,14 @@
 	module.exports = dv;
 
 /***/ },
-/* 565 */
+/* 566 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var done_typing = __webpack_require__(566).done_typing;
-	var formToObj = __webpack_require__(567).formToObj;
-	var dv = __webpack_require__(564);
+	var done_typing = __webpack_require__(567).done_typing;
+	var formToObj = __webpack_require__(568).formToObj;
+	var dv = __webpack_require__(565);
 	var localize = __webpack_require__(426).localize;
 	
 	var ValidationUI = {
@@ -83211,7 +83326,7 @@
 	};
 
 /***/ },
-/* 566 */
+/* 567 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83249,7 +83364,7 @@
 	};
 
 /***/ },
-/* 567 */
+/* 568 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83333,12 +83448,12 @@
 	};
 
 /***/ },
-/* 568 */
+/* 569 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Scroll = __webpack_require__(555).Scroll;
+	var Scroll = __webpack_require__(556).Scroll;
 	var Client = __webpack_require__(308).Client;
 	
 	var WhyUs = function () {
@@ -83363,7 +83478,7 @@
 	};
 
 /***/ },
-/* 569 */
+/* 570 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83400,13 +83515,13 @@
 	};
 
 /***/ },
-/* 570 */
+/* 571 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var url = __webpack_require__(309).url;
-	var Scroll = __webpack_require__(555).Scroll;
+	var Scroll = __webpack_require__(556).Scroll;
 	
 	var TermsAndConditions = function () {
 	    var init = function init() {
@@ -83468,7 +83583,7 @@
 	};
 
 /***/ },
-/* 571 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83572,7 +83687,7 @@
 	};
 
 /***/ },
-/* 572 */
+/* 573 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83582,13 +83697,13 @@
 	var GTM = __webpack_require__(434).GTM;
 	var SessionStore = __webpack_require__(306).SessionStore;
 	var State = __webpack_require__(306).State;
-	var Contents = __webpack_require__(539).Contents;
+	var Contents = __webpack_require__(540).Contents;
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
 	var Login = __webpack_require__(304).Login;
 	var page = __webpack_require__(537).page;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var pjax = __webpack_require__(573);
+	var pjax = __webpack_require__(574);
 	
 	var make_mobile_menu = function make_mobile_menu() {
 	    if ($('#mobile-menu-container').is(':visible')) {
@@ -83802,7 +83917,7 @@
 	};
 
 /***/ },
-/* 573 */
+/* 574 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
@@ -84415,49 +84530,49 @@
 	}).call({});
 
 /***/ },
-/* 574 */
+/* 575 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var AccountTransferWS = __webpack_require__(575).AccountTransferWS;
+	var AccountTransferWS = __webpack_require__(576).AccountTransferWS;
 	var Cashier = __webpack_require__(432).Cashier;
-	var ForwardWS = __webpack_require__(576).ForwardWS;
-	var PaymentAgentListWS = __webpack_require__(577).PaymentAgentListWS;
+	var ForwardWS = __webpack_require__(577).ForwardWS;
+	var PaymentAgentListWS = __webpack_require__(578).PaymentAgentListWS;
 	var PaymentAgentWithdrawWS = __webpack_require__(445).PaymentAgentWithdrawWS;
 	var AssetIndexUI = __webpack_require__(508).AssetIndexUI;
 	var MarketTimesUI = __webpack_require__(511).MarketTimesUI;
-	var AuthenticateWS = __webpack_require__(578).AuthenticateWS;
-	var PasswordWS = __webpack_require__(579).PasswordWS;
-	var PaymentAgentTransferSocket = __webpack_require__(580).PaymentAgentTransferSocket;
+	var AuthenticateWS = __webpack_require__(579).AuthenticateWS;
+	var PasswordWS = __webpack_require__(580).PasswordWS;
+	var PaymentAgentTransferSocket = __webpack_require__(581).PaymentAgentTransferSocket;
 	var PortfolioWS = __webpack_require__(470).PortfolioWS;
 	var ProfitTableWS = __webpack_require__(492).ProfitTableWS;
-	var APITokenWS = __webpack_require__(584).APITokenWS;
-	var AuthorisedApps = __webpack_require__(586).AuthorisedApps;
+	var APITokenWS = __webpack_require__(585).APITokenWS;
+	var AuthorisedApps = __webpack_require__(587).AuthorisedApps;
 	var FinancialAssessmentws = __webpack_require__(437).FinancialAssessmentws;
-	var IPHistoryWS = __webpack_require__(590).IPHistoryWS;
-	var Limits = __webpack_require__(594).Limits;
-	var SelfExclusionWS = __webpack_require__(597).SelfExclusionWS;
-	var SettingsDetailsWS = __webpack_require__(598).SettingsDetailsWS;
-	var SecurityWS = __webpack_require__(599).SecurityWS;
-	var SettingsWS = __webpack_require__(600).SettingsWS;
+	var IPHistoryWS = __webpack_require__(591).IPHistoryWS;
+	var Limits = __webpack_require__(595).Limits;
+	var SelfExclusionWS = __webpack_require__(598).SelfExclusionWS;
+	var SettingsDetailsWS = __webpack_require__(599).SettingsDetailsWS;
+	var SecurityWS = __webpack_require__(600).SecurityWS;
+	var SettingsWS = __webpack_require__(601).SettingsWS;
 	var StatementWS = __webpack_require__(498).StatementWS;
-	var TopUpVirtualWS = __webpack_require__(601).TopUpVirtualWS;
-	var LostPasswordWS = __webpack_require__(602).LostPasswordWS;
+	var TopUpVirtualWS = __webpack_require__(602).TopUpVirtualWS;
+	var LostPasswordWS = __webpack_require__(603).LostPasswordWS;
 	var MetaTrader = __webpack_require__(438);
-	var FinancialAccOpening = __webpack_require__(604).FinancialAccOpening;
-	var JapanAccOpening = __webpack_require__(608).JapanAccOpening;
-	var RealAccOpening = __webpack_require__(611).RealAccOpening;
-	var VirtualAccOpening = __webpack_require__(614).VirtualAccOpening;
-	var ResetPasswordWS = __webpack_require__(616).ResetPasswordWS;
+	var FinancialAccOpening = __webpack_require__(605).FinancialAccOpening;
+	var JapanAccOpening = __webpack_require__(609).JapanAccOpening;
+	var RealAccOpening = __webpack_require__(612).RealAccOpening;
+	var VirtualAccOpening = __webpack_require__(615).VirtualAccOpening;
+	var ResetPasswordWS = __webpack_require__(617).ResetPasswordWS;
 	var TNCApproval = __webpack_require__(447).TNCApproval;
 	var TradePage = __webpack_require__(473).TradePage;
 	var TradePage_Beta = __webpack_require__(506).TradePage_Beta;
 	var MBTradePage = __webpack_require__(525).MBTradePage;
 	var ViewPopupWS = __webpack_require__(448).ViewPopupWS;
-	var KnowledgeTest = __webpack_require__(618).KnowledgeTest;
-	var pjax_config_page_require_auth = __webpack_require__(572).pjax_config_page_require_auth;
-	var pjax_config_page = __webpack_require__(572).pjax_config_page;
+	var KnowledgeTest = __webpack_require__(619).KnowledgeTest;
+	var pjax_config_page_require_auth = __webpack_require__(573).pjax_config_page_require_auth;
+	var pjax_config_page = __webpack_require__(573).pjax_config_page;
 	
 	pjax_config_page('/trading', function () {
 	    return {
@@ -84790,7 +84905,7 @@
 	});
 
 /***/ },
-/* 575 */
+/* 576 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85054,7 +85169,7 @@
 	};
 
 /***/ },
-/* 576 */
+/* 577 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85323,7 +85438,7 @@
 	};
 
 /***/ },
-/* 577 */
+/* 578 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85483,7 +85598,7 @@
 	};
 
 /***/ },
-/* 578 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85539,17 +85654,17 @@
 	};
 
 /***/ },
-/* 579 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
-	var ValidationUI = __webpack_require__(565).ValidationUI;
-	var customError = __webpack_require__(565).customError;
-	var bind_validation = __webpack_require__(565).bind_validation;
-	var dv = __webpack_require__(564);
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var ValidationUI = __webpack_require__(566).ValidationUI;
+	var customError = __webpack_require__(566).customError;
+	var bind_validation = __webpack_require__(566).bind_validation;
+	var dv = __webpack_require__(565);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
@@ -85676,12 +85791,12 @@
 	};
 
 /***/ },
-/* 580 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var PaymentAgentTransfer = __webpack_require__(581).PaymentAgentTransfer;
+	var PaymentAgentTransfer = __webpack_require__(582).PaymentAgentTransfer;
 	var Content = __webpack_require__(429).Content;
 	var Client = __webpack_require__(308).Client;
 	
@@ -85712,15 +85827,15 @@
 	};
 
 /***/ },
-/* 581 */
+/* 582 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var onlyNumericOnKeypress = __webpack_require__(489).onlyNumericOnKeypress;
 	var Client = __webpack_require__(308).Client;
-	var PaymentAgentTransferData = __webpack_require__(582).PaymentAgentTransferData;
-	var PaymentAgentTransferUI = __webpack_require__(583).PaymentAgentTransferUI;
+	var PaymentAgentTransferData = __webpack_require__(583).PaymentAgentTransferData;
+	var PaymentAgentTransferUI = __webpack_require__(584).PaymentAgentTransferUI;
 	
 	var PaymentAgentTransfer = function () {
 	    var hiddenClass = 'invisible';
@@ -85919,7 +86034,7 @@
 	};
 
 /***/ },
-/* 582 */
+/* 583 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -85948,7 +86063,7 @@
 	};
 
 /***/ },
-/* 583 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86027,7 +86142,7 @@
 	};
 
 /***/ },
-/* 584 */
+/* 585 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86035,13 +86150,13 @@
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
 	var Content = __webpack_require__(429).Content;
-	var FlexTableUI = __webpack_require__(585).FlexTableUI;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var FlexTableUI = __webpack_require__(586).FlexTableUI;
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var ValidationUI = __webpack_require__(565).ValidationUI;
-	var customError = __webpack_require__(565).customError;
-	var bind_validation = __webpack_require__(565).bind_validation;
-	var dv = __webpack_require__(564);
+	var ValidationUI = __webpack_require__(566).ValidationUI;
+	var customError = __webpack_require__(566).customError;
+	var bind_validation = __webpack_require__(566).bind_validation;
+	var dv = __webpack_require__(565);
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(309).url_for;
 	
@@ -86262,7 +86377,7 @@
 	};
 
 /***/ },
-/* 585 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86324,7 +86439,7 @@
 	};
 
 /***/ },
-/* 586 */
+/* 587 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86332,7 +86447,7 @@
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
 	var url_for = __webpack_require__(309).url_for;
-	var Applications = __webpack_require__(587).Applications;
+	var Applications = __webpack_require__(588).Applications;
 	
 	var AuthorisedApps = function () {
 	    var onLoad = function onLoad() {
@@ -86358,13 +86473,13 @@
 	};
 
 /***/ },
-/* 587 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(588).ApplicationsUI;
-	var ApplicationsData = __webpack_require__(589).ApplicationsData;
+	var ApplicationsUI = __webpack_require__(589).ApplicationsUI;
+	var ApplicationsData = __webpack_require__(590).ApplicationsData;
 	
 	var Applications = function () {
 	    'use strict';
@@ -86400,7 +86515,7 @@
 	};
 
 /***/ },
-/* 588 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86409,8 +86524,8 @@
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(494).Button;
-	var FlexTableUI = __webpack_require__(585).FlexTableUI;
-	var ApplicationsData = __webpack_require__(589).ApplicationsData;
+	var FlexTableUI = __webpack_require__(586).FlexTableUI;
+	var ApplicationsData = __webpack_require__(590).ApplicationsData;
 	
 	var ApplicationsUI = function () {
 	    'use strict';
@@ -86498,7 +86613,7 @@
 	};
 
 /***/ },
-/* 589 */
+/* 590 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86550,7 +86665,7 @@
 	};
 
 /***/ },
-/* 590 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86558,7 +86673,7 @@
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
 	var url_for = __webpack_require__(309).url_for;
-	var IPHistory = __webpack_require__(591).IPHistory;
+	var IPHistory = __webpack_require__(592).IPHistory;
 	
 	var IPHistoryWS = function () {
 	    var onLoad = function onLoad() {
@@ -86584,13 +86699,13 @@
 	};
 
 /***/ },
-/* 591 */
+/* 592 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(592).IPHistoryUI;
-	var IPHistoryData = __webpack_require__(593).IPHistoryData;
+	var IPHistoryUI = __webpack_require__(593).IPHistoryUI;
+	var IPHistoryData = __webpack_require__(594).IPHistoryData;
 	
 	var IPHistory = function () {
 	    'use strict';
@@ -86626,13 +86741,13 @@
 	};
 
 /***/ },
-/* 592 */
+/* 593 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
-	var FlexTableUI = __webpack_require__(585).FlexTableUI;
+	var FlexTableUI = __webpack_require__(586).FlexTableUI;
 	var moment = __webpack_require__(312);
 	var localize = __webpack_require__(426).localize;
 	
@@ -86708,7 +86823,7 @@
 	};
 
 /***/ },
-/* 593 */
+/* 594 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -86773,12 +86888,12 @@
 	};
 
 /***/ },
-/* 594 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LimitsWS = __webpack_require__(595).LimitsWS;
+	var LimitsWS = __webpack_require__(596).LimitsWS;
 	var Content = __webpack_require__(429).Content;
 	var Client = __webpack_require__(308).Client;
 	
@@ -86826,7 +86941,7 @@
 	};
 
 /***/ },
-/* 595 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86834,7 +86949,7 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(429).Content;
 	var addComma = __webpack_require__(442).addComma;
-	var LimitsUI = __webpack_require__(596).LimitsUI;
+	var LimitsUI = __webpack_require__(597).LimitsUI;
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(311).elementTextContent;
@@ -86918,7 +87033,7 @@
 	};
 
 /***/ },
-/* 596 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86993,19 +87108,19 @@
 	};
 
 /***/ },
-/* 597 */
+/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
-	var ValidationUI = __webpack_require__(565).ValidationUI;
-	var validate_object = __webpack_require__(565).validate_object;
-	var bind_validation = __webpack_require__(565).bind_validation;
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var ValidationUI = __webpack_require__(566).ValidationUI;
+	var validate_object = __webpack_require__(566).validate_object;
+	var bind_validation = __webpack_require__(566).bind_validation;
 	var moment = __webpack_require__(312);
-	var dv = __webpack_require__(564);
+	var dv = __webpack_require__(565);
 	var TimePicker = __webpack_require__(490).TimePicker;
 	var DatePicker = __webpack_require__(483).DatePicker;
 	var dateValueChanged = __webpack_require__(311).dateValueChanged;
@@ -87344,19 +87459,18 @@
 	};
 
 /***/ },
-/* 598 */
+/* 599 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
+	var State = __webpack_require__(306).State;
 	var Content = __webpack_require__(429).Content;
 	var detect_hedging = __webpack_require__(311).detect_hedging;
 	var appendTextValueChild = __webpack_require__(311).appendTextValueChild;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
-	var bind_validation = __webpack_require__(565).bind_validation;
-	var dv = __webpack_require__(564);
+	var Validation = __webpack_require__(439);
 	var moment = __webpack_require__(312);
 	__webpack_require__(430);
 	
@@ -87365,7 +87479,6 @@
 	
 	    var formID = '#frmPersonalDetails';
 	    var RealAccElements = '.RealAcc';
-	    var jpDataKeys = {};
 	    var isInitialized = void 0,
 	        editable_fields = void 0,
 	        isJP = void 0,
@@ -87375,61 +87488,53 @@
 	        place_of_birth_value = void 0;
 	
 	    var init = function init() {
-	        if (isInitialized) return;
-	        Content.populate();
-	        editable_fields = {};
-	
-	        if (Client.get('values_set_account') && (Client.get('is_virtual') || Client.get('residence'))) {
-	            initOk();
-	        } else {
-	            isInitialized = false;
-	        }
-	
-	        BinarySocket.send({ get_settings: '1', req_id: 1 }, true);
-	    };
-	
-	    var initOk = function initOk() {
-	        isInitialized = true;
 	        isVirtual = Client.get('is_virtual');
 	        residence = Client.get('residence');
 	        isJP = residence === 'jp';
-	        bind_validation.simple($(formID)[0], {
-	            schema: isJP ? getJPSchema() : isVirtual ? {} : getNonJPSchema(),
-	            submit: function submit(ev, info) {
-	                ev.preventDefault();
-	                ev.stopPropagation();
-	                if (info.errors.length > 0) return false;
-	                var data = info.values;
-	                data.email_consent = $('#email_consent:checked').length > 0 ? 1 : 0;
-	                if (isJP) {
-	                    populateJPSettings();
-	                    data = $.extend(data, jpDataKeys);
-	                }
-	                var tax_residence_val = $('#tax_residence').val();
-	                data.tax_residence = (Array.isArray(tax_residence_val) ? tax_residence_val.join(',') : tax_residence_val) || '';
-	                if (!isChanged(data)) return showFormMessage('You did not change anything.', false);
-	                return setDetails(Client.get('is_virtual') || data);
-	            }
-	        });
 	        if (isJP && !isVirtual) {
 	            $('#fieldset_email_consent').removeClass('invisible');
 	            detect_hedging($('#trading_purpose'), $('.hedge'));
 	        }
+	        showHideTaxMessage();
+	    };
+	
+	    var showHideTaxMessage = function showHideTaxMessage() {
 	        if (Client.should_complete_tax()) {
 	            $('#tax_information_notice').removeClass('invisible');
+	        } else {
+	            $('#tax_information_notice').addClass('invisible');
 	        }
 	    };
 	
-	    var isChanged = function isChanged(data) {
-	        var changed = false;
-	        Object.keys(editable_fields).every(function (key) {
-	            if (key in data && editable_fields[key] !== data[key] || data.jp_settings && key in data.jp_settings && editable_fields[key] !== data.jp_settings[key]) {
-	                changed = true;
-	                return false;
+	    var getDetailsResponse = function getDetailsResponse(data) {
+	        data.date_of_birth = data.date_of_birth ? moment.utc(new Date(data.date_of_birth * 1000)).format('YYYY-MM-DD') : '';
+	        data.name = isJP ? data.last_name : (data.salutation || '') + ' ' + (data.first_name || '') + ' ' + (data.last_name || '');
+	
+	        displayGetSettingsData(data);
+	
+	        if (Client.get('is_virtual')) {
+	            // Virtual Account
+	            $(RealAccElements).remove();
+	            $(formID).removeClass('hidden');
+	            return;
+	        }
+	        // Real Account
+	        // Generate states list
+	        if (isJP) {
+	            var jpData = data.jp_settings;
+	            displayGetSettingsData(jpData);
+	            if (jpData.hedge_asset !== null && jpData.hedge_asset_amount !== null) {
+	                $('.hedge').removeClass('invisible');
 	            }
-	            return true;
-	        });
-	        return changed;
+	            $('.JpAcc').removeClass('invisible hidden');
+	        } else {
+	            $(RealAccElements).removeClass('hidden');
+	        }
+	        if (!isInitialized) {
+	            $(formID).submit(handleSubmit).removeClass('hidden');
+	            bindValidation();
+	            isInitialized = true;
+	        }
 	    };
 	
 	    var displayGetSettingsData = function displayGetSettingsData(data) {
@@ -87469,61 +87574,120 @@
 	        });
 	    };
 	
-	    var getDetailsResponse = function getDetailsResponse(response) {
-	        if (!isInitialized) {
-	            initOk();
-	        }
-	        var data = response.get_settings;
-	
-	        data.date_of_birth = data.date_of_birth ? moment.utc(new Date(data.date_of_birth * 1000)).format('YYYY-MM-DD') : '';
-	        data.name = isJP ? data.last_name : (data.salutation || '') + ' ' + (data.first_name || '') + ' ' + (data.last_name || '');
-	
-	        displayGetSettingsData(data);
-	
-	        if (Client.get('is_virtual')) {
-	            // Virtual Account
-	            $(RealAccElements).remove();
-	            $(formID).removeClass('hidden');
-	            return;
-	        }
-	        // Real Account
-	        // Generate states list
-	        if (residence) {
-	            BinarySocket.send({ states_list: residence, passthrough: { value: data.address_state } });
-	        }
-	        if (isJP) {
-	            var jpData = response.get_settings.jp_settings;
-	            displayGetSettingsData(jpData);
-	            if (jpData.hedge_asset !== null && jpData.hedge_asset_amount !== null) {
-	                $('.hedge').removeClass('invisible');
+	    var handleSubmit = function handleSubmit() {
+	        event.preventDefault();
+	        if (Validation.validate(formID)) {
+	            var data = populateData();
+	            if (isJP) {
+	                data = $.extend(data, populateJPData());
+	                delete data.place_of_birth;
+	                delete data.tax_identification_number;
 	            }
-	            $('.JpAcc').removeClass('invisible hidden');
-	        } else {
-	            $(RealAccElements).removeClass('hidden');
-	            BinarySocket.send({ residence_list: 1 });
+	            if (!isChanged(data)) {
+	                showFormMessage('You did not change anything.', false);
+	                return;
+	            }
+	            setDetails(data);
 	        }
-	        $(formID).removeClass('hidden');
 	    };
 	
-	    var populateStates = function populateStates(response) {
-	        var address_state = '#address_state';
-	        var $field = $(address_state);
-	        var defaultValue = response.echo_req.passthrough.value;
-	        var states = response.states_list;
+	    var populateData = function populateData() {
+	        var data = {};
+	        var id = void 0,
+	            val = void 0,
+	            $this = void 0;
+	        $('.form_input').each(function () {
+	            $this = $(this);
+	            id = $this.attr('id');
+	            if (/lbl_/.test(id)) {
+	                val = $this.text();
+	            } else if ($this.is(':checkbox')) {
+	                val = $this.is(':checked') ? 1 : 0;
+	            } else {
+	                val = $this.val();
+	            }
+	            data[id.replace('lbl_', '')] = val;
+	        });
+	        var tax_residence_val = $('#tax_residence').val();
+	        data.tax_residence = (Array.isArray(tax_residence_val) ? tax_residence_val.join(',') : tax_residence_val) || '';
+	        return data;
+	    };
 	
-	        $field.empty();
-	
-	        if (states && states.length > 0) {
-	            $field.append($('<option/>', { value: '', text: localize('Please select') }));
-	            states.forEach(function (state) {
-	                $field.append($('<option/>', { value: state.value, text: state.text }));
-	            });
-	        } else {
-	            $field.replaceWith($('<input/>', { id: address_state.replace('#', ''), name: 'address_state', type: 'text', maxlength: '35' }));
-	            $field = $(address_state);
+	    var populateJPData = function populateJPData() {
+	        var id = void 0,
+	            val = void 0,
+	            $this = void 0;
+	        var jpDataKeys = {};
+	        jpDataKeys.jp_settings = {};
+	        $('.jp_value').each(function () {
+	            $this = $(this);
+	            id = $this.attr('id');
+	            if (/lbl_/.test(id)) {
+	                val = $this.text();
+	                jpDataKeys[id.replace('lbl_', '')] = val;
+	            } else {
+	                val = $this.val();
+	                jpDataKeys.jp_settings[id] = val;
+	            }
+	        });
+	        if (/Hedging/.test($('#trading_purpose').val())) {
+	            jpDataKeys.jp_settings.hedge_asset = $('#hedge_asset').val();
+	            jpDataKeys.jp_settings.hedge_asset_amount = $('#hedge_asset_amount').val().trim();
 	        }
+	        return jpDataKeys;
+	    };
 	
-	        $field.val(defaultValue);
+	    var isChanged = function isChanged(data) {
+	        return Object.keys(editable_fields).some(function (key) {
+	            return key in data && editable_fields[key] !== data[key] || data.jp_settings && key in data.jp_settings && editable_fields[key] !== data.jp_settings[key];
+	        });
+	    };
+	
+	    var bindValidation = function bindValidation() {
+	        var validations = void 0;
+	        if (isJP) {
+	            validations = [{ selector: '#hedge_asset_amount', validations: ['req', 'number'] }, { selector: '#hedge_asset', validations: ['req'] }];
+	        } else {
+	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }];
+	            var tax_id_validation = { selector: '#tax_identification_number', validations: ['postcode', ['length', { min: 0, max: 20 }]] };
+	            if (Client.is_financial()) {
+	                validations.push({ selector: '#place_of_birth', validations: ['req'] }, { selector: '#tax_residence', validations: ['req'] });
+	                tax_id_validation.validations[1][1].min = 1;
+	                tax_id_validation.validations.unshift('req');
+	            }
+	            validations.push(tax_id_validation);
+	        }
+	        Validation.init(formID, validations);
+	    };
+	
+	    var setDetails = function setDetails(data) {
+	        var req = { set_settings: 1 };
+	        Object.keys(data).forEach(function (key) {
+	            req[key] = data[key];
+	        });
+	        BinarySocket.send(req).then(function (response) {
+	            setDetailsResponse(response);
+	        });
+	    };
+	
+	    var setDetailsResponse = function setDetailsResponse(response) {
+	        // allow user to resubmit the form on error.
+	        var is_error = response.set_settings !== 1;
+	        if (!is_error) {
+	            // to update tax information message for financial clients
+	            BinarySocket.send({ get_account_status: 1 }, true).then(function () {
+	                showHideTaxMessage();
+	            });
+	            // to update the State with latest get_settings data
+	            BinarySocket.send({ get_settings: 1 }, true).then(function (data) {
+	                getDetailsResponse(data.get_settings);
+	            });
+	        }
+	        showFormMessage(is_error ? 'Sorry, an error occurred while processing your account.' : 'Your settings have been updated successfully.', !is_error);
+	    };
+	
+	    var showFormMessage = function showFormMessage(msg, isSuccess) {
+	        $('#formMessage').attr('class', isSuccess ? 'success-msg' : 'errorfield').html(isSuccess ? '<ul class="checked"><li>' + localize(msg) + '</li></ul>' : localize(msg)).css('display', 'block').delay(5000).fadeOut(1000);
 	    };
 	
 	    var populateResidence = function populateResidence(response) {
@@ -87557,147 +87721,47 @@
 	        });
 	    };
 	
-	    var populateJPSettings = function populateJPSettings() {
-	        var id = void 0,
-	            val = void 0;
-	        jpDataKeys = {};
-	        jpDataKeys.jp_settings = {};
-	        $('.jp_value').each(function () {
-	            id = $(this).attr('id');
-	            if (/lbl_/.test(id)) {
-	                val = $(this).text();
-	                jpDataKeys[id.replace('lbl_', '')] = val;
-	            } else {
-	                val = $(this).val();
-	                jpDataKeys.jp_settings[id] = val;
-	            }
-	        });
-	        if (/Hedging/.test($('#trading_purpose').val())) {
-	            jpDataKeys.jp_settings.hedge_asset = $('#hedge_asset').val();
-	            jpDataKeys.jp_settings.hedge_asset_amount = $('#hedge_asset_amount').val().trim();
-	        }
-	    };
+	    var populateStates = function populateStates(response) {
+	        var address_state = '#address_state';
+	        var $field = $(address_state);
+	        var defaultValue = response.echo_req.passthrough.value;
+	        var states = response.states_list;
 	
-	    var getJPSchema = function getJPSchema() {
-	        var V2 = ValidateV2;
-	        if (/Hedging/.test($('#trading_purpose').val())) {
-	            return {
-	                hedge_asset_amount: [function (v) {
-	                    return dv.ok(v.trim());
-	                }, V2.required, V2.regex(/^\d+$/, [Content.localize().textNumbers])]
-	            };
-	        }
-	        // else there is nothing to validate
-	        return {};
-	    };
+	        $field.empty();
 	
-	    var getNonJPSchema = function getNonJPSchema() {
-	        var letters = Content.localize().textLetters,
-	            numbers = Content.localize().textNumbers,
-	            space = Content.localize().textSpace,
-	            period = Content.localize().textPeriod,
-	            comma = Content.localize().textComma,
-	            hyphen = Content.localize().textHyphen;
-	
-	        var V2 = ValidateV2;
-	        var isAddress = V2.regex(/^[^`~!#$%^&*)(_=+\[}{\]\\\"\;\:\?\><\|]+$/, [letters, numbers, space, period, comma, hyphen, '/ @ \' ']);
-	        var isCity = V2.regex(/^[^`~!@#$%^&*)(_=+\[\}\{\]\\\/\"\;\:\?\><\,\|\d]+$/, [letters, space, hyphen, '. \' ']);
-	        var isState = V2.regex(/^[^`~!@#$%^&*)(_=+\[\}\{\]\\\/\"\;\:\?\><\|]*$/, [letters, numbers, space, comma, hyphen, '. \'']);
-	        var isPostcode = V2.regex(/^[^+]{0,20}$/, [letters, numbers, space, hyphen]);
-	        var isPhoneNo = V2.regex(/^(|\+?[0-9\s\-]+)$/, [numbers, space, hyphen]);
-	
-	        var isResidence = V2.regex(/^([a-z]{2}$)?/, [letters]);
-	        var isTaxResidence = V2.regex(/^([a-z]{2}(,[a-z]{2})*)?$/, [letters]);
-	        var isTaxID = V2.regex(/^[\w-]{0,20}$/, [letters, numbers, hyphen]);
-	
-	        var maybeEmptyAddress = function maybeEmptyAddress(value) {
-	            return value.length ? isAddress(value) : dv.ok(value);
-	        };
-	
-	        var validations = {
-	            address_line_1: [V2.required, isAddress],
-	            address_line_2: [maybeEmptyAddress],
-	            address_city: [V2.required, isCity],
-	            address_state: [isState],
-	            address_postcode: [V2.lengthRange(0, 20), isPostcode],
-	            phone: [V2.lengthRange(6, 35), isPhoneNo]
-	        };
-	
-	        if (Client.is_financial()) {
-	            validations.place_of_birth = [V2.required, isResidence];
-	            validations.tax_residence = [V2.required, isTaxResidence];
-	            validations.tax_identification_number = [V2.required, isTaxID];
+	        if (states && states.length > 0) {
+	            $field.append($('<option/>', { value: '', text: localize('Please select') }));
+	            states.forEach(function (state) {
+	                $field.append($('<option/>', { value: state.value, text: state.text }));
+	            });
 	        } else {
-	            validations.place_of_birth = [isResidence];
-	            validations.tax_residence = [isTaxResidence];
-	            validations.tax_identification_number = [isTaxID];
+	            $field.replaceWith($('<input/>', { id: address_state.replace('#', ''), name: 'address_state', type: 'text', maxlength: '35' }));
+	            $field = $(address_state);
 	        }
-	
-	        return validations;
-	    };
-	
-	    var setDetails = function setDetails(data) {
-	        var req = { set_settings: 1 };
-	        if (Client.is_financial() && data.tax_residence && data.tax_identification_number) {
-	            Client.set('has_tax_information', 1);
-	            $('#tax_information_notice').addClass('invisible');
-	        }
-	        Object.keys(data).forEach(function (key) {
-	            req[key] = data[key];
-	        });
-	        BinarySocket.send(req);
-	    };
-	
-	    var showFormMessage = function showFormMessage(msg, isSuccess) {
-	        $('#formMessage').attr('class', isSuccess ? 'success-msg' : 'errorfield').html(isSuccess ? '<ul class="checked"><li>' + localize(msg) + '</li></ul>' : localize(msg)).css('display', 'block').delay(5000).fadeOut(1000);
-	    };
-	
-	    var setDetailsResponse = function setDetailsResponse(response) {
-	        // allow user to resubmit the form on error.
-	        var is_error = response.set_settings !== 1;
-	        // don't display the data again, but repopulate the editable_fields
-	        if (!is_error) displayGetSettingsData(response.echo_req, false);
-	        showFormMessage(is_error ? 'Sorry, an error occurred while processing your account.' : 'Your settings have been updated successfully.', !is_error);
+	        $field.val(defaultValue);
 	    };
 	
 	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                if (!response) {
-	                    console.log('some error occured');
-	                    return;
-	                }
-	                var type = response.msg_type;
-	                switch (type) {
-	                    case 'authorize':
-	                        SettingsDetailsWS.init();
-	                        break;
-	                    case 'get_settings':
-	                        if (response.req_id === 1) {
-	                            getDetailsResponse(response);
-	                        }
-	                        break;
-	                    case 'set_settings':
-	                        setDetailsResponse(response);
-	                        break;
-	                    case 'states_list':
-	                        populateStates(response);
-	                        break;
-	                    case 'residence_list':
-	                        populateResidence(response);
-	                        break;
-	                    case 'error':
-	                        $('#formMessage').attr('class', 'errorfield').text(response.error.message);
-	                        break;
-	                    default:
-	                        break;
-	                }
+	        if (isInitialized) return;
+	        Content.populate();
+	        editable_fields = {};
+	
+	        BinarySocket.wait('authorize', 'get_account_status', 'get_settings').then(function () {
+	            init();
+	            var data = State.get(['response', 'get_settings', 'get_settings']);
+	            getDetailsResponse(data);
+	            if (!isJP) {
+	                BinarySocket.send({ residence_list: 1 }).then(function (response) {
+	                    populateResidence(response);
+	                });
+	            }
+	            if (residence) {
+	                var states_req = { states_list: residence, passthrough: { value: data.address_state } };
+	                BinarySocket.send(states_req).then(function (response) {
+	                    populateStates(response);
+	                });
 	            }
 	        });
-	        if (Client.get('loginid')) {
-	            SettingsDetailsWS.init();
-	        }
 	    };
 	
 	    var onUnload = function onUnload() {
@@ -87705,7 +87769,6 @@
 	    };
 	
 	    return {
-	        init: init,
 	        onLoad: onLoad,
 	        onUnload: onUnload
 	    };
@@ -87716,15 +87779,15 @@
 	};
 
 /***/ },
-/* 599 */
+/* 600 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
-	var bind_validation = __webpack_require__(565).bind_validation;
-	var dv = __webpack_require__(564);
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var bind_validation = __webpack_require__(566).bind_validation;
+	var dv = __webpack_require__(565);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	
@@ -87888,7 +87951,7 @@
 	};
 
 /***/ },
-/* 600 */
+/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -87943,7 +88006,7 @@
 	};
 
 /***/ },
-/* 601 */
+/* 602 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88030,12 +88093,12 @@
 	};
 
 /***/ },
-/* 602 */
+/* 603 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LostPassword = __webpack_require__(603).LostPassword;
+	var LostPassword = __webpack_require__(604).LostPassword;
 	var Client = __webpack_require__(308).Client;
 	
 	var LostPasswordWS = function () {
@@ -88059,7 +88122,7 @@
 	};
 
 /***/ },
-/* 603 */
+/* 604 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88133,7 +88196,7 @@
 	};
 
 /***/ },
-/* 604 */
+/* 605 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88141,10 +88204,10 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
-	var FinancialAccOpeningUI = __webpack_require__(606).FinancialAccOpeningUI;
+	var FinancialAccOpeningUI = __webpack_require__(607).FinancialAccOpeningUI;
 	
 	var FinancialAccOpening = function () {
 	    var elementObj = void 0,
@@ -88206,7 +88269,7 @@
 	};
 
 /***/ },
-/* 605 */
+/* 606 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88217,7 +88280,7 @@
 	var Cookies = __webpack_require__(303);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
-	var Contents = __webpack_require__(539).Contents;
+	var Contents = __webpack_require__(540).Contents;
 	var url_for = __webpack_require__(309).url_for;
 	var elementInnerHtml = __webpack_require__(311).elementInnerHtml;
 	
@@ -88394,14 +88457,14 @@
 	};
 
 /***/ },
-/* 606 */
+/* 607 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var FinancialAccOpeningData = __webpack_require__(607).FinancialAccOpeningData;
+	var FinancialAccOpeningData = __webpack_require__(608).FinancialAccOpeningData;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
@@ -88463,7 +88526,7 @@
 	};
 
 /***/ },
-/* 607 */
+/* 608 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88510,7 +88573,7 @@
 	};
 
 /***/ },
-/* 608 */
+/* 609 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88518,11 +88581,11 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var detect_hedging = __webpack_require__(311).detect_hedging;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
-	var JapanAccOpeningUI = __webpack_require__(609).JapanAccOpeningUI;
+	var JapanAccOpeningUI = __webpack_require__(610).JapanAccOpeningUI;
 	
 	var JapanAccOpening = function () {
 	    var init = function init() {
@@ -88570,17 +88633,17 @@
 	};
 
 /***/ },
-/* 609 */
+/* 610 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
-	var JapanAccOpeningData = __webpack_require__(610).JapanAccOpeningData;
+	var JapanAccOpeningData = __webpack_require__(611).JapanAccOpeningData;
 	var localize = __webpack_require__(426).localize;
 	
 	var JapanAccOpeningUI = function () {
@@ -88665,7 +88728,7 @@
 	};
 
 /***/ },
-/* 610 */
+/* 611 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88712,7 +88775,7 @@
 	};
 
 /***/ },
-/* 611 */
+/* 612 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88720,9 +88783,9 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var Client = __webpack_require__(308).Client;
-	var RealAccOpeningUI = __webpack_require__(612).RealAccOpeningUI;
+	var RealAccOpeningUI = __webpack_require__(613).RealAccOpeningUI;
 	
 	var RealAccOpening = function () {
 	    var init = function init() {
@@ -88765,17 +88828,17 @@
 	};
 
 /***/ },
-/* 612 */
+/* 613 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
-	var RealAccOpeningData = __webpack_require__(613).RealAccOpeningData;
+	var RealAccOpeningData = __webpack_require__(614).RealAccOpeningData;
 	
 	var RealAccOpeningUI = function () {
 	    'use strict';
@@ -88826,7 +88889,7 @@
 	};
 
 /***/ },
-/* 613 */
+/* 614 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88863,7 +88926,7 @@
 	};
 
 /***/ },
-/* 614 */
+/* 615 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88872,8 +88935,8 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var bind_validation = __webpack_require__(565).bind_validation;
-	var VirtualAccOpeningData = __webpack_require__(615).VirtualAccOpeningData;
+	var bind_validation = __webpack_require__(566).bind_validation;
+	var VirtualAccOpeningData = __webpack_require__(616).VirtualAccOpeningData;
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
@@ -88962,16 +89025,16 @@
 	};
 
 /***/ },
-/* 615 */
+/* 616 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var TrafficSource = __webpack_require__(540).TrafficSource;
-	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var TrafficSource = __webpack_require__(541).TrafficSource;
+	var ValidateV2 = __webpack_require__(564).ValidateV2;
 	var Cookies = __webpack_require__(303);
-	var dv = __webpack_require__(564);
+	var dv = __webpack_require__(565);
 	var Client = __webpack_require__(308).Client;
 	
 	var VirtualAccOpeningData = function () {
@@ -89053,12 +89116,12 @@
 	};
 
 /***/ },
-/* 616 */
+/* 617 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ResetPassword = __webpack_require__(617).ResetPassword;
+	var ResetPassword = __webpack_require__(618).ResetPassword;
 	var Client = __webpack_require__(308).Client;
 	
 	var ResetPasswordWS = function () {
@@ -89082,7 +89145,7 @@
 	};
 
 /***/ },
-/* 617 */
+/* 618 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89280,14 +89343,14 @@
 	};
 
 /***/ },
-/* 618 */
+/* 619 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var toJapanTimeIfNeeded = __webpack_require__(449).Clock.toJapanTimeIfNeeded;
-	var KnowledgeTestUI = __webpack_require__(619).KnowledgeTestUI;
-	var KnowledgeTestData = __webpack_require__(620).KnowledgeTestData;
+	var KnowledgeTestUI = __webpack_require__(620).KnowledgeTestUI;
+	var KnowledgeTestData = __webpack_require__(621).KnowledgeTestData;
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
@@ -89484,7 +89547,7 @@
 	};
 
 /***/ },
-/* 619 */
+/* 620 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89598,7 +89661,7 @@
 	};
 
 /***/ },
-/* 620 */
+/* 621 */
 /***/ function(module, exports) {
 
 	'use strict';
