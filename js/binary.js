@@ -77130,6 +77130,7 @@
 	    function BinaryOneSignal() {
 	        _classCallCheck(this, BinaryOneSignal);
 	
+	        if (!isApplicable()) return;
 	        this.OneSignal = window.OneSignal || [];
 	        this.options = {
 	            appId: '8e2d0514-4c65-424e-b87e-4ffaaa61da21',
@@ -77182,8 +77183,8 @@
 	        value: function checkSubscription() {
 	            var _this2 = this;
 	
+	            if (!isApplicable()) return;
 	            this.OneSignal.push(function () {
-	                if (window.location.hostname !== 'www.binary.com') return; // Use in production
 	                // If we're on an unsupported browser, do nothing
 	                if (!_this2.OneSignal.isPushNotificationsSupported()) {
 	                    return;
@@ -77206,6 +77207,10 @@
 	
 	    return BinaryOneSignal;
 	}();
+	
+	var isApplicable = function isApplicable() {
+	    return window.location.hostname === 'www.binary.com' && !/logged_inws/i.test(window.location.pathname);
+	};
 	
 	exports.default = new BinaryOneSignal();
 
