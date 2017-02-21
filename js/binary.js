@@ -19624,8 +19624,14 @@
 	        activate_by_client_type();
 	    };
 	
+	    var tnc_pages = function tnc_pages() {
+	        var location = window.location.href;
+	        return (/user\/tnc_approvalws/.test(location) || /terms-and-conditions/.test(location)
+	        );
+	    };
+	
 	    var check_tnc = function check_tnc() {
-	        if (/user\/tnc_approvalws/.test(window.location.href) || /terms-and-conditions/.test(window.location.href) || get('is_virtual') || sessionStorage.getItem('check_tnc') !== 'check') {
+	        if (tnc_pages() || get('is_virtual') || sessionStorage.getItem('check_tnc') !== 'check') {
 	            return;
 	        }
 	        var client_tnc_status = get('tnc_status'),
@@ -19846,7 +19852,7 @@
 	    };
 	
 	    var should_redirect_tax = function should_redirect_tax() {
-	        if (should_complete_tax() && !/user\/settings\/detailsws/.test(window.location.pathname)) {
+	        if (should_complete_tax() && !/user\/settings\/detailsws/.test(window.location.pathname) && !tnc_pages()) {
 	            window.location.href = url_for('user/settings/detailsws');
 	            return true;
 	        }
@@ -45677,9 +45683,11 @@
 
 /***/ },
 /* 455 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	var localize = __webpack_require__(426).localize;
 	
 	/*
 	 * Notifications manages various notification messages
@@ -45712,7 +45720,7 @@
 	    };
 	
 	    var generateMessage = function generateMessage(options) {
-	        var $message = $('<div class="notice-msg center-text' + (options.dismissible ? ' dismissible' : '') + '"' + (options.uid ? ' id="' + options.uid + '"' : '') + '>' + options.text + (options.dismissible ? '<div class="notification-dismiss">x</div>' : '') + '</div>');
+	        var $message = $('<div class="notice-msg center-text' + (options.dismissible ? ' dismissible' : '') + '"' + (options.uid ? ' id="' + options.uid + '"' : '') + '>' + localize(options.text) + (options.dismissible ? '<div class="notification-dismiss">x</div>' : '') + '</div>');
 	
 	        if (options.dismissible) {
 	            $message.click(function () {
@@ -87537,7 +87545,6 @@
 	        }
 	        if (!isInitialized) {
 	            $(formID).submit(handleSubmit).removeClass('hidden');
-	            bindValidation();
 	            isInitialized = true;
 	        }
 	    };
@@ -87653,7 +87660,7 @@
 	        if (isJP) {
 	            validations = [{ selector: '#hedge_asset_amount', validations: ['req', 'number'] }, { selector: '#hedge_asset', validations: ['req'] }];
 	        } else {
-	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }];
+	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: 'input#address_state', validations: ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }];
 	            var tax_id_validation = { selector: '#tax_identification_number', validations: ['postcode', ['length', { min: 0, max: 20 }]] };
 	            if (Client.is_financial()) {
 	                validations.push({ selector: '#place_of_birth', validations: ['req'] }, { selector: '#tax_residence', validations: ['req'] });
@@ -87744,6 +87751,7 @@
 	            $field = $(address_state);
 	        }
 	        $field.val(defaultValue);
+	        bindValidation();
 	    };
 	
 	    var onLoad = function onLoad() {
