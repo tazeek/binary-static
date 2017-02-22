@@ -43,9 +43,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <thead>
                     <tr>
                         <th>Currency Symbol</th>
-                        <th>Lot Size (Volume = 1.0)</th>
+                        <th>Kích thước lô (Khối lượng = 1.0)</th>
                         <th>Minimum Volume</th>
-                        <th>Minimum Volume Increment</th>
+                        <th>Khối lượng tối thiểu tăng</th>
                         <th>Maximum Leverage</th>
                     </tr>
                 </thead>
@@ -225,34 +225,34 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     <div class="gr-12 gr-padding-10">
         <h2>How to read the table above</h2>
-        <p>The Forex is typically traded in <i>lots</i>. One standard <i>lots</i> is equivalent to 100,000 units. Each time you open a position on a currency symbol, you can start with a minimum transaction of <i>0.01 lots</i>.</p>
-        <p>Leverage indicates how much capital you can control based on your initial deposit. For example, a 100:1 leverage will allow you to control up to USD 100,000 using only USD 1,000 of your own money as deposit.</p>
-        <p>To learn more, read our <a href="/vi/metatrader/margin-policy.html">Margin Policy</a> that further explains our 100% forced liquidation level for Forex.</p>
+        <p>Thị trường ngoại hối thường được giao dịch <i>theo các lô</i>. Một trong những tiêu chuẩn <i>rất nhiều</i> là tương đương với 100.000 đơn vị. Mỗi khi bạn mở một vị trí trên một ký hiệu tiền tệ, bạn có thể bắt đầu với một giao dịch tối thiểu của <i>0,01 rất nhiều</i>.</p>
+        <p>Đòn bẩy cho biết số lượng vốn bạn có thể kiểm soát dựa trên tiền gửi ban đầu của bạn. Ví dụ, một đòn bẩy với tỉ lệ 100: 1 sẽ cho phép bạn kiểm soát lên đến 100.000 USD bằng cách sử dụng chỉ USD 1000 tiền riêng của mình như là tiền đặt cọc.</p>
+        <p>Để tìm hiểu thêm, đọc thêm về <a href="/vi/metatrader/margin-policy.html"> Chính sách lợi nhuận</a> của chúng tôi sẽ giải thích 100% về mức thanh lý bắt buộc cho ngoại hối.</p>
 
-        <h2>Important notes on our swap rates (overnight funding)</h2>
-        <p>If you keep any positions open overnight, an interest adjustment will be made to your trading account as indication of the cost required to keep your position open. This adjustment is based on interbank lending rates, on top of a 2% fee.</p>
-        <p>The interest adjustment is calculated in points, meaning we will convert the relevant interbank lending rates to points in the base currency.</p>
-        <p>The swap rate will depend on the direction of the position you take:</p>
+        <h2>Các lưu ý quan trọng về tỷ giá trao đổi của chúng tôi (tài trợ qua đêm)</h2>
+        <p>Nếu bạn giữ cho bất kỳ phiên nào hoạt đông qua đêm, điều chỉnh lãi suất sẽ được thực hiện cho tài khoản giao dịch như là dấu hiệu của các chi phí cần thiết để giữ phiên của bạn mở. Điều chỉnh này dựa trên tỷ giá cho vay liên ngân hàng, với phí cao nhất là 2%.</p>
+        <p>Việc điều chỉnh lãi suất được tính theo điểm, có nghĩa là chúng tôi sẽ chuyển đổi tỷ giá cho vay liên ngân hàng có liên quan đến các điểm trong các loại tiền tệ cơ sở.</p>
+        <p>Tỷ lệ trao đổi sẽ phụ thuộc vào sự chỉ đạo của các phiên bạn tham gia:</p>
         <div class="gr-prefix-1">
             <ul class="bullet">
-                <li><strong>Long positions</strong>: We charge a 2% fee on top of interbank lending rates.
-                    <span data-balloon-length="large" data-balloon="Let's say the points adjustment for a long position on the EUR/USD symbol is -5.64. This would require an overnight fee of 5.64 points for one lot of open position in EUR/USD, where the size of one lot is 100,000 units. The points will then be converted into the deposit currency (which is the euro in this example). As a result, you will incur an interest fee of EUR5.64 for keeping the position open overnight.">
-                        How do we calculate interest fees for long positions?
+                <li><strong>Thế giá lên</strong>: chúng tôi tính phí một khoản phí 2% trên đầu trang của lãi suất cho vay liên ngân hàng.
+                    <span data-balloon-length="large" data-balloon="Hãy nói rằng việc điều chỉnh điểm cho một phiên dài trên các EUR/USD biểu tượng là-5.64. Điều này sẽ yêu cầu một khoản phí qua đêm là 5,64 điểm cho một lô của các phiên mở trong EUR/USD, kích thước của một lô là 100.000 đơn vị. Những điểm sau đó sẽ được chuyển đổi thành các loại tiền tệ đặt cọc (là đồng euro trong ví dụ này). Kết quả là, bạn sẽ phải chịu một khoản phí lãi suất của EUR5.64 để giữ cho các vị trí mở qua đêm.">
+                        Chúng tôi tính toán lợi ích dài hạn bằng cách nào?
                     </span>
                 </li>
-                <li><strong>Short positions</strong>: We charge a 2% fee on top of interbank lending rates.
-                    <span data-balloon-length="large" data-balloon="Let's say the points adjustment for a short position on the EUR/USD symbol is 1.64. This would result in an overnight credit of 1.64 points for one lot of open position in EUR/USD where the size of one lot is 100,000 units. The points will then be converted into the deposit currency (which is the euro in this example). As a result, you will be credited with EUR1.64 for keeping the position open overnight.">
-                         How do we calculate interest fees for short positions?
+                <li><strong>Thế giá xuống</strong>: chúng tôi tính phí một khoản phí 2% trên đầu trang của tỷ giá cho vay liên ngân hàng.
+                    <span data-balloon-length="large" data-balloon="Giả sử việc điều chỉnh điểm cho một vị trí ngắn vào biểu tượng của EUR/USD là 1,64. Điều này sẽ cho kết quả trong một tín dụng qua đêm 1.64 điểm cho một lô phiên mở trong EUR/USD mà kích thước của một lô là 100.000 đơn vị. Những điểm sau đó sẽ được chuyển đổi thành các loại tiền tệ đặt cọc (là đồng euro trong ví dụ này). Kết quả là, bạn sẽ được ghi 1.64EUR để giữ cho phiên mở qua đêm.">
+                        Chúng tôi tính toán lợi ích ngắn hạn bằng cách nào?
                     </span>
                 </li>
             </ul>
         </div>
-        <p>Please take note that our swap rate also depends on the time and days you hold your positions open: </p>
+        <p>Xin hãy lưu ý rằng tỷ lệ trao đổi của chúng tôi cũng phụ thuộc vào thời gian và ngày bạn giữ phiên mở của bạn: </p>
         <div class="gr-prefix-1">
             <ul class="bullet">
                 <li>You will be subjected to swap rates if you keep a position open past 23:59:59 GMT.</li>
-                <li>Positions that are still open on Wednesday at 23:59:59 GMT will be charged three times the swap rate to account for weekends, a standard practice for all Forex brokers.</li>
-                <li>Our swap rate may also be adjusted to take holidays into account.</li>
+                <li>Các phiên vẫn mở vào thứ tư lúc 23:59:59 GMT sẽ phải trả ba lần theo tỷ lệ trao đổi vào tài khoản cho ngày cuối tuần, một tiêu chuẩn cho tất cả các môi giới ngoại hối.</li>
+                <li>Tỷ lệ trao đổi của chúng tôi cũng có thể được điều chỉnh để có ngày nghỉ vào tài khoản.</li>
             </ul>
         </div>
     </div>
@@ -261,17 +261,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <div id="volatility-content" class="toggle-content invisible">
                 <div id="volatility-specs" class="gr-row">
     <div class="gr-12 gr-padding-10">
-        <h1>Contract Specifications (CFD) - Volatility Indices</h1>
+        <h1>Hợp đồng đặc điểm kỹ thuật (CFD) - chỉ số biến động</h1>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Symbol</th>
-                        <th>Volume 1.0 (Trade Size)</th>
-                        <th>Minimum Volume (Trade Size)</th>
-                        <th>Maximum Volume (Trade Size)</th>
-                        <th>Minimum Volume Increment</th>
-                        <th>Pip Size</th>
+                        <th>Biểu tượng</th>
+                        <th>Khối 1.0(kích thước giao dịch)</th>
+                        <th>Khối lượng tối thiểu(Theo kích thước giao dịch)</th>
+                        <th>Khối lượng tối đa (Theo kích thước giao dịch)</th>
+                        <th>Khối lượng tối thiểu tăng</th>
+                        <th>Quy mô</th>
                         <th>Minimum Spread</th>
                         <th>Margin</th>
                     </tr>
@@ -328,7 +328,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <td>0.2%</td>
                     </tr>
                     <tr>
-                        <th data-balloon="High frequency (2 ticks per second)">HF Volatility 100 Index</th>
+                        <th data-balloon="Tần số cao (2 tíc trên giây)">HF Volatility 100 Index</th>
                         <td>USD 1 per point</td>
                         <td>0.01</td>
                         <td>100</td>
@@ -338,7 +338,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <td>0.2%</td>
                     </tr>
                     <tr>
-                        <th data-balloon="High frequency (2 ticks per second)">HF Volatility 50 Index</th>
+                        <th data-balloon="Tần số cao (2 tíc trên giây)">HF Volatility 50 Index</th>
                         <td>USD 1 per point</td>
                         <td>0.5</td>
                         <td>100</td>
@@ -348,7 +348,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <td>0.2%</td>
                     </tr>
                     <tr>
-                        <th data-balloon="High frequency (2 ticks per second)">HF Volatility 10 Index</th>
+                        <th data-balloon="Tần số cao (2 tíc trên giây)">HF Volatility 10 Index</th>
                         <td>USD 1 per point</td>
                         <td>0.1</td>
                         <td>100</td>
@@ -364,33 +364,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     <div class="gr-12 gr-padding-10">
         <h2>How to read the table above</h2>
-        <p>CFD (Contract for Difference): CFD is an instrument that allows you to profit by speculating on the rise or fall of an instrument. The profit/loss is estimated as a function of the difference in the buy/sell prices of the underlying instrument.</p>
-        <p>For example, the CFDs on Volatility Indices offer a USD 1 per point contract. If you buy a Volume 1.0 contract for the Volatility 100 Index with current ask price of USD 20,000 and later sell it at a bid price of USD 20,010, your net profit will be calculated as follows:</p>
+        <p>CFD (hợp đồng cho sự khác biệt): CFD là một công cụ cho phép bạn có lợi nhuận bằng cách dự đoán về tăng hoặc sụp đổ của một phương tiện. Lợi nhuận/tổn thất ước tính như là một chức năng của sự khác biệt trong mức giá mua/bán của các phương tiện nằm bên dưới.</p>
+        <p>Ví dụ, các hợp đồng chênh lệch giá trên chỉ số biến động cung cấp 1 USD cho mỗi hợp đồng. Nếu mua vào một khối hợp đồng 1.0 trên sàn biến động 100 với mức giá là 20,000 và sau đó bán lại với giá thầu 20,010 USD, biểu giá lợi nhuận của bạn sẽ được tính như sau:</p>
         <div class="gr-12 gr-padding-10 fill-bg-color">
             <div class="gr-prefix-1">
-                <p>(Sell Price - Buy Price) x Volume x Price Per Point = Profit</p>
-                <p>I.e. (20010 - 20000) x 1 x 1 = USD 10</p>
+                <p>(Giá bán - giá mua) x khối lượng x giá cho mỗi điểm = lợi nhuận</p>
+                <p>tức là (20010-20000) x1 x1 = 10 USD</p>
             </div>
         </div>
-        <p>Each time you open a position on a Volatility Index symbol, you can start with a minimum volume transaction of 0.01 (trade size), which translates to USD 0.01 per point movement of the index.</p>
-        <p>Margin indicates how much investment you can control based on your initial capital. For example, a 0.2% margin will allow you to control up to USD 500,000 using only USD 1,000 of your own money as deposit.</p>
-        <p>To learn more, read our <a href="/vi/metatrader/margin-policy.html">Margin Policy</a> that further explains our 50% forced liquidation level for Volatility Indices.</p>
+        <p>Mỗi khi bạn mở một thế trên một biểu tượng chỉ số biến động, bạn có thể bắt đầu với một giao dịch khối lượng tối thiểu của 0,01 (kích thước giao dịch), mà biến dạng thành 0,01 USD cho mỗi điểm chuyển động của các chỉ số.</p>
+        <p>Lợi nhuận cho biết số lượng đầu tư mà bạn có thể kiểm soát dựa trên vốn ban đầu của bạn. Ví dụ, lợi nhuận 0,2% sẽ cho phép bạn kiểm soát lên đến 500.000 USD bằng cách sử dụng chỉ 1000 USD tiền riêng của mình như là tiền đặt cọc.</p>
+        <p>Để tìm hiểu thêm, đọc thêm về <a href="/vi/metatrader/margin-policy.html"> Chính sách lợi nhuận</a> của chúng tôi sẽ giải thích 50% mức thanh lý bắt buộc cho chỉ số biến động.</p>
     </div>
 </div>
             </div>
             <div id="cash-content" class="toggle-content invisible">
                 <div id="cash-specs" class="gr-row">
     <div class="gr-12 gr-padding-10">
-        <h1>Contract Specifications (CFD) - Cash Indices</h1>
+        <h1>Hợp đồng đặc điểm kỹ thuật (CFD) - chỉ số tiền mặt</h1>
         <div class="table-container">
             <table>
                 <thead>
                 <tr>
-                    <th>Symbol</th>
+                    <th>Biểu tượng</th>
                     <th>Mô tả</th>
-                    <th>Volume 1.0<br>(Trade Size)</th>
-                    <th>Minimum Volume<br>(Trade Size)</th>
-                    <th>Maximum Volume<br>(Trade Size)</th>
+                    <th>Khối 1.0 <br>(kích thước giao dịch)</th>
+                    <th>Khối lượng tối thiểu <br>(theo kích thước giao dịch)</th>
+                    <th>Khối lượng tối đa <br>(Theo kích thước giao dịch)</th>
                     <th>Margin</th>
                 </tr>
                 </thead>
@@ -514,32 +514,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     <div class="gr-12 gr-padding-10">
         <h2>How to read the table above</h2>
-        <p>CFD (Contract for Difference): CFD is an instrument that allows you to profit by speculating on the rise or fall of an instrument. The profit/loss is estimated as a function of the difference in the buy/sell prices of the underlying instrument.</p>
-        <p>For example, the CFDs on US 30 Cash Index offer a USD 1 per point contract. If you buy a Volume 1.0 contract for the US 30 Cash Index with current ask price of USD 20,000 and later sell it at a bid price of USD 20,010, your net profit will be calculated as follows:</p>
+        <p>CFD (hợp đồng cho sự khác biệt): CFD là một công cụ cho phép bạn có lợi nhuận bằng cách dự đoán về tăng hoặc sụp đổ của một phương tiện. Lợi nhuận/tổn thất ước tính như là một chức năng của sự khác biệt trong mức giá mua/bán của các phương tiện nằm bên dưới.</p>
+        <p>Ví dụ, các hợp đồng chênh lệch giá trên chỉ số tiền mặt US 30 cung cấp 1 USD cho mỗi điểm hợp đồng. Nếu bạn mua vào một hợp đồng khối lượng 1.0 cho chỉ số tiền mặt US 30 với giá thành 20,000 USD và sau đó bán lại nó với giá 20,010 thì biểu đồ lợi nhuận của bạn sẽ được tính như sau:</p>
         <div class="gr-12 gr-padding-10 fill-bg-color">
             <div class="gr-prefix-1">
-                <p>(Sell Price - Buy Price) x Volume x Price Per Point = Profit</p>
-                <p>I.e. (20010 - 20000) x 1 x 1 = USD 10</p>
+                <p>(Giá bán - giá mua) x khối lượng x giá cho mỗi điểm = lợi nhuận</p>
+                <p>tức là (20010-20000) x1 x1 = 10 USD</p>
             </div>
         </div>
-        <p>Margin indicates how much investment you can control based on your initial capital. For example, a 1% margin will allow you to control up to USD 100,000 using only USD 1,000 of your own money as deposit.</p>
-        <p>To learn more, read our <a href="/vi/metatrader/margin-policy.html">Margin Policy</a> that further explains our margin requirements.</p>
-        <h2>Important notes on our swap rates (overnight funding)</h2>
-        <p>If you keep any positions open overnight, an interest adjustment will be made to your trading account as indication of the cost required to keep your position open. This adjustment is based on interbank lending rates, on top of a 2% fee.</p>
-        <p>The interest adjustment is calculated in points, meaning we will convert the relevant market rates to points in the base instrument.</p>
-        <p>The swap rate will depend on the direction of the position you take:</p>
+        <p>Lợi nhuận cho biết số lượng đầu tư mà bạn có thể kiểm soát dựa trên vốn ban đầu của bạn. Ví dụ, 1% lợi nhuận sẽ cho phép bạn kiểm soát lên đến 100.000 USD bằng cách sử dụng chỉ 1000 USD tiền riêng của mình như là tiền đặt cọc.</p>
+        <p>Để tìm hiểu thêm, đọc thêm về <a href="/vi/metatrader/margin-policy.html"> Chính sách lợi nhuận</a> của chúng tôi sẽ giải thích về các lề điều kiện.</p>
+        <h2>Các lưu ý quan trọng về tỷ giá trao đổi của chúng tôi (tài trợ qua đêm)</h2>
+        <p>Nếu bạn giữ cho bất kỳ phiên nào hoạt đông qua đêm, điều chỉnh lãi suất sẽ được thực hiện cho tài khoản giao dịch như là dấu hiệu của các chi phí cần thiết để giữ phiên của bạn mở. Điều chỉnh này dựa trên tỷ giá cho vay liên ngân hàng, với phí cao nhất là 2%.</p>
+        <p>Việc điều chỉnh lãi suất được tính theo điểm, có nghĩa là chúng tôi sẽ chuyển đổi tỷ giá thị trường có liên quan đến các điểm trong công cụ cơ bản.</p>
+        <p>Tỷ lệ trao đổi sẽ phụ thuộc vào sự chỉ đạo của các phiên bạn tham gia:</p>
         <div class="gr-prefix-1">
             <ul class="bullet">
                 <li><strong>Long positions</strong>: We charge a 2% fee on top of market rates.</li>
                 <li><strong>Short positions</strong>: We charge a 2% fee on top of market rates.</li>
             </ul>
         </div>
-        <p>Please take note that our swap rate also depends on the time and days you hold your positions open: </p>
+        <p>Xin hãy lưu ý rằng tỷ lệ trao đổi của chúng tôi cũng phụ thuộc vào thời gian và ngày bạn giữ phiên mở của bạn: </p>
         <div class="gr-prefix-1">
             <ul class="bullet">
                 <li>You will be subjected to swap rates if you keep a position open past the market close.</li>
-                <li>Positions that are still open on Friday at market close will be charged three times the swap rate to account for weekends, a standard practice for all brokers.</li>
-                <li>Our swap rate may also be adjusted to take holidays into account.</li>
+                <li>Phiên vẫn còn được mở vào ngày thứ Sáu lúc thị trường đóng sẽ được tính 3 lần theo tỷ lệ trao đổi vào tài khoản cho ngày cuối tuần, một tiêu chuẩn cho tất cả các công ty môi giới.</li>
+                <li>Tỷ lệ trao đổi của chúng tôi cũng có thể được điều chỉnh để có ngày nghỉ vào tài khoản.</li>
             </ul>
         </div>
     </div>
