@@ -62,17 +62,17 @@
 	exportAllFunctions(__webpack_require__(301));
 	
 	// created for handling global onclick
-	exportAllFunctions(__webpack_require__(544));
+	exportAllFunctions(__webpack_require__(543));
 	// used by gtm to update page after a new release
-	exportAllFunctions(__webpack_require__(545));
+	exportAllFunctions(__webpack_require__(544));
 	
+	__webpack_require__(545);
 	__webpack_require__(546);
 	__webpack_require__(547);
-	__webpack_require__(548);
 	
+	__webpack_require__(548);
 	__webpack_require__(549);
-	__webpack_require__(550);
-	__webpack_require__(575);
+	__webpack_require__(574);
 
 /***/ },
 /* 1 */
@@ -76885,11 +76885,7 @@
 
 	'use strict';
 	
-	var _onesignal = __webpack_require__(538);
-	
-	var _onesignal2 = _interopRequireDefault(_onesignal);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	// import OneSignal from '../../lib/onesignal';
 	
 	var Login = __webpack_require__(304).Login;
 	var template = __webpack_require__(307).template;
@@ -76903,17 +76899,17 @@
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
 	var Header = __webpack_require__(433).Header;
-	var Menu = __webpack_require__(539).Menu;
-	var Contents = __webpack_require__(540).Contents;
-	var TrafficSource = __webpack_require__(541).TrafficSource;
+	var Menu = __webpack_require__(538).Menu;
+	var Contents = __webpack_require__(539).Contents;
+	var TrafficSource = __webpack_require__(540).TrafficSource;
 	var checkLanguage = __webpack_require__(310).checkLanguage;
-	var ViewBalance = __webpack_require__(542).ViewBalance;
+	var ViewBalance = __webpack_require__(541).ViewBalance;
 	var Cookies = __webpack_require__(303);
 	var RealityCheck = __webpack_require__(532).RealityCheck;
 	var RealityCheckData = __webpack_require__(534).RealityCheckData;
 	__webpack_require__(535);
 	__webpack_require__(536);
-	__webpack_require__(543);
+	__webpack_require__(542);
 	
 	var Page = function Page() {
 	    State.set('is_loaded_by_pjax', false);
@@ -76956,7 +76952,7 @@
 	        this.endpoint_notification();
 	        BinarySocket.init();
 	        this.show_notification_outdated_browser();
-	        _onesignal2.default.checkSubscription();
+	        // OneSignal.checkSubscription();
 	    },
 	    on_unload: function on_unload() {
 	        Menu.on_unload();
@@ -77119,113 +77115,6 @@
 
 	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Client = __webpack_require__(308).Client;
-	var getLanguage = __webpack_require__(305).getLanguage;
-	var localize = __webpack_require__(426).localize;
-	var url_for_static = __webpack_require__(309).url_for_static;
-	
-	var BinaryOneSignal = function () {
-	    function BinaryOneSignal() {
-	        _classCallCheck(this, BinaryOneSignal);
-	
-	        if (!isApplicable()) return;
-	        this.OneSignal = window.OneSignal || [];
-	        this.options = {
-	            appId: '8e2d0514-4c65-424e-b87e-4ffaaa61da21',
-	            // safari_web_id: 'YOUR_SAFARI_WEB_ID',
-	            path: url_for_static('/'),
-	            autoRegister: true,
-	            notifyButton: {
-	                enable: false
-	            },
-	            persistNotification: false,
-	            welcomeNotification: {
-	                title: 'Binary.com',
-	                message: localize('Thank you for subscribing!')
-	            },
-	            allowLocalhostAsSecureOrigin: true
-	        };
-	        this.configure();
-	    }
-	
-	    /*
-	     * Initializes OneSignal SDK
-	     * Notes:
-	     *  - do not call 'init' twice
-	     *  - 'init' call is required before any function can be used
-	     *  - log level can be set to 'trace/debug/info/warn/error' or 'silent' to disable all but in production
-	     *     - refer https://www.npmjs.com/package/loglevel
-	     */
-	
-	
-	    _createClass(BinaryOneSignal, [{
-	        key: 'configure',
-	        value: function configure() {
-	            var _this = this;
-	
-	            this.OneSignal.log.setLevel('silent'); // Disable all error logging
-	            this.OneSignal.push(function () {
-	                // Register the worker at root scope, pushed before 'init'
-	                _this.OneSignal.SERVICE_WORKER_PARAM = { scope: url_for_static('/') };
-	            });
-	            this.OneSignal.push(['init', this.options]);
-	        }
-	
-	        /*
-	         * Checks if a user has already accepted push notifications,
-	         * then send the user website language and Binary login_id to OneSignal
-	         */
-	
-	    }, {
-	        key: 'checkSubscription',
-	        value: function checkSubscription() {
-	            var _this2 = this;
-	
-	            if (!isApplicable()) return;
-	            this.OneSignal.push(function () {
-	                // If we're on an unsupported browser, do nothing
-	                if (!_this2.OneSignal.isPushNotificationsSupported()) {
-	                    return;
-	                }
-	                _this2.OneSignal.isPushNotificationsEnabled().then(function (isPushEnabled) {
-	                    if (isPushEnabled) {
-	                        _this2.OneSignal.getTags(function (tags) {
-	                            if (tags.language === undefined) {
-	                                _this2.OneSignal.sendTag('language', getLanguage().toLowerCase());
-	                            }
-	                            if (Client.is_logged_in() && tags.login_id === undefined) {
-	                                _this2.OneSignal.sendTag('login_id', Client.get('loginid'));
-	                            }
-	                        });
-	                    }
-	                });
-	            });
-	        }
-	    }]);
-	
-	    return BinaryOneSignal;
-	}();
-	
-	var isApplicable = function isApplicable() {
-	    return window.location.hostname === 'www.binary.com' && !/logged_inws/i.test(window.location.pathname);
-	};
-	
-	exports.default = new BinaryOneSignal();
-
-/***/ },
-/* 539 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
 	var Url = __webpack_require__(309).Url;
 	var Client = __webpack_require__(308).Client;
 	
@@ -77354,7 +77243,7 @@
 	};
 
 /***/ },
-/* 540 */
+/* 539 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77413,7 +77302,7 @@
 	};
 
 /***/ },
-/* 541 */
+/* 540 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77516,7 +77405,7 @@
 	};
 
 /***/ },
-/* 542 */
+/* 541 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -77536,7 +77425,7 @@
 	};
 
 /***/ },
-/* 543 */
+/* 542 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -77963,7 +77852,7 @@
 	}(jQuery);
 
 /***/ },
-/* 544 */
+/* 543 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77993,7 +77882,7 @@
 	};
 
 /***/ },
-/* 545 */
+/* 544 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78026,7 +77915,7 @@
 	};
 
 /***/ },
-/* 546 */
+/* 545 */
 /***/ function(module, exports) {
 
 	/** @license
@@ -78573,7 +78462,7 @@
 
 
 /***/ },
-/* 547 */
+/* 546 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81675,7 +81564,7 @@
 	})(document, Math);
 
 /***/ },
-/* 548 */
+/* 547 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -81891,7 +81780,7 @@
 
 
 /***/ },
-/* 549 */
+/* 548 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -81937,28 +81826,28 @@
 	if (typeof trackJs !== 'undefined') trackJs.configure(window._trackJs);
 
 /***/ },
-/* 550 */
+/* 549 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Endpoint = __webpack_require__(551).Endpoint;
-	var GetStartedJP = __webpack_require__(552).GetStartedJP;
-	var JobDetails = __webpack_require__(553).JobDetails;
-	var Platforms = __webpack_require__(554).Platforms;
-	var Regulation = __webpack_require__(555).Regulation;
-	var Scroll = __webpack_require__(556).Scroll;
-	var GetStarted = __webpack_require__(557).GetStarted;
-	var Contact = __webpack_require__(558).Contact;
-	var Careers = __webpack_require__(561).Careers;
-	var Home = __webpack_require__(562).Home;
-	var WhyUs = __webpack_require__(569).WhyUs;
-	var CharityPage = __webpack_require__(570).CharityPage;
-	var TermsAndConditions = __webpack_require__(571).TermsAndConditions;
+	var Endpoint = __webpack_require__(550).Endpoint;
+	var GetStartedJP = __webpack_require__(551).GetStartedJP;
+	var JobDetails = __webpack_require__(552).JobDetails;
+	var Platforms = __webpack_require__(553).Platforms;
+	var Regulation = __webpack_require__(554).Regulation;
+	var Scroll = __webpack_require__(555).Scroll;
+	var GetStarted = __webpack_require__(556).GetStarted;
+	var Contact = __webpack_require__(557).Contact;
+	var Careers = __webpack_require__(560).Careers;
+	var Home = __webpack_require__(561).Home;
+	var WhyUs = __webpack_require__(568).WhyUs;
+	var CharityPage = __webpack_require__(569).CharityPage;
+	var TermsAndConditions = __webpack_require__(570).TermsAndConditions;
 	var CashierJP = __webpack_require__(444).CashierJP;
-	var LoggedInHandler = __webpack_require__(572).LoggedInHandler;
-	var pjax_config_page_require_auth = __webpack_require__(573).pjax_config_page_require_auth;
-	var pjax_config_page = __webpack_require__(573).pjax_config_page;
+	var LoggedInHandler = __webpack_require__(571).LoggedInHandler;
+	var pjax_config_page_require_auth = __webpack_require__(572).pjax_config_page_require_auth;
+	var pjax_config_page = __webpack_require__(572).pjax_config_page;
 	
 	pjax_config_page('/home', function () {
 	    return {
@@ -82140,7 +82029,7 @@
 	});
 
 /***/ },
-/* 551 */
+/* 550 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82181,7 +82070,7 @@
 	};
 
 /***/ },
-/* 552 */
+/* 551 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82240,7 +82129,7 @@
 	};
 
 /***/ },
-/* 553 */
+/* 552 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82349,7 +82238,7 @@
 	};
 
 /***/ },
-/* 554 */
+/* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82425,7 +82314,7 @@
 	};
 
 /***/ },
-/* 555 */
+/* 554 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -82472,7 +82361,7 @@
 	};
 
 /***/ },
-/* 556 */
+/* 555 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82573,7 +82462,7 @@
 	};
 
 /***/ },
-/* 557 */
+/* 556 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -82649,14 +82538,14 @@
 	};
 
 /***/ },
-/* 558 */
+/* 557 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var email_rot13 = __webpack_require__(311).email_rot13;
-	var loadCSS = __webpack_require__(559).loadCSS;
-	var loadJS = __webpack_require__(560).loadJS;
+	var loadCSS = __webpack_require__(558).loadCSS;
+	var loadJS = __webpack_require__(559).loadJS;
 	var getLanguage = __webpack_require__(305).getLanguage;
 	var url_for_static = __webpack_require__(309).url_for_static;
 	
@@ -82772,7 +82661,7 @@
 	};
 
 /***/ },
-/* 559 */
+/* 558 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -82812,7 +82701,7 @@
 	};
 
 /***/ },
-/* 560 */
+/* 559 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -82833,7 +82722,7 @@
 	};
 
 /***/ },
-/* 561 */
+/* 560 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82854,12 +82743,12 @@
 	};
 
 /***/ },
-/* 562 */
+/* 561 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var VerifyEmail = __webpack_require__(563).VerifyEmail;
+	var VerifyEmail = __webpack_require__(562).VerifyEmail;
 	var Client = __webpack_require__(308).Client;
 	
 	var Home = function () {
@@ -82885,15 +82774,15 @@
 	};
 
 /***/ },
-/* 563 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
 	var url_for = __webpack_require__(309).url_for;
-	var bind_validation = __webpack_require__(566).bind_validation;
+	var bind_validation = __webpack_require__(565).bind_validation;
 	var localize = __webpack_require__(426).localize;
 	
 	var VerifyEmail = function VerifyEmail() {
@@ -82951,7 +82840,7 @@
 	};
 
 /***/ },
-/* 564 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82960,7 +82849,7 @@
 	
 	var template = __webpack_require__(307).template;
 	var moment = __webpack_require__(312);
-	var dv = __webpack_require__(565);
+	var dv = __webpack_require__(564);
 	var Content = __webpack_require__(429).Content;
 	var localize = __webpack_require__(426).localize;
 	
@@ -83083,7 +82972,7 @@
 	};
 
 /***/ },
-/* 565 */
+/* 564 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -83164,14 +83053,14 @@
 	module.exports = dv;
 
 /***/ },
-/* 566 */
+/* 565 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var done_typing = __webpack_require__(567).done_typing;
-	var formToObj = __webpack_require__(568).formToObj;
-	var dv = __webpack_require__(565);
+	var done_typing = __webpack_require__(566).done_typing;
+	var formToObj = __webpack_require__(567).formToObj;
+	var dv = __webpack_require__(564);
 	var localize = __webpack_require__(426).localize;
 	
 	var ValidationUI = {
@@ -83337,7 +83226,7 @@
 	};
 
 /***/ },
-/* 567 */
+/* 566 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83375,7 +83264,7 @@
 	};
 
 /***/ },
-/* 568 */
+/* 567 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83459,12 +83348,12 @@
 	};
 
 /***/ },
-/* 569 */
+/* 568 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Scroll = __webpack_require__(556).Scroll;
+	var Scroll = __webpack_require__(555).Scroll;
 	var Client = __webpack_require__(308).Client;
 	
 	var WhyUs = function () {
@@ -83489,7 +83378,7 @@
 	};
 
 /***/ },
-/* 570 */
+/* 569 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83526,13 +83415,13 @@
 	};
 
 /***/ },
-/* 571 */
+/* 570 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var url = __webpack_require__(309).url;
-	var Scroll = __webpack_require__(556).Scroll;
+	var Scroll = __webpack_require__(555).Scroll;
 	
 	var TermsAndConditions = function () {
 	    var init = function init() {
@@ -83594,7 +83483,7 @@
 	};
 
 /***/ },
-/* 572 */
+/* 571 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83698,7 +83587,7 @@
 	};
 
 /***/ },
-/* 573 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83708,13 +83597,13 @@
 	var GTM = __webpack_require__(434).GTM;
 	var SessionStore = __webpack_require__(306).SessionStore;
 	var State = __webpack_require__(306).State;
-	var Contents = __webpack_require__(540).Contents;
+	var Contents = __webpack_require__(539).Contents;
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
 	var Login = __webpack_require__(304).Login;
 	var page = __webpack_require__(537).page;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var pjax = __webpack_require__(574);
+	var pjax = __webpack_require__(573);
 	
 	var make_mobile_menu = function make_mobile_menu() {
 	    if ($('#mobile-menu-container').is(':visible')) {
@@ -83928,7 +83817,7 @@
 	};
 
 /***/ },
-/* 574 */
+/* 573 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
@@ -84541,49 +84430,49 @@
 	}).call({});
 
 /***/ },
-/* 575 */
+/* 574 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var AccountTransferWS = __webpack_require__(576).AccountTransferWS;
+	var AccountTransferWS = __webpack_require__(575).AccountTransferWS;
 	var Cashier = __webpack_require__(432).Cashier;
-	var ForwardWS = __webpack_require__(577).ForwardWS;
-	var PaymentAgentListWS = __webpack_require__(578).PaymentAgentListWS;
+	var ForwardWS = __webpack_require__(576).ForwardWS;
+	var PaymentAgentListWS = __webpack_require__(577).PaymentAgentListWS;
 	var PaymentAgentWithdrawWS = __webpack_require__(445).PaymentAgentWithdrawWS;
 	var AssetIndexUI = __webpack_require__(508).AssetIndexUI;
 	var MarketTimesUI = __webpack_require__(511).MarketTimesUI;
-	var AuthenticateWS = __webpack_require__(579).AuthenticateWS;
-	var PasswordWS = __webpack_require__(580).PasswordWS;
-	var PaymentAgentTransferSocket = __webpack_require__(581).PaymentAgentTransferSocket;
+	var AuthenticateWS = __webpack_require__(578).AuthenticateWS;
+	var PasswordWS = __webpack_require__(579).PasswordWS;
+	var PaymentAgentTransferSocket = __webpack_require__(580).PaymentAgentTransferSocket;
 	var PortfolioWS = __webpack_require__(470).PortfolioWS;
 	var ProfitTableWS = __webpack_require__(492).ProfitTableWS;
-	var APITokenWS = __webpack_require__(585).APITokenWS;
-	var AuthorisedApps = __webpack_require__(587).AuthorisedApps;
+	var APITokenWS = __webpack_require__(584).APITokenWS;
+	var AuthorisedApps = __webpack_require__(586).AuthorisedApps;
 	var FinancialAssessmentws = __webpack_require__(437).FinancialAssessmentws;
-	var IPHistoryWS = __webpack_require__(591).IPHistoryWS;
-	var Limits = __webpack_require__(595).Limits;
-	var SelfExclusionWS = __webpack_require__(598).SelfExclusionWS;
-	var SettingsDetailsWS = __webpack_require__(599).SettingsDetailsWS;
-	var SecurityWS = __webpack_require__(600).SecurityWS;
-	var SettingsWS = __webpack_require__(601).SettingsWS;
+	var IPHistoryWS = __webpack_require__(590).IPHistoryWS;
+	var Limits = __webpack_require__(594).Limits;
+	var SelfExclusionWS = __webpack_require__(597).SelfExclusionWS;
+	var SettingsDetailsWS = __webpack_require__(598).SettingsDetailsWS;
+	var SecurityWS = __webpack_require__(599).SecurityWS;
+	var SettingsWS = __webpack_require__(600).SettingsWS;
 	var StatementWS = __webpack_require__(498).StatementWS;
-	var TopUpVirtualWS = __webpack_require__(602).TopUpVirtualWS;
-	var LostPasswordWS = __webpack_require__(603).LostPasswordWS;
+	var TopUpVirtualWS = __webpack_require__(601).TopUpVirtualWS;
+	var LostPasswordWS = __webpack_require__(602).LostPasswordWS;
 	var MetaTrader = __webpack_require__(438);
-	var FinancialAccOpening = __webpack_require__(605).FinancialAccOpening;
-	var JapanAccOpening = __webpack_require__(609).JapanAccOpening;
-	var RealAccOpening = __webpack_require__(612).RealAccOpening;
-	var VirtualAccOpening = __webpack_require__(615).VirtualAccOpening;
-	var ResetPasswordWS = __webpack_require__(617).ResetPasswordWS;
+	var FinancialAccOpening = __webpack_require__(604).FinancialAccOpening;
+	var JapanAccOpening = __webpack_require__(608).JapanAccOpening;
+	var RealAccOpening = __webpack_require__(611).RealAccOpening;
+	var VirtualAccOpening = __webpack_require__(614).VirtualAccOpening;
+	var ResetPasswordWS = __webpack_require__(616).ResetPasswordWS;
 	var TNCApproval = __webpack_require__(447).TNCApproval;
 	var TradePage = __webpack_require__(473).TradePage;
 	var TradePage_Beta = __webpack_require__(506).TradePage_Beta;
 	var MBTradePage = __webpack_require__(525).MBTradePage;
 	var ViewPopupWS = __webpack_require__(448).ViewPopupWS;
-	var KnowledgeTest = __webpack_require__(619).KnowledgeTest;
-	var pjax_config_page_require_auth = __webpack_require__(573).pjax_config_page_require_auth;
-	var pjax_config_page = __webpack_require__(573).pjax_config_page;
+	var KnowledgeTest = __webpack_require__(618).KnowledgeTest;
+	var pjax_config_page_require_auth = __webpack_require__(572).pjax_config_page_require_auth;
+	var pjax_config_page = __webpack_require__(572).pjax_config_page;
 	
 	pjax_config_page('/trading', function () {
 	    return {
@@ -84916,7 +84805,7 @@
 	});
 
 /***/ },
-/* 576 */
+/* 575 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85180,7 +85069,7 @@
 	};
 
 /***/ },
-/* 577 */
+/* 576 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85449,7 +85338,7 @@
 	};
 
 /***/ },
-/* 578 */
+/* 577 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85609,7 +85498,7 @@
 	};
 
 /***/ },
-/* 579 */
+/* 578 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85665,17 +85554,17 @@
 	};
 
 /***/ },
-/* 580 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
-	var ValidationUI = __webpack_require__(566).ValidationUI;
-	var customError = __webpack_require__(566).customError;
-	var bind_validation = __webpack_require__(566).bind_validation;
-	var dv = __webpack_require__(565);
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var ValidationUI = __webpack_require__(565).ValidationUI;
+	var customError = __webpack_require__(565).customError;
+	var bind_validation = __webpack_require__(565).bind_validation;
+	var dv = __webpack_require__(564);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
@@ -85802,12 +85691,12 @@
 	};
 
 /***/ },
-/* 581 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var PaymentAgentTransfer = __webpack_require__(582).PaymentAgentTransfer;
+	var PaymentAgentTransfer = __webpack_require__(581).PaymentAgentTransfer;
 	var Content = __webpack_require__(429).Content;
 	var Client = __webpack_require__(308).Client;
 	
@@ -85838,15 +85727,15 @@
 	};
 
 /***/ },
-/* 582 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var onlyNumericOnKeypress = __webpack_require__(489).onlyNumericOnKeypress;
 	var Client = __webpack_require__(308).Client;
-	var PaymentAgentTransferData = __webpack_require__(583).PaymentAgentTransferData;
-	var PaymentAgentTransferUI = __webpack_require__(584).PaymentAgentTransferUI;
+	var PaymentAgentTransferData = __webpack_require__(582).PaymentAgentTransferData;
+	var PaymentAgentTransferUI = __webpack_require__(583).PaymentAgentTransferUI;
 	
 	var PaymentAgentTransfer = function () {
 	    var hiddenClass = 'invisible';
@@ -86045,7 +85934,7 @@
 	};
 
 /***/ },
-/* 583 */
+/* 582 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -86074,7 +85963,7 @@
 	};
 
 /***/ },
-/* 584 */
+/* 583 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86153,7 +86042,7 @@
 	};
 
 /***/ },
-/* 585 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86161,13 +86050,13 @@
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
 	var Content = __webpack_require__(429).Content;
-	var FlexTableUI = __webpack_require__(586).FlexTableUI;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var FlexTableUI = __webpack_require__(585).FlexTableUI;
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var ValidationUI = __webpack_require__(566).ValidationUI;
-	var customError = __webpack_require__(566).customError;
-	var bind_validation = __webpack_require__(566).bind_validation;
-	var dv = __webpack_require__(565);
+	var ValidationUI = __webpack_require__(565).ValidationUI;
+	var customError = __webpack_require__(565).customError;
+	var bind_validation = __webpack_require__(565).bind_validation;
+	var dv = __webpack_require__(564);
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(309).url_for;
 	
@@ -86388,7 +86277,7 @@
 	};
 
 /***/ },
-/* 586 */
+/* 585 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86450,7 +86339,7 @@
 	};
 
 /***/ },
-/* 587 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86458,7 +86347,7 @@
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
 	var url_for = __webpack_require__(309).url_for;
-	var Applications = __webpack_require__(588).Applications;
+	var Applications = __webpack_require__(587).Applications;
 	
 	var AuthorisedApps = function () {
 	    var onLoad = function onLoad() {
@@ -86484,13 +86373,13 @@
 	};
 
 /***/ },
-/* 588 */
+/* 587 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(589).ApplicationsUI;
-	var ApplicationsData = __webpack_require__(590).ApplicationsData;
+	var ApplicationsUI = __webpack_require__(588).ApplicationsUI;
+	var ApplicationsData = __webpack_require__(589).ApplicationsData;
 	
 	var Applications = function () {
 	    'use strict';
@@ -86526,7 +86415,7 @@
 	};
 
 /***/ },
-/* 589 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86535,8 +86424,8 @@
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(494).Button;
-	var FlexTableUI = __webpack_require__(586).FlexTableUI;
-	var ApplicationsData = __webpack_require__(590).ApplicationsData;
+	var FlexTableUI = __webpack_require__(585).FlexTableUI;
+	var ApplicationsData = __webpack_require__(589).ApplicationsData;
 	
 	var ApplicationsUI = function () {
 	    'use strict';
@@ -86624,7 +86513,7 @@
 	};
 
 /***/ },
-/* 590 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86676,7 +86565,7 @@
 	};
 
 /***/ },
-/* 591 */
+/* 590 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86684,7 +86573,7 @@
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
 	var url_for = __webpack_require__(309).url_for;
-	var IPHistory = __webpack_require__(592).IPHistory;
+	var IPHistory = __webpack_require__(591).IPHistory;
 	
 	var IPHistoryWS = function () {
 	    var onLoad = function onLoad() {
@@ -86710,13 +86599,13 @@
 	};
 
 /***/ },
-/* 592 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(593).IPHistoryUI;
-	var IPHistoryData = __webpack_require__(594).IPHistoryData;
+	var IPHistoryUI = __webpack_require__(592).IPHistoryUI;
+	var IPHistoryData = __webpack_require__(593).IPHistoryData;
 	
 	var IPHistory = function () {
 	    'use strict';
@@ -86752,13 +86641,13 @@
 	};
 
 /***/ },
-/* 593 */
+/* 592 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLocalTimeOnHover = __webpack_require__(449).Clock.showLocalTimeOnHover;
-	var FlexTableUI = __webpack_require__(586).FlexTableUI;
+	var FlexTableUI = __webpack_require__(585).FlexTableUI;
 	var moment = __webpack_require__(312);
 	var localize = __webpack_require__(426).localize;
 	
@@ -86834,7 +86723,7 @@
 	};
 
 /***/ },
-/* 594 */
+/* 593 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -86899,12 +86788,12 @@
 	};
 
 /***/ },
-/* 595 */
+/* 594 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LimitsWS = __webpack_require__(596).LimitsWS;
+	var LimitsWS = __webpack_require__(595).LimitsWS;
 	var Content = __webpack_require__(429).Content;
 	var Client = __webpack_require__(308).Client;
 	
@@ -86952,7 +86841,7 @@
 	};
 
 /***/ },
-/* 596 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86960,7 +86849,7 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(429).Content;
 	var addComma = __webpack_require__(442).addComma;
-	var LimitsUI = __webpack_require__(597).LimitsUI;
+	var LimitsUI = __webpack_require__(596).LimitsUI;
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(311).elementTextContent;
@@ -87044,7 +86933,7 @@
 	};
 
 /***/ },
-/* 597 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -87119,19 +87008,19 @@
 	};
 
 /***/ },
-/* 598 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
-	var ValidationUI = __webpack_require__(566).ValidationUI;
-	var validate_object = __webpack_require__(566).validate_object;
-	var bind_validation = __webpack_require__(566).bind_validation;
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var ValidationUI = __webpack_require__(565).ValidationUI;
+	var validate_object = __webpack_require__(565).validate_object;
+	var bind_validation = __webpack_require__(565).bind_validation;
 	var moment = __webpack_require__(312);
-	var dv = __webpack_require__(565);
+	var dv = __webpack_require__(564);
 	var TimePicker = __webpack_require__(490).TimePicker;
 	var DatePicker = __webpack_require__(483).DatePicker;
 	var dateValueChanged = __webpack_require__(311).dateValueChanged;
@@ -87470,7 +87359,7 @@
 	};
 
 /***/ },
-/* 599 */
+/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -87790,15 +87679,15 @@
 	};
 
 /***/ },
-/* 600 */
+/* 599 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
-	var bind_validation = __webpack_require__(566).bind_validation;
-	var dv = __webpack_require__(565);
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
+	var bind_validation = __webpack_require__(565).bind_validation;
+	var dv = __webpack_require__(564);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	
@@ -87962,7 +87851,7 @@
 	};
 
 /***/ },
-/* 601 */
+/* 600 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88017,7 +87906,7 @@
 	};
 
 /***/ },
-/* 602 */
+/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88104,12 +87993,12 @@
 	};
 
 /***/ },
-/* 603 */
+/* 602 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LostPassword = __webpack_require__(604).LostPassword;
+	var LostPassword = __webpack_require__(603).LostPassword;
 	var Client = __webpack_require__(308).Client;
 	
 	var LostPasswordWS = function () {
@@ -88133,7 +88022,7 @@
 	};
 
 /***/ },
-/* 604 */
+/* 603 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88207,7 +88096,7 @@
 	};
 
 /***/ },
-/* 605 */
+/* 604 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88215,10 +88104,10 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
-	var FinancialAccOpeningUI = __webpack_require__(607).FinancialAccOpeningUI;
+	var FinancialAccOpeningUI = __webpack_require__(606).FinancialAccOpeningUI;
 	
 	var FinancialAccOpening = function () {
 	    var elementObj = void 0,
@@ -88280,7 +88169,7 @@
 	};
 
 /***/ },
-/* 606 */
+/* 605 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88291,7 +88180,7 @@
 	var Cookies = __webpack_require__(303);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
-	var Contents = __webpack_require__(540).Contents;
+	var Contents = __webpack_require__(539).Contents;
 	var url_for = __webpack_require__(309).url_for;
 	var elementInnerHtml = __webpack_require__(311).elementInnerHtml;
 	
@@ -88468,14 +88357,14 @@
 	};
 
 /***/ },
-/* 607 */
+/* 606 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var FinancialAccOpeningData = __webpack_require__(608).FinancialAccOpeningData;
+	var FinancialAccOpeningData = __webpack_require__(607).FinancialAccOpeningData;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
@@ -88537,7 +88426,7 @@
 	};
 
 /***/ },
-/* 608 */
+/* 607 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88584,7 +88473,7 @@
 	};
 
 /***/ },
-/* 609 */
+/* 608 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88592,11 +88481,11 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var detect_hedging = __webpack_require__(311).detect_hedging;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
-	var JapanAccOpeningUI = __webpack_require__(610).JapanAccOpeningUI;
+	var JapanAccOpeningUI = __webpack_require__(609).JapanAccOpeningUI;
 	
 	var JapanAccOpening = function () {
 	    var init = function init() {
@@ -88644,17 +88533,17 @@
 	};
 
 /***/ },
-/* 610 */
+/* 609 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
-	var JapanAccOpeningData = __webpack_require__(611).JapanAccOpeningData;
+	var JapanAccOpeningData = __webpack_require__(610).JapanAccOpeningData;
 	var localize = __webpack_require__(426).localize;
 	
 	var JapanAccOpeningUI = function () {
@@ -88739,7 +88628,7 @@
 	};
 
 /***/ },
-/* 611 */
+/* 610 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88786,7 +88675,7 @@
 	};
 
 /***/ },
-/* 612 */
+/* 611 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88794,9 +88683,9 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var populateObjects = __webpack_require__(424).populateObjects;
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var Client = __webpack_require__(308).Client;
-	var RealAccOpeningUI = __webpack_require__(613).RealAccOpeningUI;
+	var RealAccOpeningUI = __webpack_require__(612).RealAccOpeningUI;
 	
 	var RealAccOpening = function () {
 	    var init = function init() {
@@ -88839,17 +88728,17 @@
 	};
 
 /***/ },
-/* 613 */
+/* 612 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var ValidAccountOpening = __webpack_require__(606).ValidAccountOpening;
+	var ValidAccountOpening = __webpack_require__(605).ValidAccountOpening;
 	var hideAllErrors = __webpack_require__(424).hideAllErrors;
 	var checkRequiredInputs = __webpack_require__(424).checkRequiredInputs;
 	var Validate = __webpack_require__(428).Validate;
-	var RealAccOpeningData = __webpack_require__(614).RealAccOpeningData;
+	var RealAccOpeningData = __webpack_require__(613).RealAccOpeningData;
 	
 	var RealAccOpeningUI = function () {
 	    'use strict';
@@ -88900,7 +88789,7 @@
 	};
 
 /***/ },
-/* 614 */
+/* 613 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88937,7 +88826,7 @@
 	};
 
 /***/ },
-/* 615 */
+/* 614 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88946,8 +88835,8 @@
 	var handleResidence = __webpack_require__(424).handleResidence;
 	var Content = __webpack_require__(429).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
-	var bind_validation = __webpack_require__(566).bind_validation;
-	var VirtualAccOpeningData = __webpack_require__(616).VirtualAccOpeningData;
+	var bind_validation = __webpack_require__(565).bind_validation;
+	var VirtualAccOpeningData = __webpack_require__(615).VirtualAccOpeningData;
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
@@ -89036,16 +88925,16 @@
 	};
 
 /***/ },
-/* 616 */
+/* 615 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Content = __webpack_require__(429).Content;
-	var TrafficSource = __webpack_require__(541).TrafficSource;
-	var ValidateV2 = __webpack_require__(564).ValidateV2;
+	var TrafficSource = __webpack_require__(540).TrafficSource;
+	var ValidateV2 = __webpack_require__(563).ValidateV2;
 	var Cookies = __webpack_require__(303);
-	var dv = __webpack_require__(565);
+	var dv = __webpack_require__(564);
 	var Client = __webpack_require__(308).Client;
 	
 	var VirtualAccOpeningData = function () {
@@ -89127,12 +89016,12 @@
 	};
 
 /***/ },
-/* 617 */
+/* 616 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ResetPassword = __webpack_require__(618).ResetPassword;
+	var ResetPassword = __webpack_require__(617).ResetPassword;
 	var Client = __webpack_require__(308).Client;
 	
 	var ResetPasswordWS = function () {
@@ -89156,7 +89045,7 @@
 	};
 
 /***/ },
-/* 618 */
+/* 617 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89354,14 +89243,14 @@
 	};
 
 /***/ },
-/* 619 */
+/* 618 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var toJapanTimeIfNeeded = __webpack_require__(449).Clock.toJapanTimeIfNeeded;
-	var KnowledgeTestUI = __webpack_require__(620).KnowledgeTestUI;
-	var KnowledgeTestData = __webpack_require__(621).KnowledgeTestData;
+	var KnowledgeTestUI = __webpack_require__(619).KnowledgeTestUI;
+	var KnowledgeTestData = __webpack_require__(620).KnowledgeTestData;
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(309).url_for;
 	var Client = __webpack_require__(308).Client;
@@ -89558,7 +89447,7 @@
 	};
 
 /***/ },
-/* 620 */
+/* 619 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89672,7 +89561,7 @@
 	};
 
 /***/ },
-/* 621 */
+/* 620 */
 /***/ function(module, exports) {
 
 	'use strict';
