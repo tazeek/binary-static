@@ -57,10 +57,10 @@
           <link rel="alternate" href="/zh_cn/cashier/forwardws.html" hreflang="ZH_CN" /> 
           <link rel="alternate" href="/zh_tw/cashier/forwardws.html?l=zh_tw" hreflang="ZH_TW" /> 
         
-         <link rel="stylesheet" href="/css/binary.min.css?ste3tdnd">
-         <link rel="stylesheet" href="https://style.binary.com/binary.css?ste3tdnd">
+         <link rel="stylesheet" href="/css/binary.min.css?wbqdnfj4">
+         <link rel="stylesheet" href="https://style.binary.com/binary.css?wbqdnfj4">
         
-        <script src='/js/binary.min.js?ste3tdnd'></script>  <script src='https://style.binary.com/binary.js?ste3tdnd'></script>
+        <script src='/js/binary.min.js?wbqdnfj4'></script>  <script src='https://style.binary.com/binary.js?wbqdnfj4'></script>
     </head>
 
 
@@ -336,7 +336,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <div class="container">
 
 
-  <div class="gr-12 gr-padding-10">
+  <div class="gr-padding-10">
     <h1 id="deposit-withdraw-heading"></h1>
     <div>
         <div id="deposit-withdraw-message" class="invisible">
@@ -369,23 +369,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <p id="custom-error" class="error_messages center-text notice-msg error_vrtc"></p>
         </div>
     </div>
-    <div class="container invisible" id="deposit-withdraw-iframe-container">
-        <script data-cfasync="false" type="text/javascript">
-            function receiveCmd(e) {
-                if (e.origin !== "https://cashier.binary.com") return;
-                if (e.data.action == 'iframesize') {
-                    document.getElementById('cashiercont').style.height = (e.data.height) + "px";
-                } else if (e.data.action == 'reloadwin') {
-                    window.location.reload(true);
-                }
-            }
-            if (!window.addEventListener) {
-                window.attachEvent("message", receiveCmd);
-            } else {
-                window.addEventListener("message", receiveCmd, false);
-            }
-        </script>
-        <iframe src="" frameborder="0" width="100%" height="1500" id="cashiercont" scrolling="auto" style="padding:0;margin:0;"></iframe>
+    <div class="invisible" id="deposit-withdraw-iframe-container">
+        <iframe src="" frameborder="0" width="100%" id="cashiercont" scrolling="auto" style="padding:0;margin:0;"></iframe>
     </div>
     <div id="ukgc-funds-protection" class="gr-row gr-parent invisible">
         <div class="gr-2 gr-6-m gr-centered-m">
