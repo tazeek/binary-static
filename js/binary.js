@@ -81350,7 +81350,7 @@
 	                    if ($key.is(':checkbox')) {
 	                        $key.prop('checked', !!$data_key);
 	                    } else if (/(SELECT|INPUT)/.test($key.prop('nodeName'))) {
-	                        $key.val($data_key);
+	                        $key.val($data_key.split(',')).trigger('change');
 	                    } else {
 	                        $key.text($data_key ? localize($data_key) : '-');
 	                    }
@@ -87756,6 +87756,7 @@
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
 	var url_for = __webpack_require__(309).url_for;
+	var default_redirect_url = __webpack_require__(309).default_redirect_url;
 	var moment = __webpack_require__(312);
 	
 	var FinancialAccOpening = function () {
@@ -87769,6 +87770,20 @@
 	        } else if (Client.get('has_gaming')) {
 	            $('.security').hide();
 	        }
+	
+	        BinarySocket.wait('landing_company').then(function (response) {
+	            var landing_company = response.landing_company;
+	            if (Client.get('is_virtual')) {
+	                if (Client.can_upgrade_virtual_to_japan(landing_company)) {
+	                    window.location.href = url_for('new_account/japanws');
+	                } else if (!Client.can_upgrade_virtual_to_financial(landing_company)) {
+	                    window.location.href = url_for('new_account/realws');
+	                }
+	            } else if (!Client.can_upgrade_gaming_to_financial(landing_company)) {
+	                window.location.href = default_redirect_url();
+	            }
+	        });
+	
 	        if (AccountOpening.redirectAccount()) return;
 	        AccountOpening.populateForm(formID, getValidations);
 	
@@ -87869,10 +87884,11 @@
 	        var landing_company = response.landing_company;
 	
 	        // redirect client to correct account opening page if needed
-	        if (!State.get('is_financial_opening') && (Client.can_upgrade_gaming_to_financial(landing_company) && !isVirtual || Client.can_upgrade_virtual_to_financial(landing_company))) {
+	        if (!State.get('is_financial_opening') && (!isVirtual && Client.can_upgrade_gaming_to_financial(landing_company) || Client.can_upgrade_virtual_to_financial(landing_company))) {
 	            window.location.href = url_for('new_account/maltainvestws');
 	            return false;
-	        } else if (!State.get('is_japan_opening') && Client.can_upgrade_virtual_to_japan(landing_company) && isVirtual) {
+	        }
+	        if (!State.get('is_japan_opening') && isVirtual && Client.can_upgrade_virtual_to_japan(landing_company)) {
 	            window.location.href = url_for('new_account/japanws');
 	            return false;
 	        }
@@ -87922,7 +87938,7 @@
 	            }
 	        }
 	        if (obj_residence_el.tax_residence) {
-	            $('#tax_residence').select2().removeClass('invisible');
+	            $('#tax_residence').select2().val(residenceValue).trigger('change').removeClass('invisible');
 	        }
 	        if (residenceValue) {
 	            if (obj_residence_el.residence) {
