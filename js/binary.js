@@ -35846,14 +35846,17 @@
 	
 	var RiskClassification = __webpack_require__(431).RiskClassification;
 	var FinancialAssessment = __webpack_require__(432);
+	var objectNotEmpty = __webpack_require__(307).objectNotEmpty;
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
 	var url_for = __webpack_require__(309).url_for;
 	
 	function check_risk_classification() {
-	    if (State.get(['response', 'get_account_status', 'get_account_status', 'risk_classification']) === 'high' && localStorage.getItem('risk_classification') === 'high' && qualify_for_risk_classification()) {
-	        renderRiskClassificationPopUp();
-	    }
+	    BinarySocket.wait('get_financial_assessment').then(function () {
+	        if (State.get(['response', 'get_account_status', 'get_account_status', 'risk_classification']) === 'high' && !objectNotEmpty(State.get(['response', 'get_financial_assessment', 'get_financial_assessment'])) && localStorage.getItem('risk_classification') === 'high' && qualify_for_risk_classification()) {
+	            renderRiskClassificationPopUp();
+	        }
+	    });
 	}
 	
 	function renderRiskClassificationPopUp() {
@@ -36047,6 +36050,7 @@
 	                    } else {
 	                        showFormMessage('Your changes have been updated successfully.', true);
 	                        RiskClassification.cleanup();
+	                        BinarySocket.send({ get_financial_assessment: 1 }, true);
 	                    }
 	                });
 	            }();
@@ -65455,15 +65459,17 @@
 	        for (var m = 0; m < markets.length; m++) {
 	            var tabID = 'market_' + (m + 1);
 	
-	            // tabs
-	            if (!isJapanTrading) {
-	                $ul.append($('<li/>').append($('<a/>', { href: '#' + tabID, text: markets[m].name, id: 'outline' })));
-	            }
-	
 	            // contents
 	            var $market = $('<div/>', { id: tabID });
 	            $market.append(createMarketTables(markets[m], isJapanTrading));
-	            $contents.append($market);
+	            if ($market.find('table tr').length) {
+	                $contents.append($market);
+	
+	                // tabs
+	                if (!isJapanTrading) {
+	                    $ul.append($('<li/>').append($('<a/>', { href: '#' + tabID, text: markets[m].name, id: 'outline' })));
+	                }
+	            }
 	        }
 	
 	        $container.empty().append($ul).append($contents.children());
@@ -65507,7 +65513,9 @@
 	                    }
 	                }
 	
-	                $marketTables.append($submarketTable);
+	                if ($submarketTable.find('tbody tr').length) {
+	                    $marketTables.append($submarketTable);
+	                }
 	            }
 	        }
 	
@@ -78094,7 +78102,7 @@
 	var PaymentAgentWithdrawWS = __webpack_require__(441).PaymentAgentWithdrawWS;
 	var AssetIndexUI = __webpack_require__(503).AssetIndexUI;
 	var MarketTimesUI = __webpack_require__(506).MarketTimesUI;
-	var AuthenticateWS = __webpack_require__(575).AuthenticateWS;
+	var AuthenticateWS = __webpack_require__(575);
 	var PasswordWS = __webpack_require__(576).PasswordWS;
 	var PaymentAgentTransferSocket = __webpack_require__(577).PaymentAgentTransferSocket;
 	var PortfolioWS = __webpack_require__(465).PortfolioWS;
@@ -78102,8 +78110,8 @@
 	var APITokenWS = __webpack_require__(581).APITokenWS;
 	var AuthorisedApps = __webpack_require__(583).AuthorisedApps;
 	var FinancialAssessment = __webpack_require__(432);
-	var IPHistoryWS = __webpack_require__(587).IPHistoryWS;
-	var Limits = __webpack_require__(591).Limits;
+	var IPHistory = __webpack_require__(587);
+	var Limits = __webpack_require__(591);
 	var SelfExclusionWS = __webpack_require__(594).SelfExclusionWS;
 	var SettingsDetailsWS = __webpack_require__(595).SettingsDetailsWS;
 	var SecurityWS = __webpack_require__(598).SecurityWS;
@@ -78327,10 +78335,10 @@
 	pjax_config_page_require_auth('user/security/iphistoryws', function () {
 	    return {
 	        onLoad: function onLoad() {
-	            IPHistoryWS.onLoad();
+	            IPHistory.onLoad();
 	        },
 	        onUnload: function onUnload() {
-	            IPHistoryWS.onUnload();
+	            IPHistory.onUnload();
 	        }
 	    };
 	});
@@ -79388,40 +79396,32 @@
 	var Client = __webpack_require__(308).Client;
 	var url_for = __webpack_require__(309).url_for;
 	
-	var AuthenticateWS = function () {
+	var Authenticate = function () {
 	    var init = function init() {
 	        if (japanese_client()) {
 	            window.location.href = url_for('trading');
 	        }
 	        Content.populate();
 	
-	        var show_error = function show_error(error) {
+	        var showError = function showError(error) {
 	            $('#error_message').removeClass('invisible').text(error);
 	            return true;
 	        };
 	
-	        var check_virtual = function check_virtual() {
-	            return Client.get('is_virtual') && show_error(Content.localize().featureNotRelevantToVirtual);
+	        var checkVirtual = function checkVirtual() {
+	            return Client.get('is_virtual') && showError(Content.localize().featureNotRelevantToVirtual);
 	        };
-	        if (!check_virtual()) {
-	            BinarySocket.init({
-	                onmessage: function onmessage(msg) {
-	                    var response = JSON.parse(msg.data);
-	                    if (response) {
-	                        var error = response.error;
-	                        if (response.msg_type === 'get_account_status' && !check_virtual() && !error) {
-	                            if ($.inArray('authenticated', response.get_account_status.status) > -1) {
-	                                $('#fully-authenticated').removeClass('invisible');
-	                            } else {
-	                                $('#not-authenticated').removeClass('invisible');
-	                            }
-	                        } else if (error) {
-	                            show_error(error.message);
-	                        }
-	                    }
+	
+	        if (!checkVirtual()) {
+	            BinarySocket.send({ get_account_status: 1 }).then(function (response) {
+	                if (response.error) {
+	                    showError(response.error.message);
+	                } else if ($.inArray('authenticated', response.get_account_status.status) > -1) {
+	                    $('#fully-authenticated').removeClass('invisible');
+	                } else {
+	                    $('#not-authenticated').removeClass('invisible');
 	                }
 	            });
-	            BinarySocket.send({ get_account_status: 1 });
 	        }
 	    };
 	    return {
@@ -79429,9 +79429,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    AuthenticateWS: AuthenticateWS
-	};
+	module.exports = Authenticate;
 
 /***/ },
 /* 576 */
@@ -80453,19 +80451,19 @@
 	var Content = __webpack_require__(433).Content;
 	var japanese_client = __webpack_require__(310).japanese_client;
 	var url_for = __webpack_require__(309).url_for;
-	var IPHistory = __webpack_require__(588).IPHistory;
+	var IPHistoryInit = __webpack_require__(588);
 	
-	var IPHistoryWS = function () {
+	var IPHistory = function () {
 	    var onLoad = function onLoad() {
 	        if (japanese_client()) {
 	            window.location.href = url_for('user/settingsws');
 	        }
 	        Content.populate();
-	        IPHistory.init();
+	        IPHistoryInit.init();
 	    };
 	
 	    var onUnload = function onUnload() {
-	        IPHistory.clean();
+	        IPHistoryInit.clean();
 	    };
 	
 	    return {
@@ -80474,9 +80472,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    IPHistoryWS: IPHistoryWS
-	};
+	module.exports = IPHistory;
 
 /***/ },
 /* 588 */
@@ -80484,10 +80480,10 @@
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(589).IPHistoryUI;
-	var IPHistoryData = __webpack_require__(590).IPHistoryData;
+	var IPHistoryUI = __webpack_require__(589);
+	var IPHistoryData = __webpack_require__(590);
 	
-	var IPHistory = function () {
+	var IPHistoryInit = function () {
 	    'use strict';
 	
 	    var responseHandler = function responseHandler(response) {
@@ -80500,10 +80496,13 @@
 	
 	    var init = function init() {
 	        IPHistoryUI.init();
-	        BinarySocket.init({
-	            onmessage: IPHistoryData.calls(responseHandler)
+	        var req = {
+	            login_history: '1',
+	            limit: 50
+	        };
+	        BinarySocket.send(req).then(function (response) {
+	            responseHandler(response);
 	        });
-	        IPHistoryData.get(50);
 	    };
 	
 	    var clean = function clean() {
@@ -80516,9 +80515,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    IPHistory: IPHistory
-	};
+	module.exports = IPHistoryInit;
 
 /***/ },
 /* 589 */
@@ -80534,9 +80531,9 @@
 	var IPHistoryUI = function () {
 	    'use strict';
 	
-	    var containerSelector = '#login_history-ws-container';
+	    var container_selector = '#login_history-ws-container';
 	    var no_messages_error = 'Your account has no Login/Logout activity.';
-	    var flexTable = void 0;
+	    var flex_table = void 0;
 	
 	    var init = function init() {
 	        var $title = $('#login_history-title').children().first();
@@ -80547,23 +80544,23 @@
 	        var timestamp = moment.unix(data.time).utc().format('YYYY-MM-DD HH:mm:ss').replace(' ', '\n') + ' GMT';
 	        var status = localize(data.success ? 'Successful' : 'Failed');
 	        var browser = data.browser;
-	        var browserString = browser ? browser.name + ' v' + browser.version : 'Unknown';
+	        var browser_string = browser ? browser.name + ' v' + browser.version : 'Unknown';
 	        var patt = /^(opera|chrome|safari|firefox|IE|Edge|SeaMonkey|Chromium) v[0-9.]+$/i;
-	        if (!patt.test(browserString) && browserString !== 'Unknown') {
-	            browserString = 'Error';
+	        if (!patt.test(browser_string) && browser_string !== 'Unknown') {
+	            browser_string = 'Error';
 	        }
-	        return [timestamp, data.action, browserString, data.ip_addr, status];
+	        return [timestamp, data.action, browser_string, data.ip_addr, status];
 	    };
 	
 	    var update = function update(history) {
-	        if (flexTable) {
-	            return flexTable.replace(history);
+	        if (flex_table) {
+	            return flex_table.replace(history);
 	        }
 	        var headers = ['Date and Time', 'Action', 'Browser', 'IP Address', 'Status'];
 	        var columns = ['timestamp', 'action', 'browser', 'ip', 'status'];
-	        flexTable = new FlexTableUI({
+	        flex_table = new FlexTableUI({
 	            id: 'login-history-table',
-	            container: containerSelector,
+	            container: container_selector,
 	            header: headers.map(function (s) {
 	                return localize(s);
 	            }),
@@ -80575,15 +80572,15 @@
 	            }
 	        });
 	        if (!history.length) {
-	            return flexTable.displayError(localize(no_messages_error), 6);
+	            return flex_table.displayError(localize(no_messages_error), 6);
 	        }
 	        return showLocalTimeOnHover('td.timestamp');
 	    };
 	
 	    var clean = function clean() {
-	        $(containerSelector + ' .error-msg').text('');
-	        flexTable.clear();
-	        flexTable = null;
+	        $(container_selector + ' .error-msg').text('');
+	        flex_table.clear();
+	        flex_table = null;
 	    };
 	
 	    var displayError = function displayError(error) {
@@ -80598,9 +80595,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    IPHistoryUI: IPHistoryUI
-	};
+	module.exports = IPHistoryUI;
 
 /***/ },
 /* 590 */
@@ -80609,7 +80604,7 @@
 	'use strict';
 	
 	var IPHistoryData = function () {
-	    var parse_ua = function parse_ua(user_agent) {
+	    var parseUA = function parseUA(user_agent) {
 	        // Table of UA-values (and precedences) from:
 	        //  https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent
 	        // Regexes stolen from:
@@ -80636,36 +80631,18 @@
 	            time: activity.time,
 	            action: activity.action,
 	            success: activity.status === 1,
-	            browser: parse_ua(user_agent),
+	            browser: parseUA(user_agent),
 	            ip_addr: ip_addr
 	        };
 	    };
 	
-	    var calls = function calls(callback) {
-	        return function (msg) {
-	            var response = JSON.parse(msg.data);
-	            if (!response || response.msg_type !== 'login_history') {
-	                return;
-	            }
-	            callback(response);
-	        };
-	    };
-	
-	    var get = function get(n) {
-	        BinarySocket.send({ login_history: 1, limit: n });
-	    };
-	
 	    return {
 	        parse: parse,
-	        parseUserAgent: parse_ua,
-	        calls: calls,
-	        get: get
+	        parseUserAgent: parseUA
 	    };
 	}();
 	
-	module.exports = {
-	    IPHistoryData: IPHistoryData
-	};
+	module.exports = IPHistoryData;
 
 /***/ },
 /* 591 */
@@ -80673,41 +80650,31 @@
 
 	'use strict';
 	
-	var LimitsWS = __webpack_require__(592).LimitsWS;
+	var LimitsInit = __webpack_require__(592);
 	var Content = __webpack_require__(433).Content;
 	var Client = __webpack_require__(308).Client;
 	
 	var Limits = function () {
 	    var onLoad = function onLoad() {
-	        Content.populate();
-	        if (Client.get('is_virtual')) {
-	            LimitsWS.limitsError();
-	            return;
-	        }
-	
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                if (response) {
-	                    var type = response.msg_type;
-	                    var error = response.error;
-	
-	                    if (type === 'authorize' && Client.get('is_virtual')) {
-	                        LimitsWS.limitsError(error);
-	                    } else if (type === 'get_limits' && !error) {
-	                        LimitsWS.limitsHandler(response);
-	                    } else if (error) {
-	                        LimitsWS.limitsError(error);
-	                    }
-	                }
+	        BinarySocket.wait('authorize').then(function () {
+	            Content.populate();
+	            if (Client.get('is_virtual')) {
+	                LimitsInit.limitsError();
+	                return;
 	            }
-	        });
 	
-	        BinarySocket.send({ get_limits: 1 });
+	            BinarySocket.send({ get_limits: 1 }).then(function (response) {
+	                if (response.error) {
+	                    LimitsInit.limitsError(response.error);
+	                } else {
+	                    LimitsInit.limitsHandler(response);
+	                }
+	            });
+	        });
 	    };
 	
 	    var onUnload = function onUnload() {
-	        LimitsWS.clean();
+	        LimitsInit.clean();
 	    };
 	
 	    return {
@@ -80716,9 +80683,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    Limits: Limits
-	};
+	module.exports = Limits;
 
 /***/ },
 /* 592 */
@@ -80729,53 +80694,53 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(433).Content;
 	var addComma = __webpack_require__(438).addComma;
-	var LimitsUI = __webpack_require__(593).LimitsUI;
+	var LimitsUI = __webpack_require__(593);
 	var localize = __webpack_require__(425).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(311).elementTextContent;
 	var elementInnerHtml = __webpack_require__(311).elementInnerHtml;
 	
-	var LimitsWS = function () {
+	var LimitsInit = function () {
 	    'use strict';
 	
 	    var limitsHandler = function limitsHandler(response) {
 	        var limits = response.get_limits;
 	        LimitsUI.fillLimitsTable(limits);
 	
-	        var elWithdrawLimit = document.getElementById('withdrawal-limit');
-	        var elWithdrawn = document.getElementById('already-withdraw');
-	        var elWithdrawLimitAgg = document.getElementById('withdrawal-limit-aggregate');
+	        var el_withdraw_limit = document.getElementById('withdrawal-limit');
+	        var el_withdrawn = document.getElementById('already-withdraw');
+	        var el_withdraw_limit_agg = document.getElementById('withdrawal-limit-aggregate');
 	
 	        if (limits.lifetime_limit === 99999999 && limits.num_of_days_limit === 99999999) {
-	            elementTextContent(elWithdrawLimit, localize('Your account is fully authenticated and your withdrawal limits have been lifted.'));
+	            elementTextContent(el_withdraw_limit, localize('Your account is fully authenticated and your withdrawal limits have been lifted.'));
 	        } else {
-	            var txtWithdrawLim = localize('Your withdrawal limit is [_1] [_2] (or equivalent in other currency).'),
-	                txtWithdrawAmt = localize('You have already withdrawn the equivalent of [_1] [_2].'),
-	                text_CurrentMaxWithdrawal = localize('Therefore your current immediate maximum withdrawal (subject to your account having sufficient funds) is [_1] [_2] (or equivalent in other currency).'),
+	            var txt_withdraw_lim = localize('Your withdrawal limit is [_1] [_2] (or equivalent in other currency).'),
+	                txt_withdraw_amt = localize('You have already withdrawn the equivalent of [_1] [_2].'),
+	                txt_current_max_withdrawal = localize('Therefore your current immediate maximum withdrawal (subject to your account having sufficient funds) is [_1] [_2] (or equivalent in other currency).'),
 	                currency = 'EUR';
-	            var daysLimit = addComma(limits.num_of_days_limit).split('.')[1] === '00' ? addComma(limits.num_of_days_limit).split('.')[0] : addComma(limits.num_of_days_limit);
+	            var days_limit = addComma(limits.num_of_days_limit).split('.')[1] === '00' ? addComma(limits.num_of_days_limit).split('.')[0] : addComma(limits.num_of_days_limit);
 	            // no need for addComma since it is already string like "1,000"
 	            var withdrawn = limits.withdrawal_since_inception_monetary;
 	            var remainder = addComma(limits.remainder).split('.')[1] === '00' ? addComma(limits.remainder).split('.')[0] : addComma(limits.remainder);
 	
 	            if (/^(iom)$/i.test(Client.get('landing_company_name'))) {
 	                // MX
-	                txtWithdrawLim = localize('Your [_1] day withdrawal limit is currently [_2] [_3] (or equivalent in other currency).');
-	                txtWithdrawAmt = localize('You have already withdrawn the equivalent of [_1] [_2] in aggregate over the last [_3] days.');
-	                elementTextContent(elWithdrawLimit, template(txtWithdrawLim, [limits.num_of_days, currency, daysLimit]));
-	                elementTextContent(elWithdrawn, template(txtWithdrawAmt, [currency, withdrawn, limits.num_of_days]));
+	                txt_withdraw_lim = localize('Your [_1] day withdrawal limit is currently [_2] [_3] (or equivalent in other currency).');
+	                txt_withdraw_amt = localize('You have already withdrawn the equivalent of [_1] [_2] in aggregate over the last [_3] days.');
+	                elementTextContent(el_withdraw_limit, template(txt_withdraw_lim, [limits.num_of_days, currency, days_limit]));
+	                elementTextContent(el_withdrawn, template(txt_withdraw_amt, [currency, withdrawn, limits.num_of_days]));
 	            } else {
 	                if (/^(costarica|japan)$/i.test(Client.get('landing_company_name'))) {
 	                    // CR , JP
-	                    txtWithdrawLim = localize('Your withdrawal limit is [_1] [_2].');
-	                    txtWithdrawAmt = localize('You have already withdrawn [_1] [_2].');
-	                    text_CurrentMaxWithdrawal = localize('Therefore your current immediate maximum withdrawal (subject to your account having sufficient funds) is [_1] [_2].');
+	                    txt_withdraw_lim = localize('Your withdrawal limit is [_1] [_2].');
+	                    txt_withdraw_amt = localize('You have already withdrawn [_1] [_2].');
+	                    txt_current_max_withdrawal = localize('Therefore your current immediate maximum withdrawal (subject to your account having sufficient funds) is [_1] [_2].');
 	                    currency = Client.get('currency') || Client.get('default_currency');
 	                }
-	                elementTextContent(elWithdrawLimit, template(txtWithdrawLim, [currency, daysLimit]));
-	                elementTextContent(elWithdrawn, template(txtWithdrawAmt, [currency, withdrawn]));
+	                elementTextContent(el_withdraw_limit, template(txt_withdraw_lim, [currency, days_limit]));
+	                elementTextContent(el_withdrawn, template(txt_withdraw_amt, [currency, withdrawn]));
 	            }
-	            elementTextContent(elWithdrawLimitAgg, template(text_CurrentMaxWithdrawal, [currency, remainder]));
+	            elementTextContent(el_withdraw_limit_agg, template(txt_current_max_withdrawal, [currency, remainder]));
 	        }
 	    };
 	
@@ -80808,9 +80773,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    LimitsWS: LimitsWS
-	};
+	module.exports = LimitsInit;
 
 /***/ },
 /* 593 */
@@ -80827,10 +80790,10 @@
 	var LimitsUI = function () {
 	    'use strict';
 	
-	    var clientLimits = '';
+	    var client_limits = '';
 	
 	    var appendRowTable = function appendRowTable(name, turnover_limit, padding, font_weight) {
-	        clientLimits.append('<tr class="flex-tr">' + '<td class="flex-tr-child" style="padding-left: ' + padding + '; font-weight: ' + font_weight + ';">' + localize(name) + '</td>' + '<td>' + turnover_limit + '</td>' + '</tr>');
+	        client_limits.append('<tr class="flex-tr">' + '<td class="flex-tr-child" style="padding-left: ' + padding + '; font-weight: ' + font_weight + ';">' + localize(name) + '</td>' + '<td>' + turnover_limit + '</td>' + '</tr>');
 	    };
 	
 	    var fillLimitsTable = function fillLimitsTable(limits) {
@@ -80840,20 +80803,20 @@
 	            $('.limit').append(' (' + currency + ')');
 	        }
 	
-	        var openPosition = document.getElementById('open-positions'),
-	            accountBalance = document.getElementById('account-balance'),
+	        var open_position = document.getElementById('open-positions'),
+	            account_balance = document.getElementById('account-balance'),
 	            payout = document.getElementById('payout'),
-	            payoutPer = document.getElementById('payout-per-symbol-and-contract-type');
+	            payout_per = document.getElementById('payout-per-symbol-and-contract-type');
 	
-	        elementTextContent(openPosition, addComma(limits.open_positions).split('.')[0]);
-	        elementTextContent(accountBalance, addComma(limits.account_balance).split('.')[0]);
+	        elementTextContent(open_position, addComma(limits.open_positions).split('.')[0]);
+	        elementTextContent(account_balance, addComma(limits.account_balance).split('.')[0]);
 	        elementTextContent(payout, addComma(limits.payout).split('.')[0]);
-	        elementTextContent(payoutPer, addComma(limits.payout_per_symbol_and_contract_type).split('.')[0]);
+	        elementTextContent(payout_per, addComma(limits.payout_per_symbol_and_contract_type).split('.')[0]);
 	
-	        var marketSpecific = limits.market_specific;
-	        clientLimits = $('#client-limits');
-	        Object.keys(marketSpecific).forEach(function (key) {
-	            var object = marketSpecific[key];
+	        var market_specific = limits.market_specific;
+	        client_limits = $('#client-limits');
+	        Object.keys(market_specific).forEach(function (key) {
+	            var object = market_specific[key];
 	            if (object.length && object.length > 0) {
 	                appendRowTable(localize(key.charAt(0).toUpperCase() + key.slice(1)), '', 'auto', 'bold');
 	                Object.keys(object).forEach(function (c) {
@@ -80865,10 +80828,10 @@
 	                appendRowTable(object.name, object.turnover_limit !== 'null' ? addComma(object.turnover_limit).split('.')[0] : 0, 'auto', 'bold');
 	            }
 	        });
-	        var loginId = Client.get('loginid');
-	        if (loginId) {
-	            $('#trading-limits').prepend(loginId + ' - ');
-	            $('#withdrawal-title').prepend(loginId + ' - ');
+	        var login_id = Client.get('login_id');
+	        if (login_id) {
+	            $('#trading-limits').prepend(login_id + ' - ');
+	            $('#withdrawal-title').prepend(login_id + ' - ');
 	        }
 	        $('#withdrawal-limits, #limits-title').removeClass('invisible');
 	    };
@@ -80883,9 +80846,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    LimitsUI: LimitsUI
-	};
+	module.exports = LimitsUI;
 
 /***/ },
 /* 594 */
@@ -81333,7 +81294,7 @@
 	        }
 	        var $key = void 0,
 	            $lbl_key = void 0,
-	            $data_key = void 0,
+	            data_key = void 0,
 	            has_key = void 0,
 	            has_lbl_key = void 0;
 	        Object.keys(data).forEach(function (key) {
@@ -81344,15 +81305,15 @@
 	            // prioritise labels for japan account
 	            $key = has_key && has_lbl_key ? isJP ? $lbl_key : $key : has_key ? $key : $lbl_key;
 	            if ($key.length > 0) {
-	                $data_key = data[key];
-	                editable_fields[key] = $data_key === null ? '' : $data_key;
+	                data_key = data[key] || '';
+	                editable_fields[key] = data_key;
 	                if (populate) {
 	                    if ($key.is(':checkbox')) {
-	                        $key.prop('checked', !!$data_key);
+	                        $key.prop('checked', !!data_key);
 	                    } else if (/(SELECT|INPUT)/.test($key.prop('nodeName'))) {
-	                        $key.val($data_key.split(',')).trigger('change');
+	                        $key.val(data_key.split(',')).trigger('change');
 	                    } else {
-	                        $key.text($data_key ? localize($data_key) : '-');
+	                        $key.text(data_key ? localize(data_key) : '-');
 	                    }
 	                }
 	            }
@@ -88245,6 +88206,7 @@
 	            handleJPForm();
 	        } else {
 	            getResidence();
+	            $('#residence').removeClass('invisible');
 	            bindValidation();
 	        }
 	
