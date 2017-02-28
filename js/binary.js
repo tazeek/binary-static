@@ -18725,9 +18725,6 @@
 	                    }
 	                    var status = response.get_account_status.status;
 	                    sessionStorage.setItem('client_status', status);
-	                    if (/has_password/.test(status)) {
-	                        Client.set('has_password', 1);
-	                    }
 	                    if (/crs_tin_information/.test(status)) {
 	                        Client.set('has_tax_information', 1);
 	                    } else if (Client.should_redirect_tax()) {
@@ -75313,32 +75310,32 @@
 	var TradePage_Beta = __webpack_require__(501);
 	var TradePage = __webpack_require__(468);
 	var Authenticate = __webpack_require__(573);
-	var PasswordWS = __webpack_require__(574);
-	var PaymentAgentTransferSocket = __webpack_require__(575);
+	var ChangePassword = __webpack_require__(574);
+	var PaymentAgentTransferSocket = __webpack_require__(576);
 	var PortfolioWS = __webpack_require__(465);
 	var ProfitTableWS = __webpack_require__(487);
-	var APITokenWS = __webpack_require__(579);
-	var AuthorisedApps = __webpack_require__(581);
+	var APITokenWS = __webpack_require__(580);
+	var AuthorisedApps = __webpack_require__(582);
+	var CashierPassword = __webpack_require__(586);
 	var FinancialAssessment = __webpack_require__(433);
-	var IPHistory = __webpack_require__(585);
-	var Limits = __webpack_require__(589);
-	var SettingsWS = __webpack_require__(592);
-	var SelfExclusionWS = __webpack_require__(593);
-	var SettingsDetailsWS = __webpack_require__(594);
-	var SecurityWS = __webpack_require__(597);
+	var IPHistory = __webpack_require__(587);
+	var Limits = __webpack_require__(591);
+	var Settings = __webpack_require__(594);
+	var SelfExclusionWS = __webpack_require__(595);
+	var SettingsDetailsWS = __webpack_require__(596);
 	var StatementWS = __webpack_require__(493);
 	var TopUpVirtualWS = __webpack_require__(598);
-	var LostPasswordWS = __webpack_require__(599);
+	var LostPassword = __webpack_require__(599);
 	var MetaTrader = __webpack_require__(436);
-	var FinancialAccOpening = __webpack_require__(601);
-	var JapanAccOpening = __webpack_require__(604);
-	var RealAccOpening = __webpack_require__(605);
-	var VirtualAccOpening = __webpack_require__(606);
-	var ResetPasswordWS = __webpack_require__(607);
+	var FinancialAccOpening = __webpack_require__(600);
+	var JapanAccOpening = __webpack_require__(603);
+	var RealAccOpening = __webpack_require__(604);
+	var VirtualAccOpening = __webpack_require__(605);
+	var ResetPassword = __webpack_require__(606);
 	var TNCApproval = __webpack_require__(566);
 	
 	var CashierJP = __webpack_require__(441);
-	var KnowledgeTest = __webpack_require__(609);
+	var KnowledgeTest = __webpack_require__(607);
 	
 	var pages_config = {
 	    account_transferws: { module: AccountTransferWS, is_authenticated: true, only_real: true },
@@ -75349,8 +75346,8 @@
 	    authorised_appsws: { module: AuthorisedApps, is_authenticated: true },
 	    careers: { module: Careers },
 	    cashier: { module: Cashier },
-	    cashier_passwordws: { module: SecurityWS, is_authenticated: true, only_real: true },
-	    change_passwordws: { module: PasswordWS, is_authenticated: true },
+	    cashier_passwordws: { module: CashierPassword, is_authenticated: true, only_real: true },
+	    change_passwordws: { module: ChangePassword, is_authenticated: true },
 	    charity: { module: Charity },
 	    contact: { module: Contact },
 	    detailsws: { module: SettingsDetailsWS, is_authenticated: true },
@@ -75363,7 +75360,7 @@
 	    knowledge_testws: { module: KnowledgeTest, is_authenticated: true, only_virtual: true },
 	    limitsws: { module: Limits, is_authenticated: true, only_real: true },
 	    logged_inws: { module: LoggedInHandler },
-	    lost_passwordws: { module: LostPasswordWS, not_authenticated: true },
+	    lost_passwordws: { module: LostPassword, not_authenticated: true },
 	    maltainvestws: { module: FinancialAccOpening, is_authenticated: true },
 	    market_timesws: { module: MarketTimesUI },
 	    metatrader: { module: MetaTrader, is_authenticated: true },
@@ -75375,10 +75372,10 @@
 	    profit_tablews: { module: ProfitTableWS, is_authenticated: true },
 	    realws: { module: RealAccOpening, is_authenticated: true, only_virtual: true },
 	    regulation: { module: Regulation },
-	    reset_passwordws: { module: ResetPasswordWS, not_authenticated: true },
-	    securityws: { module: SettingsWS, is_authenticated: true },
+	    reset_passwordws: { module: ResetPassword, not_authenticated: true },
+	    securityws: { module: Settings, is_authenticated: true },
 	    self_exclusionws: { module: SelfExclusionWS, is_authenticated: true, only_real: true },
-	    settingsws: { module: SettingsWS, is_authenticated: true },
+	    settingsws: { module: Settings, is_authenticated: true },
 	    signup: { module: StaticPages.AffiliateSignup },
 	    statementws: { module: StatementWS, is_authenticated: true },
 	    tnc_approvalws: { module: TNCApproval, is_authenticated: true, only_real: true },
@@ -78326,131 +78323,44 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var localize = __webpack_require__(426).localize;
-	var Content = __webpack_require__(434).Content;
-	var ValidateV2 = __webpack_require__(553).ValidateV2;
-	var bind_validation = __webpack_require__(555).bind_validation;
-	var customError = __webpack_require__(555).customError;
-	var ValidationUI = __webpack_require__(555).ValidationUI;
-	var dv = __webpack_require__(554);
+	var FormManager = __webpack_require__(575);
 	
-	var PasswordWS = function () {
-	    var $form = void 0,
-	        $result = void 0;
-	
-	    var hasPassword = function hasPassword() {
-	        if (!Client.get('has_password')) {
-	            BinaryPjax.load('user/settingsws');
-	            return false;
-	        }
-	        return true;
-	    };
+	var ChangePassword = function () {
+	    var form_id = '#frm_change_password';
 	
 	    var init = function init() {
-	        if (!hasPassword()) return;
-	        var $container = $('#change-password');
-	        $container.removeClass('invisible');
-	        $form = $container.find(' > form');
-	        $result = $container.find(' > div[data-id="success-result"]');
-	        bind_validation.simple($form[0], {
-	            stop: displayErrors,
-	            schema: getSchema(),
-	            submit: function submit(ev, info) {
-	                ev.preventDefault();
-	                ev.stopPropagation();
-	                if (info.errors.length > 0) return;
-	                sendRequest(info.values);
-	            }
-	        });
-	    };
-	
-	    var IS_EMPTY = { q: 'old-blank' };
-	    var MATCHES_OLD = { q: 'same-as-old' };
-	
-	    var displayErrors = function displayErrors(info) {
-	        ValidationUI.clear();
-	        $form.find('p[data-error]').addClass('hidden');
-	        info.errors.forEach(function (err) {
-	            switch (err.err) {
-	                case MATCHES_OLD:
-	                case IS_EMPTY:
-	                    $form.find('p[data-error="' + err.err.q + '"]').removeClass('hidden');
-	                    break;
-	                default:
-	                    ValidationUI.draw('input[name=' + err.ctx + ']', err.err);
-	            }
-	        });
-	    };
-	
-	    var getSchema = function getSchema() {
-	        var V2 = ValidateV2;
-	        var err = Content.localize().textPasswordsNotMatching;
-	
-	        var notMatchingOld = function notMatchingOld(value, data) {
-	            return value !== data.old_password;
-	        };
-	
-	        var match = function match(value, data) {
-	            return value === data.new_password;
-	        };
-	        return {
-	            old_password: [customError(V2.required, IS_EMPTY)],
-	            new_password: [V2.required, dv.check(notMatchingOld, MATCHES_OLD), V2.password],
-	            repeat_password: [V2.required, dv.check(match, err)]
-	        };
-	    };
-	
-	    var sendRequest = function sendRequest(data) {
-	        if (!hasPassword()) return;
-	        BinarySocket.send({
-	            change_password: '1',
-	            old_password: data.old_password,
-	            new_password: data.new_password
-	        });
+	        FormManager.init(form_id, [{ selector: '#old_password', validations: ['req', ['length', { min: 6, max: 25 }]] }, { selector: '#new_password', validations: ['req', 'password', ['not_equal', { to: '#old_password', name1: 'Current password', name2: 'New password' }]] }, { selector: '#repeat_password', validations: ['req', ['compare', { to: '#new_password' }]], exclude_request: 1 }]);
+	        FormManager.handleSubmit(form_id, { change_password: 1 }, handler);
 	    };
 	
 	    var handler = function handler(response) {
 	        if ('error' in response) {
-	            var errorMsg = localize('Old password is wrong.');
-	            if ('message' in response.error) {
-	                if (response.error.message.indexOf('old_password') === -1) {
-	                    errorMsg = response.error.message;
-	                }
-	            }
-	            $form.find('p[data-error="server-sent-error"]').text(errorMsg).removeClass('hidden');
-	            return;
+	            $('#form_error').text(localize(response.error.message)).removeClass('hidden');
+	        } else {
+	            $(form_id).addClass('hidden');
+	            $('#msg_success').removeClass('invisible');
+	            setTimeout(function () {
+	                Client.send_logout_request(true);
+	            }, 5000);
 	        }
-	
-	        $form.addClass('hidden');
-	        $result.removeClass('hidden');
-	        setTimeout(function () {
-	            Client.send_logout_request(true);
-	        }, 5000);
 	    };
 	
 	    var onLoad = function onLoad() {
-	        Content.populate();
-	
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                if (!response) return;
-	                var type = response.msg_type;
-	                if (type === 'change_password' || type === 'error' && 'change_password' in response.echo_req) {
-	                    handler(response);
-	                }
+	        BinarySocket.wait('get_account_status').then(function (response) {
+	            if (/has_password/.test(response.get_account_status.status)) {
+	                init();
+	            } else {
+	                BinaryPjax.load('user/settingsws');
 	            }
 	        });
-	        init();
 	    };
 	
 	    return {
-	        onLoad: onLoad,
-	        init: init,
-	        handler: handler
+	        onLoad: onLoad
 	    };
 	}();
 	
-	module.exports = PasswordWS;
+	module.exports = ChangePassword;
 
 /***/ },
 /* 575 */
@@ -78458,7 +78368,99 @@
 
 	'use strict';
 	
-	var PaymentAgentTransfer = __webpack_require__(576).PaymentAgentTransfer;
+	var Validation = __webpack_require__(435);
+	
+	var FormManager = function () {
+	    'use strict';
+	
+	    var forms = {};
+	
+	    var initForm = function initForm(form_selector, fields) {
+	        var $form = $(form_selector + ':visible');
+	        if ($form.length && Array.isArray(fields) && fields.length) {
+	            forms[form_selector] = { fields: fields };
+	            fields.forEach(function (field) {
+	                if (field.selector) {
+	                    field.$ = $form.find(field.selector);
+	                    if (!field.$.length) return;
+	                }
+	
+	                field.form = form_selector;
+	            });
+	        }
+	        Validation.init(form_selector, fields);
+	    };
+	
+	    var getFormData = function getFormData(form_selector) {
+	        var data = {};
+	        var fields = forms[form_selector].fields;
+	        var key = void 0,
+	            $selector = void 0,
+	            current_field = void 0,
+	            val = void 0,
+	            value = void 0;
+	
+	        Object.keys(fields).forEach(function (field) {
+	            current_field = fields[field];
+	            if (!current_field.exclude_request) {
+	                $selector = $(current_field.form).find(current_field.selector);
+	                if ($selector.is(':visible') || current_field.value) {
+	                    val = $selector.val();
+	                    key = current_field.request_field || current_field.selector;
+	
+	                    // prioritise data-value
+	                    // if label, take the text
+	                    // if checkbox, take checked value
+	                    // otherwise take the value
+	                    value = current_field.value ? current_field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? current_field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
+	
+	                    key = key.replace(/lbl_|#|\./g, '');
+	                    if (current_field.parent_node) {
+	                        if (!data[current_field.parent_node]) {
+	                            data[current_field.parent_node] = {};
+	                        }
+	                        data[current_field.parent_node][key] = value;
+	                    } else {
+	                        data[key] = value;
+	                    }
+	                }
+	            }
+	        });
+	        return data;
+	    };
+	
+	    var handleSubmit = function handleSubmit(form_selector, obj_request, fnc_response_handler, fnc_additional_check) {
+	        $(form_selector).off('submit').on('submit', function (evt) {
+	            evt.preventDefault();
+	            if (Validation.validate(form_selector)) {
+	                var req = $.extend(obj_request, getFormData(form_selector));
+	                if (typeof fnc_additional_check === 'function' && !fnc_additional_check(req)) {
+	                    return;
+	                }
+	                BinarySocket.send(req).then(function (response) {
+	                    if (typeof fnc_response_handler === 'function') {
+	                        fnc_response_handler(response);
+	                    }
+	                });
+	            }
+	        });
+	    };
+	
+	    return {
+	        init: initForm,
+	        handleSubmit: handleSubmit
+	    };
+	}();
+	
+	module.exports = FormManager;
+
+/***/ },
+/* 576 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var PaymentAgentTransfer = __webpack_require__(577).PaymentAgentTransfer;
 	var Content = __webpack_require__(434).Content;
 	
 	var PaymentAgentTransferSocket = function () {
@@ -78484,15 +78486,15 @@
 	module.exports = PaymentAgentTransferSocket;
 
 /***/ },
-/* 576 */
+/* 577 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var onlyNumericOnKeypress = __webpack_require__(484).onlyNumericOnKeypress;
 	var Client = __webpack_require__(308).Client;
-	var PaymentAgentTransferData = __webpack_require__(577).PaymentAgentTransferData;
-	var PaymentAgentTransferUI = __webpack_require__(578).PaymentAgentTransferUI;
+	var PaymentAgentTransferData = __webpack_require__(578).PaymentAgentTransferData;
+	var PaymentAgentTransferUI = __webpack_require__(579).PaymentAgentTransferUI;
 	
 	var PaymentAgentTransfer = function () {
 	    var hiddenClass = 'invisible';
@@ -78671,7 +78673,7 @@
 	};
 
 /***/ },
-/* 577 */
+/* 578 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -78700,7 +78702,7 @@
 	};
 
 /***/ },
-/* 578 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78779,7 +78781,7 @@
 	};
 
 /***/ },
-/* 579 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78788,7 +78790,7 @@
 	var showLocalTimeOnHover = __webpack_require__(444).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
+	var FlexTableUI = __webpack_require__(581).FlexTableUI;
 	var Content = __webpack_require__(434).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
 	var ValidateV2 = __webpack_require__(553).ValidateV2;
@@ -79012,7 +79014,7 @@
 	module.exports = APITokenWS;
 
 /***/ },
-/* 580 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79074,12 +79076,12 @@
 	};
 
 /***/ },
-/* 581 */
+/* 582 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Applications = __webpack_require__(582).Applications;
+	var Applications = __webpack_require__(583).Applications;
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(434).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
@@ -79106,13 +79108,13 @@
 	module.exports = AuthorisedApps;
 
 /***/ },
-/* 582 */
+/* 583 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(583).ApplicationsUI;
-	var ApplicationsData = __webpack_require__(584).ApplicationsData;
+	var ApplicationsUI = __webpack_require__(584).ApplicationsUI;
+	var ApplicationsData = __webpack_require__(585).ApplicationsData;
 	
 	var Applications = function () {
 	    'use strict';
@@ -79148,7 +79150,7 @@
 	};
 
 /***/ },
-/* 583 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79157,8 +79159,8 @@
 	var showLocalTimeOnHover = __webpack_require__(444).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(489).Button;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
-	var ApplicationsData = __webpack_require__(584).ApplicationsData;
+	var FlexTableUI = __webpack_require__(581).FlexTableUI;
+	var ApplicationsData = __webpack_require__(585).ApplicationsData;
 	
 	var ApplicationsUI = function () {
 	    'use strict';
@@ -79246,7 +79248,7 @@
 	};
 
 /***/ },
-/* 584 */
+/* 585 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79298,12 +79300,103 @@
 	};
 
 /***/ },
-/* 585 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryInit = __webpack_require__(586);
+	var BinaryPjax = __webpack_require__(309);
+	var localize = __webpack_require__(426).localize;
+	var Content = __webpack_require__(434).Content;
+	var FormManager = __webpack_require__(575);
+	
+	var CashierPassword = function () {
+	    'use strict';
+	
+	    var $form = void 0,
+	        redirect_url = void 0;
+	    var form_id = '#frm_cashier_password';
+	    var hidden_class = 'invisible';
+	
+	    var onLoad = function onLoad() {
+	        Content.populate();
+	        $form = $(form_id);
+	
+	        BinarySocket.wait('authorize').then(function () {
+	            BinarySocket.send({ cashier_password: 1 }).then(function (response) {
+	                return init(response);
+	            });
+	        });
+	    };
+	
+	    var updatePage = function updatePage(config) {
+	        $('legend').text(localize(config.legend));
+	        $('#lockInfo').text(localize(config.info));
+	        $form.find('button').html(localize(config.button));
+	    };
+	
+	    var init = function init(response) {
+	        var locked = response.cashier_password;
+	        if (locked) {
+	            updatePage({
+	                legend: 'Unlock Cashier',
+	                info: 'Your cashier is locked as per your request - to unlock it, please enter the password.',
+	                button: 'Unlock Cashier'
+	            });
+	            $('#repeat_password_row').addClass(hidden_class);
+	        } else {
+	            updatePage({
+	                legend: 'Lock Cashier',
+	                info: 'An additional password can be used to restrict access to the cashier.',
+	                button: 'Update'
+	            });
+	            $('#repeat_password_row').removeClass(hidden_class);
+	        }
+	        $form.removeClass(hidden_class);
+	        FormManager.init(form_id, [{ selector: '#cashier_password', validations: ['req', locked ? ['length', { min: 6, max: 25 }] : 'password'], request_field: locked ? 'unlock_password' : 'lock_password' }, { selector: '#repeat_cashier_password', validations: ['req', ['compare', { to: '#cashier_password' }]], exclude_request: 1 }]);
+	        FormManager.handleSubmit(form_id, { cashier_password: 1 }, handleResponse);
+	    };
+	
+	    var handleResponse = function handleResponse(response) {
+	        var $form_error = $('#form_error');
+	        var $form_message = $('#form_message');
+	        $form_message.text('');
+	        $form_error.text('');
+	        if (response.error) {
+	            var message = response.error.message;
+	            if (response.error.code === 'InputValidationFailed') {
+	                message = 'Sorry, you have entered an incorrect cashier password';
+	            }
+	            $form_error.text(localize(message));
+	            return;
+	        }
+	        redirect_url = sessionStorage.getItem('cashier_lock_redirect') || '';
+	        $form.addClass(hidden_class);
+	        $form_message.text(localize('Your settings have been updated successfully.'));
+	        setTimeout(redirect, 2000);
+	    };
+	
+	    var redirect = function redirect() {
+	        if (redirect_url) {
+	            sessionStorage.removeItem('cashier_lock_redirect');
+	            BinaryPjax.load(redirect_url);
+	        }
+	    };
+	
+	    return {
+	        onLoad: onLoad
+	    };
+	}();
+	
+	module.exports = CashierPassword;
+
+/***/ },
+/* 587 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var IPHistoryInit = __webpack_require__(588);
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(434).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
@@ -79330,13 +79423,13 @@
 	module.exports = IPHistory;
 
 /***/ },
-/* 586 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(587);
-	var IPHistoryData = __webpack_require__(588);
+	var IPHistoryUI = __webpack_require__(589);
+	var IPHistoryData = __webpack_require__(590);
 	
 	var IPHistoryInit = function () {
 	    'use strict';
@@ -79373,13 +79466,13 @@
 	module.exports = IPHistoryInit;
 
 /***/ },
-/* 587 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLocalTimeOnHover = __webpack_require__(444).Clock.showLocalTimeOnHover;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
+	var FlexTableUI = __webpack_require__(581).FlexTableUI;
 	var moment = __webpack_require__(313);
 	var localize = __webpack_require__(426).localize;
 	
@@ -79453,7 +79546,7 @@
 	module.exports = IPHistoryUI;
 
 /***/ },
-/* 588 */
+/* 590 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -79500,12 +79593,12 @@
 	module.exports = IPHistoryData;
 
 /***/ },
-/* 589 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LimitsInit = __webpack_require__(590);
+	var LimitsInit = __webpack_require__(592);
 	var Content = __webpack_require__(434).Content;
 	
 	var Limits = function () {
@@ -79534,7 +79627,7 @@
 	module.exports = Limits;
 
 /***/ },
-/* 590 */
+/* 592 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79542,7 +79635,7 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(434).Content;
 	var addComma = __webpack_require__(439).addComma;
-	var LimitsUI = __webpack_require__(591);
+	var LimitsUI = __webpack_require__(593);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(312).elementTextContent;
@@ -79622,7 +79715,7 @@
 	module.exports = LimitsInit;
 
 /***/ },
-/* 591 */
+/* 593 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79695,7 +79788,7 @@
 	module.exports = LimitsUI;
 
 /***/ },
-/* 592 */
+/* 594 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79703,25 +79796,26 @@
 	var japanese_client = __webpack_require__(311).japanese_client;
 	var Client = __webpack_require__(308).Client;
 	
-	var SettingsWS = function () {
+	var Settings = function () {
 	    'use strict';
 	
 	    var onLoad = function onLoad() {
-	        var classHidden = 'invisible',
-	            classReal = '.real';
+	        BinarySocket.wait('get_account_status').then(function (response) {
+	            var class_hidden = 'invisible';
+	            var class_real = '.real';
 	
-	        if (!Client.get('is_virtual')) {
-	            // control-class is a fake class, only used to counteract ja-hide class
-	            $(classReal).not(japanese_client() ? '.ja-hide' : '.control-class').removeClass(classHidden);
-	        } else {
-	            $(classReal).addClass(classHidden);
-	        }
+	            if (Client.get('is_virtual')) {
+	                $(class_real).addClass(class_hidden);
+	            } else {
+	                $(class_real).not(japanese_client() ? '.ja-hide' : '').removeClass(class_hidden);
+	            }
 	
-	        if (Client.get('has_password')) {
-	            $('#change_password').removeClass(classHidden);
-	        }
+	            if (/has_password/.test(response.get_account_status.status)) {
+	                $('#change_password').removeClass(class_hidden);
+	            }
 	
-	        $('#settingsContainer').removeClass(classHidden);
+	            $('#settings_container').removeClass(class_hidden);
+	        });
 	    };
 	
 	    return {
@@ -79729,10 +79823,10 @@
 	    };
 	}();
 	
-	module.exports = SettingsWS;
+	module.exports = Settings;
 
 /***/ },
-/* 593 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -80080,7 +80174,7 @@
 	module.exports = SelfExclusionWS;
 
 /***/ },
-/* 594 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -80091,9 +80185,9 @@
 	var Content = __webpack_require__(434).Content;
 	var detect_hedging = __webpack_require__(312).detect_hedging;
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
-	var FormManager = __webpack_require__(595);
+	var FormManager = __webpack_require__(575);
 	var moment = __webpack_require__(313);
-	__webpack_require__(596);
+	__webpack_require__(597);
 	
 	var SettingsDetailsWS = function () {
 	    'use strict';
@@ -80216,7 +80310,7 @@
 	                validations.push({ selector: '#' + $(this).attr('id'), validations: ['req'], parent_node: 'jp_settings' });
 	            });
 	        } else {
-	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: 'input#address_state', validations: ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }, { selector: '#place_of_birth', validations: Client.is_financial() ? ['req'] : '' }, { selector: '#tax_residence', validations: Client.is_financial() ? ['req'] : '' }];
+	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }, { selector: '#place_of_birth', validations: Client.is_financial() ? ['req'] : '' }, { selector: '#tax_residence', validations: Client.is_financial() ? ['req'] : '' }];
 	            var tax_id_validation = { selector: '#tax_identification_number', validations: ['postcode', ['length', { min: 0, max: 20 }]] };
 	            if (Client.is_financial()) {
 	                tax_id_validation.validations[1][1].min = 1;
@@ -80337,99 +80431,7 @@
 	module.exports = SettingsDetailsWS;
 
 /***/ },
-/* 595 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var Validation = __webpack_require__(435);
-	
-	var FormManager = function () {
-	    'use strict';
-	
-	    var forms = {};
-	
-	    var initForm = function initForm(form_selector, fields) {
-	        var $form = $(form_selector + ':visible');
-	        if ($form.length && Array.isArray(fields) && fields.length) {
-	            forms[form_selector] = { fields: fields };
-	            fields.forEach(function (field) {
-	                if (field.selector) {
-	                    field.$ = $form.find(field.selector);
-	                    if (!field.$.length) return;
-	                }
-	
-	                field.form = form_selector;
-	            });
-	        }
-	        Validation.init(form_selector, fields);
-	    };
-	
-	    var getFormData = function getFormData(form_selector) {
-	        var data = {};
-	        var fields = forms[form_selector].fields;
-	        var key = void 0,
-	            $selector = void 0,
-	            current_field = void 0,
-	            val = void 0,
-	            value = void 0;
-	
-	        Object.keys(fields).forEach(function (field) {
-	            current_field = fields[field];
-	            if (!current_field.exclude_request) {
-	                $selector = $(current_field.form).find(current_field.selector);
-	                if ($selector.is(':visible') || current_field.value) {
-	                    val = $selector.val();
-	                    key = current_field.request_field || current_field.selector;
-	
-	                    // prioritise data-value
-	                    // if label, take the text
-	                    // if checkbox, take checked value
-	                    // otherwise take the value
-	                    value = current_field.value ? current_field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? current_field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
-	
-	                    key = key.replace(/lbl_|#|\./g, '');
-	                    if (current_field.parent_node) {
-	                        if (!data[current_field.parent_node]) {
-	                            data[current_field.parent_node] = {};
-	                        }
-	                        data[current_field.parent_node][key] = value;
-	                    } else {
-	                        data[key] = value;
-	                    }
-	                }
-	            }
-	        });
-	        return data;
-	    };
-	
-	    var handleSubmit = function handleSubmit(form_selector, obj_request, fnc_response_handler, fnc_additional_check) {
-	        $(form_selector).off('submit').on('submit', function (evt) {
-	            evt.preventDefault();
-	            if (Validation.validate(form_selector)) {
-	                var req = $.extend(obj_request, getFormData(form_selector));
-	                if (typeof fnc_additional_check === 'function' && !fnc_additional_check(req)) {
-	                    return;
-	                }
-	                BinarySocket.send(req).then(function (response) {
-	                    if (typeof fnc_response_handler === 'function') {
-	                        fnc_response_handler(response);
-	                    }
-	                });
-	            }
-	        });
-	    };
-	
-	    return {
-	        init: initForm,
-	        handleSubmit: handleSubmit
-	    };
-	}();
-	
-	module.exports = FormManager;
-
-/***/ },
-/* 596 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var require;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -86160,161 +86162,6 @@
 
 
 /***/ },
-/* 597 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var BinaryPjax = __webpack_require__(309);
-	var localize = __webpack_require__(426).localize;
-	var Content = __webpack_require__(434).Content;
-	var ValidateV2 = __webpack_require__(553).ValidateV2;
-	var bind_validation = __webpack_require__(555).bind_validation;
-	var dv = __webpack_require__(554);
-	
-	var SecurityWS = function () {
-	    'use strict';
-	
-	    var $form = void 0,
-	        current_state = void 0,
-	        redirect_url = void 0;
-	    var STATE = {
-	        WAIT_AUTH: 'WAIT_AUTH',
-	        QUERY_LOCKED: 'QUERY_LOCKED',
-	        LOCKED: 'LOCKED',
-	        UNLOCKED: 'UNLOCKED',
-	        TRY_UNLOCK: 'TRY_UNLOCK',
-	        TRY_LOCK: 'TRY_LOCK',
-	        DONE: 'DONE'
-	    };
-	
-	    var clearErrors = function clearErrors() {
-	        $('#SecuritySuccessMsg').text('');
-	        $('#invalidinputfound').text('');
-	    };
-	
-	    var onLoad = function onLoad() {
-	        Content.populate();
-	        $form = $('#changeCashierLock');
-	
-	        current_state = STATE.WAIT_AUTH;
-	        BinarySocket.init({ onmessage: handler });
-	        current_state = STATE.QUERY_LOCKED;
-	        BinarySocket.send({ cashier_password: '1' });
-	    };
-	
-	    var updatePage = function updatePage(config) {
-	        $('legend').text(localize(config.legend));
-	        $('#lockInfo').text(localize(config.info));
-	        $form.find('button').attr('value', config.button).html(localize(config.button));
-	    };
-	
-	    var setupRepeatPasswordForm = function setupRepeatPasswordForm() {
-	        $('#repasswordrow').show();
-	    };
-	
-	    var lockedStatus = function lockedStatus(response) {
-	        var locked = +response.cashier_password === 1;
-	        if (locked) {
-	            updatePage({
-	                legend: 'Unlock Cashier',
-	                info: 'Your cashier is locked as per your request - to unlock it, please enter the password.',
-	                button: 'Unlock Cashier'
-	            });
-	            $('#repasswordrow').hide();
-	        } else {
-	            updatePage({
-	                legend: 'Lock Cashier',
-	                info: 'An additional password can be used to restrict access to the cashier.',
-	                button: 'Update'
-	            });
-	            setupRepeatPasswordForm();
-	        }
-	        current_state = locked ? STATE.LOCKED : STATE.UNLOCKED;
-	        bind_validation.simple($form[0], {
-	            schema: locked ? {} : getUnlockedSchema(),
-	            submit: function submit(e, info) {
-	                e.preventDefault();
-	                e.stopPropagation();
-	                if (info.errors.length > 0) {
-	                    return;
-	                }
-	                current_state = locked ? STATE.TRY_UNLOCK : STATE.TRY_LOCK;
-	                makeTryingRequest();
-	            }
-	        });
-	        $form.show();
-	    };
-	
-	    var getUnlockedSchema = function getUnlockedSchema() {
-	        var err = Content.localize().textPasswordsNotMatching;
-	        var matches = function matches(value, data) {
-	            return value === data.cashierlockpassword1;
-	        };
-	
-	        return {
-	            cashierlockpassword1: [ValidateV2.password],
-	            cashierlockpassword2: [dv.check(matches, err)]
-	        };
-	    };
-	
-	    var makeTryingRequest = function makeTryingRequest() {
-	        var key = current_state === STATE.TRY_UNLOCK ? 'unlock_password' : 'lock_password';
-	        var params = { cashier_password: '1' };
-	        params[key] = $('#cashierlockpassword1').val();
-	        BinarySocket.send(params);
-	    };
-	
-	    var tryStatus = function tryStatus(response) {
-	        if (response.error) {
-	            current_state = current_state === STATE.TRY_UNLOCK ? STATE.LOCKED : STATE.UNLOCKED;
-	            var message = response.error.message;
-	            if (current_state === STATE.LOCKED && response.error.code === 'InputValidationFailed') {
-	                message = 'Sorry, you have entered an incorrect cashier password';
-	            }
-	            $('#invalidinputfound').text(localize(message));
-	            return;
-	        }
-	        $form.hide();
-	        clearErrors();
-	        $('#SecuritySuccessMsg').text(localize('Your settings have been updated successfully.'));
-	        redirect_url = current_state === STATE.TRY_UNLOCK ? sessionStorage.getItem('cashier_lock_redirect') : '';
-	        setTimeout(redirect, 2000);
-	        current_state = STATE.DONE;
-	    };
-	
-	    var redirect = function redirect() {
-	        if (redirect_url) {
-	            sessionStorage.removeItem('cashier_lock_redirect');
-	            BinaryPjax.load(redirect_url);
-	        }
-	    };
-	
-	    var handler = function handler(msg) {
-	        var response = JSON.parse(msg.data);
-	        if (response.msg_type === 'cashier_password') {
-	            switch (current_state) {
-	                case STATE.QUERY_LOCKED:
-	                    lockedStatus(response);
-	                    break;
-	                case STATE.TRY_UNLOCK:
-	                case STATE.TRY_LOCK:
-	                    tryStatus(response);
-	                    break;
-	                default:
-	                    break;
-	            }
-	        }
-	    };
-	
-	    return {
-	        onLoad: onLoad
-	    };
-	}();
-	
-	module.exports = SecurityWS;
-
-/***/ },
 /* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -86401,14 +86248,25 @@
 
 	'use strict';
 	
-	var LostPassword = __webpack_require__(600).LostPassword;
+	var BinaryPjax = __webpack_require__(309);
+	var localize = __webpack_require__(426).localize;
+	var FormManager = __webpack_require__(575);
 	
-	var LostPasswordWS = function () {
+	var LostPassword = function () {
+	    'use strict';
+	
+	    var responseHandler = function responseHandler(response) {
+	        if (response.verify_email) {
+	            BinaryPjax.load('user/reset_passwordws');
+	        } else if (response.error) {
+	            $('#form_error').removeClass('invisible').text(localize(response.error.message));
+	        }
+	    };
+	
 	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: LostPassword.lostPasswordWSHandler
-	        });
-	        LostPassword.init();
+	        var form_id = '#frm_lost_password';
+	        FormManager.init(form_id, [{ selector: '#email', validations: ['req', 'email'], request_field: 'verify_email' }, { request_field: 'type', value: 'reset_password' }]);
+	        FormManager.handleSubmit(form_id, {}, responseHandler);
 	    };
 	
 	    return {
@@ -86416,84 +86274,10 @@
 	    };
 	}();
 	
-	module.exports = LostPasswordWS;
+	module.exports = LostPassword;
 
 /***/ },
 /* 600 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var Content = __webpack_require__(434).Content;
-	var validateEmail = __webpack_require__(570).validateEmail;
-	var BinaryPjax = __webpack_require__(309);
-	var localize = __webpack_require__(426).localize;
-	
-	var LostPassword = function () {
-	    'use strict';
-	
-	    var hiddenClass = 'invisible';
-	
-	    var submitEmail = function submitEmail() {
-	        var emailInput = ($('#lp_email').val() || '').trim();
-	
-	        if (emailInput === '') {
-	            $('#email_error').removeClass(hiddenClass).text(localize('This field is required.'));
-	        } else if (!validateEmail(emailInput)) {
-	            $('#email_error').removeClass(hiddenClass).text(Content.errorMessage('valid', localize('email address')));
-	        } else {
-	            BinarySocket.send({ verify_email: emailInput, type: 'reset_password' });
-	            $('#submit').prop('disabled', true);
-	        }
-	    };
-	
-	    var onEmailInput = function onEmailInput(input) {
-	        if (input) {
-	            $('#email_error').addClass(hiddenClass);
-	        }
-	    };
-	
-	    var lostPasswordWSHandler = function lostPasswordWSHandler(msg) {
-	        var response = JSON.parse(msg.data);
-	        var type = response.msg_type;
-	
-	        if (type === 'verify_email') {
-	            if (response.verify_email === 1) {
-	                BinaryPjax.load('user/reset_passwordws');
-	            } else if (response.error) {
-	                $('#email_error').removeClass(hiddenClass).text(Content.errorMessage('valid', localize('email address')));
-	                $('#submit').prop('disabled', false);
-	            }
-	        }
-	    };
-	
-	    var init = function init() {
-	        Content.populate();
-	        $('#lost_passwordws').removeClass('invisible');
-	        $('#submit:enabled').click(function () {
-	            submitEmail();
-	        });
-	
-	        $('#lp_email').keypress(function (ev) {
-	            if (ev.which === 13) {
-	                submitEmail();
-	            }
-	            onEmailInput(ev.target.value);
-	        });
-	    };
-	
-	    return {
-	        lostPasswordWSHandler: lostPasswordWSHandler,
-	        init: init
-	    };
-	}();
-	
-	module.exports = {
-	    LostPassword: LostPassword
-	};
-
-/***/ },
-/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86503,8 +86287,8 @@
 	var State = __webpack_require__(306).State;
 	var default_redirect_url = __webpack_require__(310).default_redirect_url;
 	var objectNotEmpty = __webpack_require__(307).objectNotEmpty;
-	var AccountOpening = __webpack_require__(602);
-	var FormManager = __webpack_require__(595);
+	var AccountOpening = __webpack_require__(601);
+	var FormManager = __webpack_require__(575);
 	var toISOFormat = __webpack_require__(439).toISOFormat;
 	var moment = __webpack_require__(313);
 	
@@ -86602,20 +86386,20 @@
 	module.exports = FinancialAccOpening;
 
 /***/ },
-/* 602 */
+/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var generateBirthDate = __webpack_require__(603);
+	var generateBirthDate = __webpack_require__(602);
 	var BinaryPjax = __webpack_require__(309);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
-	var FormManager = __webpack_require__(595);
+	var FormManager = __webpack_require__(575);
 	var Cookies = __webpack_require__(303);
-	__webpack_require__(596);
+	__webpack_require__(597);
 	
 	var redirectCookie = function redirectCookie() {
 	    if (Client.get('has_real')) {
@@ -86767,7 +86551,7 @@
 	};
 	
 	var commonValidations = function commonValidations() {
-	    var req = [{ selector: '#salutation', validations: ['req'] }, { selector: '#first_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#last_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'], request_field: 'address_state' }, { selector: '#address_postcode', validations: ['postcode'] }, { selector: '#phone', validations: ['req', 'phone', ['min', { min: 6, max: 35 }]] }, { selector: '#secret_question', validations: ['req'] }, { selector: '#secret_answer', validations: ['req', 'letter_symbol', ['min', { min: 4, max: 50 }]] }, { selector: '#tnc', validations: [['req', { message: localize('Please accept the terms and conditions.') }]], exclude_request: 1 }, { request_field: 'residence', value: Client.get('residence') }];
+	    var req = [{ selector: '#salutation', validations: ['req'] }, { selector: '#first_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#last_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode'] }, { selector: '#phone', validations: ['req', 'phone', ['min', { min: 6, max: 35 }]] }, { selector: '#secret_question', validations: ['req'] }, { selector: '#secret_answer', validations: ['req', 'letter_symbol', ['min', { min: 4, max: 50 }]] }, { selector: '#tnc', validations: [['req', { message: localize('Please accept the terms and conditions.') }]], exclude_request: 1 }, { request_field: 'residence', value: Client.get('residence') }];
 	
 	    if (Cookies.get('affiliate_tracking')) {
 	        req.push({ request_field: 'affiliate_token', value: Cookies.getJSON('affiliate_tracking').t });
@@ -86805,7 +86589,7 @@
 	};
 
 /***/ },
-/* 603 */
+/* 602 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86832,7 +86616,7 @@
 	module.exports = generateBirthDate;
 
 /***/ },
-/* 604 */
+/* 603 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86840,9 +86624,9 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
-	var AccountOpening = __webpack_require__(602);
+	var AccountOpening = __webpack_require__(601);
 	var detect_hedging = __webpack_require__(312).detect_hedging;
-	var FormManager = __webpack_require__(595);
+	var FormManager = __webpack_require__(575);
 	
 	var JapanAccOpening = function () {
 	    var onLoad = function onLoad() {
@@ -86887,14 +86671,14 @@
 	module.exports = JapanAccOpening;
 
 /***/ },
-/* 605 */
+/* 604 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Client = __webpack_require__(308).Client;
-	var AccountOpening = __webpack_require__(602);
-	var FormManager = __webpack_require__(595);
+	var AccountOpening = __webpack_require__(601);
+	var FormManager = __webpack_require__(575);
 	
 	var RealAccOpening = function () {
 	    var residenceID = '#residence';
@@ -86959,7 +86743,7 @@
 	module.exports = RealAccOpening;
 
 /***/ },
-/* 606 */
+/* 605 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86968,9 +86752,9 @@
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(310).url_for;
 	var template = __webpack_require__(307).template;
-	var getResidence = __webpack_require__(602).getResidence;
+	var getResidence = __webpack_require__(601).getResidence;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var FormManager = __webpack_require__(595);
+	var FormManager = __webpack_require__(575);
 	var TrafficSource = __webpack_require__(534).TrafficSource;
 	var Cookies = __webpack_require__(303);
 	
@@ -87066,23 +86850,67 @@
 	module.exports = VirtualAccOpening;
 
 /***/ },
-/* 607 */
+/* 606 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ResetPassword = __webpack_require__(608).ResetPassword;
 	var Client = __webpack_require__(308).Client;
+	var localize = __webpack_require__(426).localize;
+	var Login = __webpack_require__(304).Login;
+	var generateBirthDate = __webpack_require__(602);
+	var FormManager = __webpack_require__(575);
 	
-	var ResetPasswordWS = function () {
-	    var onLoad = function onLoad() {
-	        if (Client.redirect_if_login()) {
-	            return;
+	var ResetPassword = function () {
+	    'use strict';
+	
+	    var hidden_class = 'invisible';
+	
+	    var responseHandler = function responseHandler(response) {
+	        $('#container_reset_password').addClass(hidden_class);
+	        if (response.error) {
+	            var $form_error = $('#form_error');
+	            var resetErrorTemplate = '[_1] Please click the link below to restart the password recovery process. If you require further assistance, please contact our Customer Support.';
+	            var error_code = response.error.code;
+	
+	            $('#msg_reset_password').addClass(hidden_class);
+	
+	            var errMsg = void 0;
+	            if (error_code === 'SocialBased') {
+	                errMsg = localize(response.error.message);
+	                $form_error.find('a').addClass(hidden_class);
+	            } else {
+	                // special handling as backend return inconsistent format
+	                errMsg = localize(resetErrorTemplate, [error_code === 'InputValidationFailed' ? localize('Token has expired.') : localize(response.error.message)]);
+	            }
+	
+	            $('#form_error_msg').text(errMsg);
+	            $form_error.removeClass(hidden_class);
+	        } else {
+	            $('#msg_reset_password').text(localize('Your password has been successfully reset. Please log into your account using your new password.'));
+	            setTimeout(function () {
+	                Login.redirect_to_login();
+	            }, 5000);
 	        }
-	        BinarySocket.init({
-	            onmessage: ResetPassword.resetPasswordWSHandler
+	    };
+	
+	    var onLoad = function onLoad() {
+	        if (Client.redirect_if_login()) return;
+	
+	        generateBirthDate();
+	
+	        $('#have_real_account').click(function () {
+	            if ($(this).is(':checked')) {
+	                $('#dob_field').removeClass(hidden_class);
+	            } else {
+	                $('#dob_field').addClass(hidden_class);
+	            }
 	        });
-	        ResetPassword.init();
+	
+	        var form_id = '#frm_reset_password';
+	        FormManager.init(form_id, [{ selector: '#verification_code', validations: ['req', 'email_token'] }, { selector: '#new_password', validations: ['req', 'password'] }, { selector: '#repeat_password', validations: ['req', ['compare', { to: '#new_password' }]], exclude_request: 1 }, { selector: '#date_of_birth', validations: ['req'] }]);
+	
+	        FormManager.handleSubmit(form_id, { reset_password: 1 }, responseHandler);
 	    };
 	
 	    return {
@@ -87090,186 +86918,17 @@
 	    };
 	}();
 	
-	module.exports = ResetPasswordWS;
+	module.exports = ResetPassword;
 
 /***/ },
-/* 608 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var Login = __webpack_require__(304).Login;
-	var isValidDate = __webpack_require__(312).isValidDate;
-	var Content = __webpack_require__(434).Content;
-	var generateBirthDate = __webpack_require__(603);
-	var passwordValid = __webpack_require__(570).passwordValid;
-	var showPasswordError = __webpack_require__(570).showPasswordError;
-	var localize = __webpack_require__(426).localize;
-	
-	var ResetPassword = function () {
-	    'use strict';
-	
-	    var hiddenClass = 'invisible';
-	    var resetErrorTemplate = '[_1] Please click the link below to restart the password recovery process. If you require further assistance, please contact our Customer Support.';
-	    var date_of_birth = void 0;
-	
-	    var submitResetPassword = function submitResetPassword() {
-	        var token = $('#verification-code').val();
-	        var pw1 = $('#reset-password1').val();
-	        var pw2 = $('#reset-password2').val();
-	
-	        if (token.length < 48) {
-	            $('#verification-error').removeClass(hiddenClass).text(localize('Verification code format incorrect.'));
-	            return;
-	        }
-	        var $pw_err1 = $('#password-error1');
-	        if (!pw1) {
-	            // password not entered
-	            $pw_err1.empty().append('<p></p>', { class: 'errorfield' }).text(Content.localize().textMessageRequired).removeClass(hiddenClass);
-	            return;
-	        } else if (!passwordValid(pw1)) {
-	            // password failed validation
-	            var errMsgs = showPasswordError(pw1);
-	            $pw_err1.empty();
-	            errMsgs.forEach(function (msg) {
-	                var $errP = $('<p></p>', { class: 'errorfield' }).text(msg);
-	                $pw_err1.append($errP);
-	            });
-	            $pw_err1.removeClass(hiddenClass);
-	            return;
-	        }
-	
-	        if (pw1 !== pw2) {
-	            if (!pw2) {
-	                $('#password-error2').removeClass(hiddenClass).text(Content.localize().textMessageRequired);
-	            } else {
-	                $('#password-error2').removeClass(hiddenClass).text(Content.localize().textPasswordsNotMatching);
-	            }
-	
-	            return;
-	        }
-	
-	        if (date_of_birth) {
-	            if (!isValidDate(date_of_birth)) {
-	                $('#dob-error').removeClass(hiddenClass).text(localize('Invalid format for date of birth.'));
-	                return;
-	            }
-	
-	            BinarySocket.send({
-	                reset_password: 1,
-	                verification_code: token,
-	                new_password: pw1,
-	                date_of_birth: date_of_birth
-	            });
-	            $('#reset').prop('disabled', true);
-	        } else {
-	            BinarySocket.send({
-	                reset_password: 1,
-	                verification_code: token,
-	                new_password: pw1
-	            });
-	            $('#reset').prop('disabled', true);
-	        }
-	    };
-	
-	    var hideError = function hideError() {
-	        $('.errorfield').addClass(hiddenClass);
-	    };
-	
-	    var resetPasswordWSHandler = function resetPasswordWSHandler(msg) {
-	        var response = JSON.parse(msg.data);
-	        var type = response.msg_type;
-	
-	        if (type === 'reset_password') {
-	            $('#reset').prop('disabled', true);
-	            $('#reset-form').addClass(hiddenClass);
-	
-	            if (response.error) {
-	                $('p.notice-msg').addClass(hiddenClass);
-	                $('#reset-error').removeClass(hiddenClass);
-	
-	                var error_code = response.error.code;
-	                var errMsg = void 0;
-	                if (error_code === 'SocialBased') {
-	                    errMsg = localize(response.error.message);
-	                    $('#reset-error').find('a').addClass(hiddenClass);
-	                } else {
-	                    // special handling as backend return inconsistent format
-	                    errMsg = localize(resetErrorTemplate, [error_code === 'InputValidationFailed' ? localize('Token has expired.') : localize(response.error.message)]);
-	                }
-	
-	                $('#reset-error-msg').text(errMsg);
-	            } else {
-	                $('p.notice-msg').text(localize('Your password has been successfully reset. Please log into your account using your new password.'));
-	                window.setTimeout(function () {
-	                    Login.redirect_to_login();
-	                }, 5000);
-	            }
-	        }
-	    };
-	
-	    var haveRealAccountHandler = function haveRealAccountHandler() {
-	        var isChecked = $('#have-real-account').is(':checked');
-	        if (isChecked) {
-	            $('#dob-field').removeClass(hiddenClass);
-	        } else {
-	            $('#dob-field').addClass(hiddenClass);
-	        }
-	    };
-	
-	    var onDOBChange = function onDOBChange() {
-	        date_of_birth = $('#date_of_birth').attr('data-value');
-	    };
-	
-	    var onEnterKey = function onEnterKey(e) {
-	        if (e.which === 13) {
-	            submitResetPassword();
-	        }
-	    };
-	
-	    var init = function init() {
-	        $('#reset_passwordws').removeClass('invisible');
-	        Content.populate();
-	        generateBirthDate();
-	
-	        $('input').keypress(function (e) {
-	            hideError();
-	            onEnterKey(e);
-	        });
-	
-	        $('#reset:enabled').click(function () {
-	            submitResetPassword();
-	        });
-	
-	        $('#have-real-account').click(function () {
-	            haveRealAccountHandler();
-	        });
-	
-	        $('select').change(function () {
-	            hideError();
-	            onDOBChange();
-	        });
-	    };
-	
-	    return {
-	        resetPasswordWSHandler: resetPasswordWSHandler,
-	        init: init
-	    };
-	}();
-	
-	module.exports = {
-	    ResetPassword: ResetPassword
-	};
-
-/***/ },
-/* 609 */
+/* 607 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var toJapanTimeIfNeeded = __webpack_require__(444).Clock.toJapanTimeIfNeeded;
-	var KnowledgeTestUI = __webpack_require__(610).KnowledgeTestUI;
-	var KnowledgeTestData = __webpack_require__(611).KnowledgeTestData;
+	var KnowledgeTestUI = __webpack_require__(608).KnowledgeTestUI;
+	var KnowledgeTestData = __webpack_require__(609).KnowledgeTestData;
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var Header = __webpack_require__(429).Header;
@@ -87463,7 +87122,7 @@
 	module.exports = KnowledgeTest;
 
 /***/ },
-/* 610 */
+/* 608 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -87577,7 +87236,7 @@
 	};
 
 /***/ },
-/* 611 */
+/* 609 */
 /***/ function(module, exports) {
 
 	'use strict';
