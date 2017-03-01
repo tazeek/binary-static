@@ -78764,10 +78764,10 @@
 
 	'use strict';
 	
-	var Applications = __webpack_require__(582).Applications;
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
+	var ApplicationsInit = __webpack_require__(582);
 	
 	var AuthorisedApps = function () {
 	    var onLoad = function onLoad() {
@@ -78775,11 +78775,11 @@
 	            BinaryPjax.load('user/settingsws');
 	        }
 	        Content.populate();
-	        Applications.init();
+	        ApplicationsInit.init();
 	    };
 	
 	    var onUnload = function onUnload() {
-	        Applications.clean();
+	        ApplicationsInit.clean();
 	    };
 	
 	    return {
@@ -78796,26 +78796,21 @@
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(583).ApplicationsUI;
-	var ApplicationsData = __webpack_require__(584).ApplicationsData;
+	var ApplicationsUI = __webpack_require__(583);
+	var ApplicationsData = __webpack_require__(584);
 	
-	var Applications = function () {
+	var ApplicationsInit = function () {
 	    'use strict';
-	
-	    var responseHandler = function responseHandler(response) {
-	        if (response.error && response.error.message) {
-	            return ApplicationsUI.displayError(response.error.message);
-	        }
-	        var apps = response.oauth_apps.map(ApplicationsData.parse);
-	        return ApplicationsUI.update(apps);
-	    };
 	
 	    var init = function init() {
 	        ApplicationsUI.init();
-	        BinarySocket.init({
-	            onmessage: ApplicationsData.calls(responseHandler)
+	        BinarySocket.send({ oauth_apps: 1 }).then(function (response) {
+	            if (response.error) {
+	                ApplicationsUI.displayError(response.error.message);
+	            } else {
+	                ApplicationsUI.update(response.oauth_apps.map(ApplicationsData.parse));
+	            }
 	        });
-	        ApplicationsData.list();
 	    };
 	
 	    var clean = function clean() {
@@ -78828,9 +78823,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    Applications: Applications
-	};
+	module.exports = ApplicationsInit;
 
 /***/ },
 /* 583 */
@@ -78843,18 +78836,18 @@
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(478).Button;
 	var FlexTableUI = __webpack_require__(580).FlexTableUI;
-	var ApplicationsData = __webpack_require__(584).ApplicationsData;
+	var ApplicationsData = __webpack_require__(584);
 	
 	var ApplicationsUI = function () {
 	    'use strict';
 	
-	    var containerSelector = '#applications-ws-container';
+	    var container_selector = '#applications-ws-container';
 	    var messages = {
 	        no_apps: 'You have not granted access to any applications.',
 	        revoke_confirm: 'Are you sure that you want to permanently revoke access to application',
 	        revoke_access: 'Revoke access'
 	    };
-	    var flexTable = void 0;
+	    var flex_table = void 0;
 	
 	    var formatApp = function formatApp(app) {
 	        var last_used = app.last_used ? app.last_used.format('YYYY-MM-DD HH:mm:ss') : localize('Never');
@@ -78862,26 +78855,32 @@
 	    };
 	
 	    var createRevokeButton = function createRevokeButton(container, app) {
-	        var $buttonSpan = Button.createBinaryStyledButton();
-	        var $button = $buttonSpan.children('.button').first();
+	        var $button_span = Button.createBinaryStyledButton();
+	        var $button = $button_span.children('.button').first();
 	        $button.text(localize(messages.revoke_access));
 	        $button.on('click', function () {
 	            if (window.confirm(localize(messages.revoke_confirm) + ": '" + app.name + "'?")) {
-	                ApplicationsData.revoke(app.id);
+	                BinarySocket.send({ oauth_apps: 1, revoke_app: app.id }).then(function (response) {
+	                    if (response.error) {
+	                        displayError(response.error.message);
+	                    } else {
+	                        update(response.oauth_apps.map(ApplicationsData.parse));
+	                    }
+	                });
 	                container.css({ opacity: 0.5 });
 	            }
 	        });
-	        return $buttonSpan;
+	        return $button_span;
 	    };
 	
 	    var createTable = function createTable(data) {
-	        if (flexTable) {
-	            return flexTable.replace(data);
+	        if (flex_table) {
+	            return flex_table.replace(data);
 	        }
 	        var headers = ['Name', 'Permissions', 'Last Used', 'Action'];
 	        var columns = ['name', 'permissions', 'last_used', 'action'];
-	        flexTable = new FlexTableUI({
-	            container: containerSelector,
+	        flex_table = new FlexTableUI({
+	            container: container_selector,
 	            header: headers.map(function (s) {
 	                return localize(s);
 	            }),
@@ -78900,12 +78899,12 @@
 	        $('#loading').remove();
 	        createTable(apps);
 	        if (!apps.length) {
-	            flexTable.displayError(localize(messages.no_apps), 7);
+	            flex_table.displayError(localize(messages.no_apps), 7);
 	        }
 	    };
 	
 	    var displayError = function displayError(message) {
-	        $(containerSelector + ' .error-msg').text(message);
+	        $(container_selector + ' .error-msg').text(message);
 	    };
 	
 	    var init = function init() {
@@ -78913,9 +78912,9 @@
 	    };
 	
 	    var clean = function clean() {
-	        $(containerSelector + ' .error-msg').text('');
-	        flexTable.clear();
-	        flexTable = null;
+	        $(container_selector + ' .error-msg').text('');
+	        flex_table.clear();
+	        flex_table = null;
 	    };
 	
 	    return {
@@ -78926,9 +78925,7 @@
 	    };
 	}();
 	
-	module.exports = {
-	    ApplicationsUI: ApplicationsUI
-	};
+	module.exports = ApplicationsUI;
 
 /***/ },
 /* 584 */
@@ -78941,25 +78938,6 @@
 	var ApplicationsData = function () {
 	    'use strict';
 	
-	    var calls = function calls(callback) {
-	        return function (msg) {
-	            var response = JSON.parse(msg.data);
-	            if (!response || response.msg_type !== 'oauth_apps') {
-	                return;
-	            }
-	            callback(response);
-	        };
-	    };
-	
-	    var list = function list() {
-	        BinarySocket.send({ oauth_apps: 1 });
-	    };
-	
-	    var revoke = function revoke(id) {
-	        if (!id) return;
-	        BinarySocket.send({ oauth_apps: 1, revoke_app: id });
-	    };
-	
 	    var parse = function parse(app) {
 	        var last = app.last_used ? moment.utc(app.last_used) : null;
 	        return {
@@ -78971,16 +78949,11 @@
 	    };
 	
 	    return {
-	        parse: parse,
-	        calls: calls,
-	        revoke: revoke,
-	        list: list
+	        parse: parse
 	    };
 	}();
 	
-	module.exports = {
-	    ApplicationsData: ApplicationsData
-	};
+	module.exports = ApplicationsData;
 
 /***/ },
 /* 585 */
@@ -79892,7 +79865,6 @@
 	        isJP = residence === 'jp';
 	        if (isJP && !isVirtual) {
 	            $('#fieldset_email_consent').removeClass('invisible');
-	            detect_hedging($('#trading_purpose'), $('.hedge'));
 	        }
 	        showHideTaxMessage();
 	    };
@@ -80073,6 +80045,11 @@
 	        }
 	        $field.val(get_settings_data.address_state);
 	        FormManager.init(formID, getValidations(get_settings_data));
+	        if (isJP && !isVirtual) {
+	            // detect_hedging needs to be called after FormManager.init
+	            // or all previously bound event listeners on form elements will be removed
+	            detect_hedging($('#trading_purpose'), $('.hedge'));
+	        }
 	    };
 	
 	    var onLoad = function onLoad() {
