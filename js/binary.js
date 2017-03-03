@@ -62,17 +62,17 @@
 	exportAllFunctions(__webpack_require__(301));
 	
 	// created for handling global onclick
-	exportAllFunctions(__webpack_require__(534));
+	exportAllFunctions(__webpack_require__(533));
 	// used by gtm to update page after a new release
-	exportAllFunctions(__webpack_require__(536));
+	exportAllFunctions(__webpack_require__(535));
 	
+	__webpack_require__(536);
 	__webpack_require__(537);
 	__webpack_require__(538);
+	
 	__webpack_require__(539);
 	
-	__webpack_require__(540);
-	
-	var BinaryLoader = __webpack_require__(541);
+	var BinaryLoader = __webpack_require__(540);
 	
 	$(window).on('load', BinaryLoader.init);
 
@@ -18361,7 +18361,6 @@
 	var getPropertyValue = __webpack_require__(307).getPropertyValue;
 	var getLoginToken = __webpack_require__(312).getLoginToken;
 	var SessionDurationLimit = __webpack_require__(425).SessionDurationLimit;
-	var checkClientsCountry = __webpack_require__(311).checkClientsCountry;
 	var create_language_drop_down = __webpack_require__(428).create_language_drop_down;
 	var ViewPopupWS = __webpack_require__(429);
 	var ViewBalanceUI = __webpack_require__(453).ViewBalanceUI;
@@ -18702,12 +18701,6 @@
 	                        create_language_drop_down(response.website_status.supported_languages);
 	                        LocalStore.set('website.tnc_version', response.website_status.terms_conditions_version);
 	                        if (!localStorage.getItem('risk_classification')) Client.check_tnc();
-	                        if (response.website_status.clients_country) {
-	                            localStorage.setItem('clients_country', response.website_status.clients_country);
-	                            if (!Login.is_login_pages()) {
-	                                checkClientsCountry();
-	                            }
-	                        }
 	                    }
 	                } else if (type === 'reality_check') {
 	                    RealityCheck.realityCheckWSHandler(response);
@@ -20216,8 +20209,9 @@
 	var URLForLanguage = __webpack_require__(305).URLForLanguage;
 	
 	function checkClientsCountry() {
-	    var clients_country = localStorage.getItem('clients_country');
-	    if (clients_country) {
+	    BinarySocket.wait('website_status').then(function (response) {
+	        if (response.error) return;
+	        var clients_country = response.website_status.clients_country;
 	        if (clients_country === 'jp') {
 	            limitLanguage('JA');
 	        } else if (clients_country === 'id') {
@@ -20225,10 +20219,7 @@
 	        } else {
 	            $('.languages').show();
 	        }
-	    } else {
-	        BinarySocket.init();
-	        BinarySocket.send({ website_status: '1' });
-	    }
+	    });
 	}
 	
 	function limitLanguage(lang) {
@@ -20245,7 +20236,7 @@
 	function japanese_client() {
 	    // handle for test case
 	    if (typeof window === 'undefined') return false;
-	    return getLanguage() === 'JA' || japanese_residence() || localStorage.getItem('clients_country') === 'jp';
+	    return getLanguage() === 'JA' || japanese_residence();
 	}
 	
 	function japanese_residence() {
@@ -70031,7 +70022,6 @@
 	var Contents = __webpack_require__(531).Contents;
 	var TrafficSource = __webpack_require__(532).TrafficSource;
 	var checkLanguage = __webpack_require__(311).checkLanguage;
-	var ViewBalance = __webpack_require__(533).ViewBalance;
 	var Cookies = __webpack_require__(303);
 	var RealityCheck = __webpack_require__(515).RealityCheck;
 	var RealityCheckData = __webpack_require__(521).RealityCheckData;
@@ -70064,9 +70054,7 @@
 	                BinarySocket.send({ reality_check: 1 });
 	            }
 	        }
-	        if (Client.is_logged_in()) {
-	            ViewBalance.init();
-	        } else {
+	        if (!Client.is_logged_in()) {
 	            LocalStore.set('reality_check.ack', 0);
 	        }
 	        setCookieLanguage();
@@ -70979,31 +70967,11 @@
 
 /***/ },
 /* 533 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	var ViewBalance = function () {
-	    var init = function init() {
-	        BinarySocket.init(1);
-	    };
-	
-	    return {
-	        init: init
-	    };
-	}();
-	
-	module.exports = {
-	    ViewBalance: ViewBalance
-	};
-
-/***/ },
-/* 534 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var CashierJP = __webpack_require__(535);
+	var CashierJP = __webpack_require__(534);
 	var MBPrice = __webpack_require__(433).MBPrice;
 	
 	var HandleClick = function HandleClick(param) {
@@ -71028,7 +70996,7 @@
 	};
 
 /***/ },
-/* 535 */
+/* 534 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -71087,7 +71055,7 @@
 	module.exports = CashierJP;
 
 /***/ },
-/* 536 */
+/* 535 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -71120,7 +71088,7 @@
 	};
 
 /***/ },
-/* 537 */
+/* 536 */
 /***/ function(module, exports) {
 
 	/** @license
@@ -71667,7 +71635,7 @@
 
 
 /***/ },
-/* 538 */
+/* 537 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -74769,7 +74737,7 @@
 	})(document, Math);
 
 /***/ },
-/* 539 */
+/* 538 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -74985,7 +74953,7 @@
 
 
 /***/ },
-/* 540 */
+/* 539 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -75031,13 +74999,13 @@
 	if (typeof trackJs !== 'undefined') trackJs.configure(window._trackJs);
 
 /***/ },
-/* 541 */
+/* 540 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var BinaryPjax = __webpack_require__(309);
-	var pages_config = __webpack_require__(542);
+	var pages_config = __webpack_require__(541);
 	var Client = __webpack_require__(308).Client;
 	var GTM = __webpack_require__(485).GTM;
 	var localize = __webpack_require__(426).localize;
@@ -75133,64 +75101,64 @@
 	module.exports = BinaryLoader;
 
 /***/ },
-/* 542 */
+/* 541 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LoggedInHandler = __webpack_require__(543);
+	var LoggedInHandler = __webpack_require__(542);
 	
-	var Careers = __webpack_require__(544);
-	var Charity = __webpack_require__(545);
-	var Contact = __webpack_require__(546);
-	var Endpoint = __webpack_require__(549);
-	var Home = __webpack_require__(550);
-	var GetStarted = __webpack_require__(557);
-	var GetStartedJP = __webpack_require__(559);
-	var JobDetails = __webpack_require__(560);
-	var Platforms = __webpack_require__(561);
-	var Regulation = __webpack_require__(562);
-	var StaticPages = __webpack_require__(563);
-	var TermsAndConditions = __webpack_require__(564);
-	var WhyUs = __webpack_require__(566);
+	var Careers = __webpack_require__(543);
+	var Charity = __webpack_require__(544);
+	var Contact = __webpack_require__(545);
+	var Endpoint = __webpack_require__(548);
+	var Home = __webpack_require__(549);
+	var GetStarted = __webpack_require__(551);
+	var GetStartedJP = __webpack_require__(553);
+	var JobDetails = __webpack_require__(554);
+	var Platforms = __webpack_require__(555);
+	var Regulation = __webpack_require__(556);
+	var StaticPages = __webpack_require__(557);
+	var TermsAndConditions = __webpack_require__(558);
+	var WhyUs = __webpack_require__(560);
 	
-	var AccountTransferWS = __webpack_require__(567);
-	var Cashier = __webpack_require__(568);
-	var DepositWithdraw = __webpack_require__(569);
-	var PaymentAgentListWS = __webpack_require__(571);
-	var PaymentAgentWithdrawWS = __webpack_require__(572);
+	var AccountTransferWS = __webpack_require__(561);
+	var Cashier = __webpack_require__(562);
+	var DepositWithdraw = __webpack_require__(563);
+	var PaymentAgentListWS = __webpack_require__(564);
+	var PaymentAgentWithdrawWS = __webpack_require__(565);
 	var MBTradePage = __webpack_require__(508);
 	var AssetIndexUI = __webpack_require__(493);
 	var MarketTimesUI = __webpack_require__(495);
 	var TradePage_Beta = __webpack_require__(491);
 	var TradePage = __webpack_require__(457);
-	var Authenticate = __webpack_require__(573);
-	var ChangePassword = __webpack_require__(574);
-	var PaymentAgentTransferSocket = __webpack_require__(575);
+	var Authenticate = __webpack_require__(566);
+	var ChangePassword = __webpack_require__(567);
+	var PaymentAgentTransferSocket = __webpack_require__(568);
 	var PortfolioWS = __webpack_require__(454);
 	var ProfitTableWS = __webpack_require__(476);
-	var APITokenWS = __webpack_require__(579);
-	var AuthorisedApps = __webpack_require__(581);
-	var CashierPassword = __webpack_require__(585);
+	var APITokenWS = __webpack_require__(572);
+	var AuthorisedApps = __webpack_require__(579);
+	var CashierPassword = __webpack_require__(583);
 	var FinancialAssessment = __webpack_require__(519);
-	var IPHistory = __webpack_require__(586);
-	var Limits = __webpack_require__(590);
-	var Settings = __webpack_require__(593);
-	var SelfExclusionWS = __webpack_require__(594);
-	var SettingsDetailsWS = __webpack_require__(595);
+	var IPHistory = __webpack_require__(584);
+	var Limits = __webpack_require__(588);
+	var Settings = __webpack_require__(591);
+	var SelfExclusionWS = __webpack_require__(592);
+	var SettingsDetailsWS = __webpack_require__(593);
 	var StatementWS = __webpack_require__(482);
-	var TopUpVirtualWS = __webpack_require__(597);
-	var LostPassword = __webpack_require__(598);
+	var TopUpVirtualWS = __webpack_require__(595);
+	var LostPassword = __webpack_require__(596);
 	var MetaTrader = __webpack_require__(525);
-	var FinancialAccOpening = __webpack_require__(599);
-	var JapanAccOpening = __webpack_require__(602);
-	var RealAccOpening = __webpack_require__(603);
-	var VirtualAccOpening = __webpack_require__(604);
-	var ResetPassword = __webpack_require__(605);
-	var TNCApproval = __webpack_require__(565);
+	var FinancialAccOpening = __webpack_require__(597);
+	var JapanAccOpening = __webpack_require__(600);
+	var RealAccOpening = __webpack_require__(601);
+	var VirtualAccOpening = __webpack_require__(602);
+	var ResetPassword = __webpack_require__(603);
+	var TNCApproval = __webpack_require__(559);
 	
-	var CashierJP = __webpack_require__(535);
-	var KnowledgeTest = __webpack_require__(606);
+	var CashierJP = __webpack_require__(534);
+	var KnowledgeTest = __webpack_require__(604);
 	
 	var pages_config = {
 	    account_transferws: { module: AccountTransferWS, is_authenticated: true, only_real: true },
@@ -75258,7 +75226,7 @@
 	module.exports = pages_config;
 
 /***/ },
-/* 543 */
+/* 542 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -75360,7 +75328,7 @@
 	module.exports = LoggedInHandler;
 
 /***/ },
-/* 544 */
+/* 543 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -75379,7 +75347,7 @@
 	module.exports = Careers;
 
 /***/ },
-/* 545 */
+/* 544 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -75417,14 +75385,14 @@
 	module.exports = Charity;
 
 /***/ },
-/* 546 */
+/* 545 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var email_rot13 = __webpack_require__(312).email_rot13;
-	var loadCSS = __webpack_require__(547).loadCSS;
-	var loadJS = __webpack_require__(548).loadJS;
+	var loadCSS = __webpack_require__(546).loadCSS;
+	var loadJS = __webpack_require__(547).loadJS;
 	var getLanguage = __webpack_require__(305).getLanguage;
 	var url_for_static = __webpack_require__(310).url_for_static;
 	
@@ -75538,7 +75506,7 @@
 	module.exports = Contact;
 
 /***/ },
-/* 547 */
+/* 546 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75578,7 +75546,7 @@
 	};
 
 /***/ },
-/* 548 */
+/* 547 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75599,7 +75567,7 @@
 	};
 
 /***/ },
-/* 549 */
+/* 548 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -75638,26 +75606,44 @@
 	module.exports = Endpoint;
 
 /***/ },
-/* 550 */
+/* 549 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var VerifyEmail = __webpack_require__(551).VerifyEmail;
-	var Client = __webpack_require__(308).Client;
+	var BinaryPjax = __webpack_require__(309);
+	var localize = __webpack_require__(426).localize;
+	var url_for = __webpack_require__(310).url_for;
+	var FormManager = __webpack_require__(550);
 	
 	var Home = function () {
+	    'use strict';
+	
+	    var clients_country = void 0;
+	
 	    var onLoad = function onLoad() {
-	        if (!Client.redirect_if_login()) {
-	            check_login_hide_signup();
-	            VerifyEmail();
-	        }
+	        BinarySocket.wait('website_status').then(function (response) {
+	            clients_country = response.website_status.clients_country;
+	            var form_id = '#frm_verify_email';
+	            FormManager.init(form_id, [{ selector: '#email', validations: ['req', 'email'], request_field: 'verify_email' }, { request_field: 'type', value: 'account_opening' }]);
+	            FormManager.handleSubmit(form_id, {}, handler, checkCountry);
+	        });
 	    };
 	
-	    var check_login_hide_signup = function check_login_hide_signup() {
-	        if (Client.is_logged_in()) {
-	            $('#verify-email-form').remove();
-	            $('.break').attr('style', 'margin-bottom:1em');
+	    var checkCountry = function checkCountry(req) {
+	        if (clients_country !== 'my' || /@binary\.com$/.test(req.verify_email)) {
+	            return true;
+	        }
+	        $('#frm_verify_email').find('div').html($('<p/>', { class: 'notice-msg center-text', html: localize('Sorry, account signup is not available in your country. Please contact <a href="[_1]">customer support</a> for more information.', [url_for('contact')]) }));
+	        return false;
+	    };
+	
+	    var handler = function handler(response) {
+	        var error = response.error;
+	        if (!error) {
+	            BinaryPjax.load('new_account/virtualws');
+	        } else {
+	            $('#signup_error').css({ display: 'inline-block' }).text(error.message);
 	        }
 	    };
 	
@@ -75669,588 +75655,105 @@
 	module.exports = Home;
 
 /***/ },
+/* 550 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Validation = __webpack_require__(520);
+	
+	var FormManager = function () {
+	    'use strict';
+	
+	    var forms = {};
+	
+	    var initForm = function initForm(form_selector, fields) {
+	        var $form = $(form_selector + ':visible');
+	        if ($form.length && Array.isArray(fields) && fields.length) {
+	            forms[form_selector] = { fields: fields };
+	            fields.forEach(function (field) {
+	                if (field.selector) {
+	                    field.$ = $form.find(field.selector);
+	                    if (!field.$.length) return;
+	                }
+	
+	                field.form = form_selector;
+	            });
+	        }
+	        Validation.init(form_selector, fields);
+	    };
+	
+	    var getFormData = function getFormData(form_selector) {
+	        var data = {};
+	        var fields = forms[form_selector].fields;
+	        var key = void 0,
+	            $selector = void 0,
+	            current_field = void 0,
+	            val = void 0,
+	            value = void 0;
+	
+	        Object.keys(fields).forEach(function (field) {
+	            current_field = fields[field];
+	            if (!current_field.exclude_request) {
+	                $selector = $(current_field.form).find(current_field.selector);
+	                if ($selector.is(':visible') || current_field.value) {
+	                    val = $selector.val();
+	                    key = current_field.request_field || current_field.selector;
+	
+	                    // prioritise data-value
+	                    // if label, take the text
+	                    // if checkbox, take checked value
+	                    // otherwise take the value
+	                    value = current_field.value ? current_field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? current_field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
+	
+	                    key = key.replace(/lbl_|#|\./g, '');
+	                    if (current_field.parent_node) {
+	                        if (!data[current_field.parent_node]) {
+	                            data[current_field.parent_node] = {};
+	                        }
+	                        data[current_field.parent_node][key] = value;
+	                    } else {
+	                        data[key] = value;
+	                    }
+	                }
+	            }
+	        });
+	        return data;
+	    };
+	
+	    var handleSubmit = function handleSubmit(form_selector, obj_request, fnc_response_handler, fnc_additional_check) {
+	        $(form_selector).off('submit').on('submit', function (evt) {
+	            evt.preventDefault();
+	            if (Validation.validate(form_selector)) {
+	                var req = $.extend(obj_request, getFormData(form_selector));
+	                if (typeof fnc_additional_check === 'function' && !fnc_additional_check(req)) {
+	                    return;
+	                }
+	                BinarySocket.send(req).then(function (response) {
+	                    if (typeof fnc_response_handler === 'function') {
+	                        fnc_response_handler(response);
+	                    }
+	                });
+	            }
+	        });
+	    };
+	
+	    return {
+	        init: initForm,
+	        handleSubmit: handleSubmit
+	    };
+	}();
+	
+	module.exports = FormManager;
+
+/***/ },
 /* 551 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var BinaryPjax = __webpack_require__(309);
-	var localize = __webpack_require__(426).localize;
-	var url_for = __webpack_require__(310).url_for;
-	var Content = __webpack_require__(447).Content;
-	var ValidateV2 = __webpack_require__(552).ValidateV2;
-	var bind_validation = __webpack_require__(554).bind_validation;
-	
-	var VerifyEmail = function VerifyEmail() {
-	    Content.populate();
-	    var clients_country = localStorage.getItem('clients_country');
-	
-	    var form = $('#verify-email-form')[0];
-	    if (!form) {
-	        return;
-	    }
-	
-	    var handler = function handler(msg) {
-	        var response = JSON.parse(msg.data);
-	        if (!response) return;
-	
-	        var type = response.msg_type;
-	        var error = response.error;
-	        if (type === 'verify_email' && !error) {
-	            BinaryPjax.load('new_account/virtualws');
-	            return;
-	        }
-	        if (!error || !error.message) return;
-	        $('#signup_error').css({ display: 'inline-block' }).text(error.message);
-	    };
-	
-	    var openAccount = function openAccount(email) {
-	        BinarySocket.init({ onmessage: handler });
-	        BinarySocket.send({ verify_email: email, type: 'account_opening' });
-	    };
-	
-	    bind_validation.simple(form, {
-	        schema: {
-	            email: [ValidateV2.required, ValidateV2.email]
-	        },
-	        stop: function stop(info) {
-	            $('#signup_error').text('');
-	            info.errors.forEach(function (err) {
-	                $('#signup_error').css({ display: 'block' }).text(err.err);
-	            });
-	        },
-	        submit: function submit(ev, info) {
-	            ev.preventDefault();
-	            if (info.errors.length) return;
-	            if (clients_country !== 'my' || /@binary\.com$/.test(info.values.email)) {
-	                openAccount(info.values.email);
-	            } else {
-	                $('#verify-email-form > div').html('<p class="notice-msg center-text">' + localize('Sorry, account signup is not available in your country. Please contact <a href="[_1]">customer support</a> for more information.', [url_for('contact')]) + '</p>');
-	            }
-	        }
-	    });
-	};
-	
-	module.exports = {
-	    VerifyEmail: VerifyEmail
-	};
-
-/***/ },
-/* 552 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-	
-	var template = __webpack_require__(307).template;
-	var moment = __webpack_require__(313);
-	var dv = __webpack_require__(553);
-	var Content = __webpack_require__(447).Content;
-	var localize = __webpack_require__(426).localize;
-	
-	var ValidateV2 = function () {
-	    var err = function err() {
-	        return Content.errorMessage.apply(Content, arguments);
-	    };
-	
-	    // We don't have access to the localised messages at the init-time
-	    // of this module. Solution: delay execution with 'unwrappables'.
-	    // Objects that have an `.unwrap` method.
-	    //
-	    // unwrap({unwrap: () => 1}) == 1
-	    // unwrap(1) == 1
-	    //
-	    var _unwrap = function _unwrap(a) {
-	        return a.unwrap ? a.unwrap() : a;
-	    };
-	
-	    var local = function local(value) {
-	        return { unwrap: function unwrap() {
-	                return localize(value);
-	            } };
-	    };
-	
-	    var localKey = function localKey(value) {
-	        return { unwrap: function unwrap() {
-	                return Content.localize()[value];
-	            } };
-	    };
-	
-	    var msg = function msg() {
-	        var args = [].slice.call(arguments);
-	        return { unwrap: function unwrap() {
-	                return err.apply(undefined, _toConsumableArray(args.map(_unwrap)));
-	            } };
-	    };
-	
-	    var check = function check(fn, error) {
-	        return function (value) {
-	            return fn(value) ? dv.ok(value) : dv.fail(_unwrap(error));
-	        };
-	    };
-	
-	    // TEST THESE
-	    var validEmail = function validEmail(email) {
-	        var regexp = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
-	        return regexp.test(email);
-	    };
-	
-	    var notEmpty = function notEmpty(value) {
-	        return value.length > 0;
-	    };
-	
-	    var validPasswordLength = function validPasswordLength(value) {
-	        return value.length >= 6 && value.length <= 25;
-	    };
-	
-	    var validPasswordChars = function validPasswordChars(value) {
-	        return (/[0-9]+/.test(value) && /[A-Z]+/.test(value) && /[a-z]+/.test(value)
-	        );
-	    };
-	
-	    var noSymbolsInPassword = function noSymbolsInPassword(value) {
-	        return (/^[!-~]+$/.test(value)
-	        );
-	    };
-	
-	    var validToken = function validToken(value) {
-	        return value.length === 48;
-	    };
-	
-	    // CAN BE USED IN UI
-	    var required = check(notEmpty, msg('req'));
-	    var email = check(validEmail, msg('valid', local('email address')));
-	    var token = check(validToken, msg('valid', local('verification token')));
-	    var password = function password(value) {
-	        return dv.first(value, [password.len, password.allowed, password.symbols]);
-	    };
-	
-	    password.len = check(validPasswordLength, msg('range', '6-25'));
-	    password.allowed = check(validPasswordChars, local('Password should have lower and uppercase letters with numbers.'));
-	    password.symbols = check(noSymbolsInPassword, msg('valid', localKey('textPassword')));
-	
-	    var regex = function regex(regexp, allowed) {
-	        return function (str) {
-	            return regexp.test(str) ? dv.ok(str) : dv.fail(err('reg', allowed));
-	        };
-	    };
-	
-	    var lengthRange = function lengthRange(start, end) {
-	        var range = template('([_1]-[_2])', [start, end]);
-	        return function (str) {
-	            var len = str.length;
-	            return len >= start && len <= end ? dv.ok(str) : dv.fail(err('range', range));
-	        };
-	    };
-	
-	    var momentFmt = function momentFmt(format, error) {
-	        return function (str) {
-	            var date = moment(str, format, true);
-	            return date.isValid() ? dv.ok(date) : dv.fail(error);
-	        };
-	    };
-	
-	    return {
-	        err: err,
-	        momentFmt: momentFmt,
-	        required: required,
-	        password: password,
-	        email: email,
-	        token: token,
-	        regex: regex,
-	        lengthRange: lengthRange
-	    };
-	}();
-	
-	module.exports = {
-	    ValidateV2: ValidateV2
-	};
-
-/***/ },
-/* 553 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	var dv = function () {
-	  function ok(v) {
-	    if (!(this instanceof ok)) return new ok(v);
-	    this.value = v;
-	  }
-	
-	  ok.prototype = {
-	    isOk: true,
-	    then: function then(f) {
-	      return f(this.value);
-	    },
-	    fmap: function fmap(f) {
-	      return this;
-	    },
-	    ap: function ap(o) {
-	      return o.isOk ? this : o;
-	    }
-	  };
-	
-	  function fail(v) {
-	    if (!(this instanceof fail)) return new fail(v);
-	    this.value = [v];
-	  }
-	
-	  fail.of = function (v) {
-	    var f = fail();
-	    f.value = v;
-	    return f;
-	  };
-	
-	  fail.prototype = {
-	    isOk: false,
-	    then: function then(f) {
-	      return this;
-	    },
-	    fmap: function fmap(f) {
-	      return fail.of(this.value.map(f));
-	    },
-	    ap: function ap(o) {
-	      return o.isOk ? this : fail.of(this.value.concat(o.value));
-	    }
-	  };
-	
-	  function combine(v, xs) {
-	    return xs.reduce(function (prev, curr) {
-	      return prev.ap(curr);
-	    }, ok(v));
-	  }
-	
-	  function check(fn, err) {
-	    return function (v) {
-	      return fn.apply(this, arguments) ? ok(v) : fail(err);
-	    };
-	  }
-	
-	  function first(v, xs) {
-	    var u = ok(v);
-	    for (var i = 0; i < xs.length; i++) {
-	      u = u.then(xs[i]);
-	      if (!u.isOk) break;
-	    }
-	    return u;
-	  }
-	
-	  return {
-	    ok: ok,
-	    fail: fail,
-	    combine: combine,
-	    check: check,
-	    first: first
-	  };
-	}();
-	
-	module.exports = dv;
-
-/***/ },
-/* 554 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var done_typing = __webpack_require__(555).done_typing;
-	var formToObj = __webpack_require__(556).formToObj;
-	var dv = __webpack_require__(553);
-	var localize = __webpack_require__(426).localize;
-	
-	var ValidationUI = {
-	    clear: function clear() {
-	        $('.errorfield[data-is-error-field]').remove();
-	    },
-	    draw: function draw(selector, message) {
-	        var $parent = $(selector).parent();
-	        var $p = $('<p/>', {
-	            class: 'errorfield',
-	            text: localize(message)
-	        });
-	        $p.attr('data-is-error-field', true);
-	        $parent.append($p);
-	    }
-	};
-	
-	/**
-	 * Replaces error messages returned by a validator by the given
-	 * error message `err`. Only use this on validators with one
-	 * error message.
-	 */
-	function customError(fn, err) {
-	    return function (value) {
-	        var rv = fn(value);
-	        if (!rv.isOk) rv.value = [err];
-	        return rv;
-	    };
-	}
-	
-	function withContext(ctx) {
-	    return function (msg) {
-	        return {
-	            ctx: ctx,
-	            err: msg
-	        };
-	    };
-	}
-	
-	/**
-	 * Validates data given a schema.
-	 *
-	 * @param data    An object.
-	 * @param schema  An object in the form {key: Array}, where the Array
-	 *                contains functions which accept two arguments- the current
-	 *                value and the objet being validated, and return either dv.ok
-	 *                or dv.fail.
-	 * @returns {Object}  {errors: errors, values: values, raw: data} where
-	 *                    errors is an array of {ctx: key, err: message} objects,
-	 *                    values is an object with the collected successful values,
-	 *                    raw is the data passed in.
-	 */
-	function validate_object(data, schema) {
-	    var keys = Object.keys(schema),
-	        values = {};
-	    var rv = dv.combine([], keys.map(function (ctx) {
-	        var res = dv.ok(data[ctx]);
-	        var fns = schema[ctx];
-	        for (var i = 0; i < fns.length; i++) {
-	            res = fns[i](res.value, data);
-	            if (!res.isOk) return res.fmap(withContext(ctx));
-	        }
-	        values[ctx] = res.value;
-	        return res;
-	    }));
-	    return {
-	        errors: rv.value,
-	        values: values,
-	        raw: data
-	    };
-	}
-	
-	function stripTrailing(name) {
-	    return (name || '').replace(/\[]$/, '');
-	}
-	
-	/**
-	 * Helper for enabling form validation when the user starts and stops typing.
-	 *
-	 * @param form             A form Element (not JQuery object).
-	 * @param config           Configuration object.
-	 * @param config.extract   Returns the current data on the form.
-	 * @param config.validate  Receives the current data returns an object with
-	 *                         {values: Object, errors: [{ctx: key, err: msg}...]}.
-	 * @param config.stop      Called when the user stops typing with the return
-	 *                         value of `config.validate`.
-	 * @param config.submit    Called on submit event with event and validation state.
-	 */
-	function bind_validation(form, config) {
-	    var extract = config.extract,
-	        validate = config.validate,
-	        stop = config.stop,
-	        submit = config.submit,
-	        seen = {};
-	
-	    var onStart = function onStart(ev) {
-	        seen[stripTrailing(ev.target.name)] = true;
-	    };
-	
-	    var onStop = function onStop() {
-	        var data = extract(),
-	            validation = validate(data);
-	        validation.errors = validation.errors.filter(function (err) {
-	            return seen[err.ctx];
-	        });
-	        stop(validation);
-	    };
-	
-	    form.addEventListener('submit', function (ev) {
-	        var data = extract(),
-	            validation = validate(data);
-	        stop(validation);
-	        submit(ev, validation);
-	    });
-	
-	    form.addEventListener('change', function (ev) {
-	        onStart(ev);
-	        onStop();
-	    });
-	    done_typing(form, {
-	        start: onStart,
-	        stop: onStop
-	    });
-	}
-	
-	/**
-	 * Generates (and binds) a config for the given form.
-	 *
-	 * @param form  Form element.
-	 * @param opts  Config object.
-	 * @param opts.extract   Optional. Defaults to `formToObj(form)`.
-	 * @param opts.submit    Required.
-	 * @param opts.validate  Optional. If you do not specify this then opts.schema
-	 *                       is required.
-	 * @param opts.schema    See above.
-	 * @param opts.stop      Optional.
-	 *
-	 */
-	bind_validation.simple = function (form, opts) {
-	    bind_validation(form, {
-	        submit: opts.submit,
-	        extract: opts.extract || function () {
-	            return formToObj(form);
-	        },
-	        validate: opts.validate || function (data) {
-	            return validate_object(data, opts.schema);
-	        },
-	        stop: opts.stop || function (validation) {
-	            ValidationUI.clear();
-	            validation.errors.forEach(function (err) {
-	                var sel = '[name=' + stripTrailing(err.ctx) + ']';
-	                ValidationUI.draw(sel, err.err);
-	            });
-	        }
-	    });
-	};
-	
-	module.exports = {
-	    ValidationUI: ValidationUI,
-	    customError: customError,
-	    validate_object: validate_object,
-	    bind_validation: bind_validation
-	};
-
-/***/ },
-/* 555 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	function done_typing(elem, config) {
-	    var onStart = config.start || function () {};
-	    var onStop = config.stop || function () {};
-	    var delay = config.delay || 200;
-	
-	    var stopped = true;
-	    var timeout = null;
-	
-	    function down(ev) {
-	        if (stopped) {
-	            onStart(ev);
-	            stopped = false;
-	        }
-	        clearTimeout(timeout);
-	    }
-	
-	    function up(ev) {
-	        timeout = setTimeout(function () {
-	            timeout = null;
-	            stopped = true;
-	            onStop(ev);
-	        }, delay);
-	    }
-	
-	    elem.addEventListener('keydown', down);
-	    elem.addEventListener('keyup', up);
-	};
-	
-	module.exports = {
-	    done_typing: done_typing
-	};
-
-/***/ },
-/* 556 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	function formToObj(form) {
-	  var fields = formToArr(form);
-	
-	  fields.sort(function (a, b) {
-	    return a.name.localeCompare(b.name);
-	  });
-	
-	  return fields.reduce(function (obj, field) {
-	    addProp(obj, field.name, field.value);
-	    return obj;
-	  }, {});
-	
-	  function formToArr(form) {
-	    var inputs = form.querySelectorAll('input, textarea, select, [contenteditable=true]');
-	    var arr = [];
-	
-	    for (var i = 0; i < inputs.length; ++i) {
-	      var input = inputs[i],
-	          name = input.name || input.getAttribute('data-name'),
-	          val = input.value;
-	
-	      if (!name || (input.type === 'checkbox' || input.type === 'radio') && !input.checked) {
-	        continue;
-	      }
-	
-	      if (input.getAttribute('contenteditable') === 'true') {
-	        val = input.innerHTML;
-	      }
-	
-	      arr.push({
-	        name: name,
-	        value: val
-	      });
-	    }
-	
-	    return arr;
-	  }
-	
-	  function addProp(o, prop, val) {
-	    var props = prop.split('.');
-	    var lastProp = props.length - 1;
-	
-	    props.reduce(function (obj, prop, i) {
-	      return setProp(obj, prop, i === lastProp ? val : {});
-	    }, o);
-	  }
-	
-	  function setProp(obj, name, val) {
-	    if (name.slice(-2) === '[]') {
-	      makeArr(obj, name).push(val);
-	    } else if (obj[name]) {
-	      return obj[name];
-	    } else if (name[name.length - 1] === ']') {
-	      var arr = makeArr(obj, name);
-	
-	      if (arr.prevName === name) {
-	        return arr[arr.length - 1];
-	      }
-	
-	      arr.push(val);
-	      arr.prevName = name;
-	    } else {
-	      obj[name] = val;
-	    }
-	
-	    return val;
-	  }
-	
-	  function makeArr(obj, name) {
-	    var arrName = name.replace(/\[\d*\]/, '');
-	    return obj[arrName] || (obj[arrName] = []);
-	  }
-	}
-	
-	module.exports = {
-	  formToObj: formToObj
-	};
-
-/***/ },
-/* 557 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
 	var Client = __webpack_require__(308).Client;
-	var Scroll = __webpack_require__(558);
+	var Scroll = __webpack_require__(552);
 	
 	var GetStarted = function () {
 	    var select_nav_element = function select_nav_element() {
@@ -76329,7 +75832,7 @@
 	module.exports = GetStarted;
 
 /***/ },
-/* 558 */
+/* 552 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -76434,7 +75937,7 @@
 	module.exports = Scroll;
 
 /***/ },
-/* 559 */
+/* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -76493,7 +75996,7 @@
 	module.exports = GetStartedJP;
 
 /***/ },
-/* 560 */
+/* 554 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -76599,7 +76102,7 @@
 	module.exports = JobDetails;
 
 /***/ },
-/* 561 */
+/* 555 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -76681,7 +76184,7 @@
 	module.exports = Platforms;
 
 /***/ },
-/* 562 */
+/* 556 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -76726,14 +76229,14 @@
 	module.exports = Regulation;
 
 /***/ },
-/* 563 */
+/* 557 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Scroll = __webpack_require__(558);
+	var Scroll = __webpack_require__(552);
 	var handleHash = __webpack_require__(307).handleHash;
-	var GetStarted = __webpack_require__(557);
+	var GetStarted = __webpack_require__(551);
 	
 	module.exports = {
 	    OpenPositions: {
@@ -76773,15 +76276,15 @@
 	};
 
 /***/ },
-/* 564 */
+/* 558 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var localize = __webpack_require__(426).localize;
 	var url = __webpack_require__(310).url;
-	var Scroll = __webpack_require__(558);
-	var TNCApproval = __webpack_require__(565);
+	var Scroll = __webpack_require__(552);
+	var TNCApproval = __webpack_require__(559);
 	
 	var TermsAndConditions = function () {
 	    var onLoad = function onLoad() {
@@ -76852,7 +76355,7 @@
 	module.exports = TermsAndConditions;
 
 /***/ },
-/* 565 */
+/* 559 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -76934,12 +76437,12 @@
 	module.exports = TNCApproval;
 
 /***/ },
-/* 566 */
+/* 560 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Scroll = __webpack_require__(558);
+	var Scroll = __webpack_require__(552);
 	var Client = __webpack_require__(308).Client;
 	
 	var WhyUs = function () {
@@ -76961,7 +76464,7 @@
 	module.exports = WhyUs;
 
 /***/ },
-/* 567 */
+/* 561 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77212,7 +76715,7 @@
 	module.exports = AccountTransferWS;
 
 /***/ },
-/* 568 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77310,7 +76813,7 @@
 	module.exports = Cashier;
 
 /***/ },
-/* 569 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77320,7 +76823,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var template = __webpack_require__(307).template;
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	
 	var DepositWithdraw = function () {
 	    'use strict';
@@ -77515,99 +77018,7 @@
 	module.exports = DepositWithdraw;
 
 /***/ },
-/* 570 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var Validation = __webpack_require__(520);
-	
-	var FormManager = function () {
-	    'use strict';
-	
-	    var forms = {};
-	
-	    var initForm = function initForm(form_selector, fields) {
-	        var $form = $(form_selector + ':visible');
-	        if ($form.length && Array.isArray(fields) && fields.length) {
-	            forms[form_selector] = { fields: fields };
-	            fields.forEach(function (field) {
-	                if (field.selector) {
-	                    field.$ = $form.find(field.selector);
-	                    if (!field.$.length) return;
-	                }
-	
-	                field.form = form_selector;
-	            });
-	        }
-	        Validation.init(form_selector, fields);
-	    };
-	
-	    var getFormData = function getFormData(form_selector) {
-	        var data = {};
-	        var fields = forms[form_selector].fields;
-	        var key = void 0,
-	            $selector = void 0,
-	            current_field = void 0,
-	            val = void 0,
-	            value = void 0;
-	
-	        Object.keys(fields).forEach(function (field) {
-	            current_field = fields[field];
-	            if (!current_field.exclude_request) {
-	                $selector = $(current_field.form).find(current_field.selector);
-	                if ($selector.is(':visible') || current_field.value) {
-	                    val = $selector.val();
-	                    key = current_field.request_field || current_field.selector;
-	
-	                    // prioritise data-value
-	                    // if label, take the text
-	                    // if checkbox, take checked value
-	                    // otherwise take the value
-	                    value = current_field.value ? current_field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? current_field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
-	
-	                    key = key.replace(/lbl_|#|\./g, '');
-	                    if (current_field.parent_node) {
-	                        if (!data[current_field.parent_node]) {
-	                            data[current_field.parent_node] = {};
-	                        }
-	                        data[current_field.parent_node][key] = value;
-	                    } else {
-	                        data[key] = value;
-	                    }
-	                }
-	            }
-	        });
-	        return data;
-	    };
-	
-	    var handleSubmit = function handleSubmit(form_selector, obj_request, fnc_response_handler, fnc_additional_check) {
-	        $(form_selector).off('submit').on('submit', function (evt) {
-	            evt.preventDefault();
-	            if (Validation.validate(form_selector)) {
-	                var req = $.extend(obj_request, getFormData(form_selector));
-	                if (typeof fnc_additional_check === 'function' && !fnc_additional_check(req)) {
-	                    return;
-	                }
-	                BinarySocket.send(req).then(function (response) {
-	                    if (typeof fnc_response_handler === 'function') {
-	                        fnc_response_handler(response);
-	                    }
-	                });
-	            }
-	        });
-	    };
-	
-	    return {
-	        init: initForm,
-	        handleSubmit: handleSubmit
-	    };
-	}();
-	
-	module.exports = FormManager;
-
-/***/ },
-/* 571 */
+/* 564 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77765,7 +77176,7 @@
 	module.exports = PaymentAgentListWS;
 
 /***/ },
-/* 572 */
+/* 565 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78050,7 +77461,7 @@
 	module.exports = PaymentAgentWithdrawWS;
 
 /***/ },
-/* 573 */
+/* 566 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78097,7 +77508,7 @@
 	module.exports = Authenticate;
 
 /***/ },
-/* 574 */
+/* 567 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78105,7 +77516,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var localize = __webpack_require__(426).localize;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	
 	var ChangePassword = function () {
 	    var form_id = '#frm_change_password';
@@ -78145,12 +77556,12 @@
 	module.exports = ChangePassword;
 
 /***/ },
-/* 575 */
+/* 568 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var PaymentAgentTransfer = __webpack_require__(576).PaymentAgentTransfer;
+	var PaymentAgentTransfer = __webpack_require__(569).PaymentAgentTransfer;
 	var Content = __webpack_require__(447).Content;
 	
 	var PaymentAgentTransferSocket = function () {
@@ -78176,15 +77587,15 @@
 	module.exports = PaymentAgentTransferSocket;
 
 /***/ },
-/* 576 */
+/* 569 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var onlyNumericOnKeypress = __webpack_require__(473).onlyNumericOnKeypress;
 	var Client = __webpack_require__(308).Client;
-	var PaymentAgentTransferData = __webpack_require__(577).PaymentAgentTransferData;
-	var PaymentAgentTransferUI = __webpack_require__(578).PaymentAgentTransferUI;
+	var PaymentAgentTransferData = __webpack_require__(570).PaymentAgentTransferData;
+	var PaymentAgentTransferUI = __webpack_require__(571).PaymentAgentTransferUI;
 	
 	var PaymentAgentTransfer = function () {
 	    var hiddenClass = 'invisible';
@@ -78363,7 +77774,7 @@
 	};
 
 /***/ },
-/* 577 */
+/* 570 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -78392,7 +77803,7 @@
 	};
 
 /***/ },
-/* 578 */
+/* 571 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78471,7 +77882,7 @@
 	};
 
 /***/ },
-/* 579 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78480,14 +77891,14 @@
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
+	var FlexTableUI = __webpack_require__(573).FlexTableUI;
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var ValidateV2 = __webpack_require__(552).ValidateV2;
-	var customError = __webpack_require__(554).customError;
-	var bind_validation = __webpack_require__(554).bind_validation;
-	var ValidationUI = __webpack_require__(554).ValidationUI;
-	var dv = __webpack_require__(553);
+	var ValidateV2 = __webpack_require__(574).ValidateV2;
+	var customError = __webpack_require__(576).customError;
+	var bind_validation = __webpack_require__(576).bind_validation;
+	var ValidationUI = __webpack_require__(576).ValidationUI;
+	var dv = __webpack_require__(575);
 	
 	var APITokenWS = function () {
 	    'use strict';
@@ -78704,7 +78115,7 @@
 	module.exports = APITokenWS;
 
 /***/ },
-/* 580 */
+/* 573 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78766,7 +78177,515 @@
 	};
 
 /***/ },
-/* 581 */
+/* 574 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	var template = __webpack_require__(307).template;
+	var moment = __webpack_require__(313);
+	var dv = __webpack_require__(575);
+	var Content = __webpack_require__(447).Content;
+	var localize = __webpack_require__(426).localize;
+	
+	var ValidateV2 = function () {
+	    var err = function err() {
+	        return Content.errorMessage.apply(Content, arguments);
+	    };
+	
+	    // We don't have access to the localised messages at the init-time
+	    // of this module. Solution: delay execution with 'unwrappables'.
+	    // Objects that have an `.unwrap` method.
+	    //
+	    // unwrap({unwrap: () => 1}) == 1
+	    // unwrap(1) == 1
+	    //
+	    var _unwrap = function _unwrap(a) {
+	        return a.unwrap ? a.unwrap() : a;
+	    };
+	
+	    var local = function local(value) {
+	        return { unwrap: function unwrap() {
+	                return localize(value);
+	            } };
+	    };
+	
+	    var localKey = function localKey(value) {
+	        return { unwrap: function unwrap() {
+	                return Content.localize()[value];
+	            } };
+	    };
+	
+	    var msg = function msg() {
+	        var args = [].slice.call(arguments);
+	        return { unwrap: function unwrap() {
+	                return err.apply(undefined, _toConsumableArray(args.map(_unwrap)));
+	            } };
+	    };
+	
+	    var check = function check(fn, error) {
+	        return function (value) {
+	            return fn(value) ? dv.ok(value) : dv.fail(_unwrap(error));
+	        };
+	    };
+	
+	    // TEST THESE
+	    var validEmail = function validEmail(email) {
+	        var regexp = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
+	        return regexp.test(email);
+	    };
+	
+	    var notEmpty = function notEmpty(value) {
+	        return value.length > 0;
+	    };
+	
+	    var validPasswordLength = function validPasswordLength(value) {
+	        return value.length >= 6 && value.length <= 25;
+	    };
+	
+	    var validPasswordChars = function validPasswordChars(value) {
+	        return (/[0-9]+/.test(value) && /[A-Z]+/.test(value) && /[a-z]+/.test(value)
+	        );
+	    };
+	
+	    var noSymbolsInPassword = function noSymbolsInPassword(value) {
+	        return (/^[!-~]+$/.test(value)
+	        );
+	    };
+	
+	    var validToken = function validToken(value) {
+	        return value.length === 48;
+	    };
+	
+	    // CAN BE USED IN UI
+	    var required = check(notEmpty, msg('req'));
+	    var email = check(validEmail, msg('valid', local('email address')));
+	    var token = check(validToken, msg('valid', local('verification token')));
+	    var password = function password(value) {
+	        return dv.first(value, [password.len, password.allowed, password.symbols]);
+	    };
+	
+	    password.len = check(validPasswordLength, msg('range', '6-25'));
+	    password.allowed = check(validPasswordChars, local('Password should have lower and uppercase letters with numbers.'));
+	    password.symbols = check(noSymbolsInPassword, msg('valid', localKey('textPassword')));
+	
+	    var regex = function regex(regexp, allowed) {
+	        return function (str) {
+	            return regexp.test(str) ? dv.ok(str) : dv.fail(err('reg', allowed));
+	        };
+	    };
+	
+	    var lengthRange = function lengthRange(start, end) {
+	        var range = template('([_1]-[_2])', [start, end]);
+	        return function (str) {
+	            var len = str.length;
+	            return len >= start && len <= end ? dv.ok(str) : dv.fail(err('range', range));
+	        };
+	    };
+	
+	    var momentFmt = function momentFmt(format, error) {
+	        return function (str) {
+	            var date = moment(str, format, true);
+	            return date.isValid() ? dv.ok(date) : dv.fail(error);
+	        };
+	    };
+	
+	    return {
+	        err: err,
+	        momentFmt: momentFmt,
+	        required: required,
+	        password: password,
+	        email: email,
+	        token: token,
+	        regex: regex,
+	        lengthRange: lengthRange
+	    };
+	}();
+	
+	module.exports = {
+	    ValidateV2: ValidateV2
+	};
+
+/***/ },
+/* 575 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var dv = function () {
+	  function ok(v) {
+	    if (!(this instanceof ok)) return new ok(v);
+	    this.value = v;
+	  }
+	
+	  ok.prototype = {
+	    isOk: true,
+	    then: function then(f) {
+	      return f(this.value);
+	    },
+	    fmap: function fmap(f) {
+	      return this;
+	    },
+	    ap: function ap(o) {
+	      return o.isOk ? this : o;
+	    }
+	  };
+	
+	  function fail(v) {
+	    if (!(this instanceof fail)) return new fail(v);
+	    this.value = [v];
+	  }
+	
+	  fail.of = function (v) {
+	    var f = fail();
+	    f.value = v;
+	    return f;
+	  };
+	
+	  fail.prototype = {
+	    isOk: false,
+	    then: function then(f) {
+	      return this;
+	    },
+	    fmap: function fmap(f) {
+	      return fail.of(this.value.map(f));
+	    },
+	    ap: function ap(o) {
+	      return o.isOk ? this : fail.of(this.value.concat(o.value));
+	    }
+	  };
+	
+	  function combine(v, xs) {
+	    return xs.reduce(function (prev, curr) {
+	      return prev.ap(curr);
+	    }, ok(v));
+	  }
+	
+	  function check(fn, err) {
+	    return function (v) {
+	      return fn.apply(this, arguments) ? ok(v) : fail(err);
+	    };
+	  }
+	
+	  function first(v, xs) {
+	    var u = ok(v);
+	    for (var i = 0; i < xs.length; i++) {
+	      u = u.then(xs[i]);
+	      if (!u.isOk) break;
+	    }
+	    return u;
+	  }
+	
+	  return {
+	    ok: ok,
+	    fail: fail,
+	    combine: combine,
+	    check: check,
+	    first: first
+	  };
+	}();
+	
+	module.exports = dv;
+
+/***/ },
+/* 576 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var done_typing = __webpack_require__(577).done_typing;
+	var formToObj = __webpack_require__(578).formToObj;
+	var dv = __webpack_require__(575);
+	var localize = __webpack_require__(426).localize;
+	
+	var ValidationUI = {
+	    clear: function clear() {
+	        $('.errorfield[data-is-error-field]').remove();
+	    },
+	    draw: function draw(selector, message) {
+	        var $parent = $(selector).parent();
+	        var $p = $('<p/>', {
+	            class: 'errorfield',
+	            text: localize(message)
+	        });
+	        $p.attr('data-is-error-field', true);
+	        $parent.append($p);
+	    }
+	};
+	
+	/**
+	 * Replaces error messages returned by a validator by the given
+	 * error message `err`. Only use this on validators with one
+	 * error message.
+	 */
+	function customError(fn, err) {
+	    return function (value) {
+	        var rv = fn(value);
+	        if (!rv.isOk) rv.value = [err];
+	        return rv;
+	    };
+	}
+	
+	function withContext(ctx) {
+	    return function (msg) {
+	        return {
+	            ctx: ctx,
+	            err: msg
+	        };
+	    };
+	}
+	
+	/**
+	 * Validates data given a schema.
+	 *
+	 * @param data    An object.
+	 * @param schema  An object in the form {key: Array}, where the Array
+	 *                contains functions which accept two arguments- the current
+	 *                value and the objet being validated, and return either dv.ok
+	 *                or dv.fail.
+	 * @returns {Object}  {errors: errors, values: values, raw: data} where
+	 *                    errors is an array of {ctx: key, err: message} objects,
+	 *                    values is an object with the collected successful values,
+	 *                    raw is the data passed in.
+	 */
+	function validate_object(data, schema) {
+	    var keys = Object.keys(schema),
+	        values = {};
+	    var rv = dv.combine([], keys.map(function (ctx) {
+	        var res = dv.ok(data[ctx]);
+	        var fns = schema[ctx];
+	        for (var i = 0; i < fns.length; i++) {
+	            res = fns[i](res.value, data);
+	            if (!res.isOk) return res.fmap(withContext(ctx));
+	        }
+	        values[ctx] = res.value;
+	        return res;
+	    }));
+	    return {
+	        errors: rv.value,
+	        values: values,
+	        raw: data
+	    };
+	}
+	
+	function stripTrailing(name) {
+	    return (name || '').replace(/\[]$/, '');
+	}
+	
+	/**
+	 * Helper for enabling form validation when the user starts and stops typing.
+	 *
+	 * @param form             A form Element (not JQuery object).
+	 * @param config           Configuration object.
+	 * @param config.extract   Returns the current data on the form.
+	 * @param config.validate  Receives the current data returns an object with
+	 *                         {values: Object, errors: [{ctx: key, err: msg}...]}.
+	 * @param config.stop      Called when the user stops typing with the return
+	 *                         value of `config.validate`.
+	 * @param config.submit    Called on submit event with event and validation state.
+	 */
+	function bind_validation(form, config) {
+	    var extract = config.extract,
+	        validate = config.validate,
+	        stop = config.stop,
+	        submit = config.submit,
+	        seen = {};
+	
+	    var onStart = function onStart(ev) {
+	        seen[stripTrailing(ev.target.name)] = true;
+	    };
+	
+	    var onStop = function onStop() {
+	        var data = extract(),
+	            validation = validate(data);
+	        validation.errors = validation.errors.filter(function (err) {
+	            return seen[err.ctx];
+	        });
+	        stop(validation);
+	    };
+	
+	    form.addEventListener('submit', function (ev) {
+	        var data = extract(),
+	            validation = validate(data);
+	        stop(validation);
+	        submit(ev, validation);
+	    });
+	
+	    form.addEventListener('change', function (ev) {
+	        onStart(ev);
+	        onStop();
+	    });
+	    done_typing(form, {
+	        start: onStart,
+	        stop: onStop
+	    });
+	}
+	
+	/**
+	 * Generates (and binds) a config for the given form.
+	 *
+	 * @param form  Form element.
+	 * @param opts  Config object.
+	 * @param opts.extract   Optional. Defaults to `formToObj(form)`.
+	 * @param opts.submit    Required.
+	 * @param opts.validate  Optional. If you do not specify this then opts.schema
+	 *                       is required.
+	 * @param opts.schema    See above.
+	 * @param opts.stop      Optional.
+	 *
+	 */
+	bind_validation.simple = function (form, opts) {
+	    bind_validation(form, {
+	        submit: opts.submit,
+	        extract: opts.extract || function () {
+	            return formToObj(form);
+	        },
+	        validate: opts.validate || function (data) {
+	            return validate_object(data, opts.schema);
+	        },
+	        stop: opts.stop || function (validation) {
+	            ValidationUI.clear();
+	            validation.errors.forEach(function (err) {
+	                var sel = '[name=' + stripTrailing(err.ctx) + ']';
+	                ValidationUI.draw(sel, err.err);
+	            });
+	        }
+	    });
+	};
+	
+	module.exports = {
+	    ValidationUI: ValidationUI,
+	    customError: customError,
+	    validate_object: validate_object,
+	    bind_validation: bind_validation
+	};
+
+/***/ },
+/* 577 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	function done_typing(elem, config) {
+	    var onStart = config.start || function () {};
+	    var onStop = config.stop || function () {};
+	    var delay = config.delay || 200;
+	
+	    var stopped = true;
+	    var timeout = null;
+	
+	    function down(ev) {
+	        if (stopped) {
+	            onStart(ev);
+	            stopped = false;
+	        }
+	        clearTimeout(timeout);
+	    }
+	
+	    function up(ev) {
+	        timeout = setTimeout(function () {
+	            timeout = null;
+	            stopped = true;
+	            onStop(ev);
+	        }, delay);
+	    }
+	
+	    elem.addEventListener('keydown', down);
+	    elem.addEventListener('keyup', up);
+	};
+	
+	module.exports = {
+	    done_typing: done_typing
+	};
+
+/***/ },
+/* 578 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	function formToObj(form) {
+	  var fields = formToArr(form);
+	
+	  fields.sort(function (a, b) {
+	    return a.name.localeCompare(b.name);
+	  });
+	
+	  return fields.reduce(function (obj, field) {
+	    addProp(obj, field.name, field.value);
+	    return obj;
+	  }, {});
+	
+	  function formToArr(form) {
+	    var inputs = form.querySelectorAll('input, textarea, select, [contenteditable=true]');
+	    var arr = [];
+	
+	    for (var i = 0; i < inputs.length; ++i) {
+	      var input = inputs[i],
+	          name = input.name || input.getAttribute('data-name'),
+	          val = input.value;
+	
+	      if (!name || (input.type === 'checkbox' || input.type === 'radio') && !input.checked) {
+	        continue;
+	      }
+	
+	      if (input.getAttribute('contenteditable') === 'true') {
+	        val = input.innerHTML;
+	      }
+	
+	      arr.push({
+	        name: name,
+	        value: val
+	      });
+	    }
+	
+	    return arr;
+	  }
+	
+	  function addProp(o, prop, val) {
+	    var props = prop.split('.');
+	    var lastProp = props.length - 1;
+	
+	    props.reduce(function (obj, prop, i) {
+	      return setProp(obj, prop, i === lastProp ? val : {});
+	    }, o);
+	  }
+	
+	  function setProp(obj, name, val) {
+	    if (name.slice(-2) === '[]') {
+	      makeArr(obj, name).push(val);
+	    } else if (obj[name]) {
+	      return obj[name];
+	    } else if (name[name.length - 1] === ']') {
+	      var arr = makeArr(obj, name);
+	
+	      if (arr.prevName === name) {
+	        return arr[arr.length - 1];
+	      }
+	
+	      arr.push(val);
+	      arr.prevName = name;
+	    } else {
+	      obj[name] = val;
+	    }
+	
+	    return val;
+	  }
+	
+	  function makeArr(obj, name) {
+	    var arrName = name.replace(/\[\d*\]/, '');
+	    return obj[arrName] || (obj[arrName] = []);
+	  }
+	}
+	
+	module.exports = {
+	  formToObj: formToObj
+	};
+
+/***/ },
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78774,7 +78693,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var ApplicationsInit = __webpack_require__(582);
+	var ApplicationsInit = __webpack_require__(580);
 	
 	var AuthorisedApps = function () {
 	    var onLoad = function onLoad() {
@@ -78798,13 +78717,13 @@
 	module.exports = AuthorisedApps;
 
 /***/ },
-/* 582 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(583);
-	var ApplicationsData = __webpack_require__(584);
+	var ApplicationsUI = __webpack_require__(581);
+	var ApplicationsData = __webpack_require__(582);
 	
 	var ApplicationsInit = function () {
 	    'use strict';
@@ -78833,7 +78752,7 @@
 	module.exports = ApplicationsInit;
 
 /***/ },
-/* 583 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78842,8 +78761,8 @@
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(478).Button;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
-	var ApplicationsData = __webpack_require__(584);
+	var FlexTableUI = __webpack_require__(573).FlexTableUI;
+	var ApplicationsData = __webpack_require__(582);
 	
 	var ApplicationsUI = function () {
 	    'use strict';
@@ -78935,7 +78854,7 @@
 	module.exports = ApplicationsUI;
 
 /***/ },
-/* 584 */
+/* 582 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78963,7 +78882,7 @@
 	module.exports = ApplicationsData;
 
 /***/ },
-/* 585 */
+/* 583 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78971,7 +78890,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var localize = __webpack_require__(426).localize;
 	var Content = __webpack_require__(447).Content;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	
 	var CashierPassword = function () {
 	    'use strict';
@@ -79054,12 +78973,12 @@
 	module.exports = CashierPassword;
 
 /***/ },
-/* 586 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryInit = __webpack_require__(587);
+	var IPHistoryInit = __webpack_require__(585);
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
@@ -79086,13 +79005,13 @@
 	module.exports = IPHistory;
 
 /***/ },
-/* 587 */
+/* 585 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(588);
-	var IPHistoryData = __webpack_require__(589);
+	var IPHistoryUI = __webpack_require__(586);
+	var IPHistoryData = __webpack_require__(587);
 	
 	var IPHistoryInit = function () {
 	    'use strict';
@@ -79129,13 +79048,13 @@
 	module.exports = IPHistoryInit;
 
 /***/ },
-/* 588 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
-	var FlexTableUI = __webpack_require__(580).FlexTableUI;
+	var FlexTableUI = __webpack_require__(573).FlexTableUI;
 	var moment = __webpack_require__(313);
 	var localize = __webpack_require__(426).localize;
 	
@@ -79209,7 +79128,7 @@
 	module.exports = IPHistoryUI;
 
 /***/ },
-/* 589 */
+/* 587 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -79256,12 +79175,12 @@
 	module.exports = IPHistoryData;
 
 /***/ },
-/* 590 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LimitsInit = __webpack_require__(591);
+	var LimitsInit = __webpack_require__(589);
 	var Content = __webpack_require__(447).Content;
 	
 	var Limits = function () {
@@ -79290,7 +79209,7 @@
 	module.exports = Limits;
 
 /***/ },
-/* 591 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79298,7 +79217,7 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(447).Content;
 	var addComma = __webpack_require__(432).addComma;
-	var LimitsUI = __webpack_require__(592);
+	var LimitsUI = __webpack_require__(590);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(312).elementTextContent;
@@ -79378,7 +79297,7 @@
 	module.exports = LimitsInit;
 
 /***/ },
-/* 592 */
+/* 590 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79451,7 +79370,7 @@
 	module.exports = LimitsUI;
 
 /***/ },
-/* 593 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79489,19 +79408,19 @@
 	module.exports = Settings;
 
 /***/ },
-/* 594 */
+/* 592 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var Content = __webpack_require__(447).Content;
-	var ValidateV2 = __webpack_require__(552).ValidateV2;
-	var ValidationUI = __webpack_require__(554).ValidationUI;
-	var validate_object = __webpack_require__(554).validate_object;
-	var bind_validation = __webpack_require__(554).bind_validation;
+	var ValidateV2 = __webpack_require__(574).ValidateV2;
+	var ValidationUI = __webpack_require__(576).ValidationUI;
+	var validate_object = __webpack_require__(576).validate_object;
+	var bind_validation = __webpack_require__(576).bind_validation;
 	var moment = __webpack_require__(313);
-	var dv = __webpack_require__(553);
+	var dv = __webpack_require__(575);
 	var TimePicker = __webpack_require__(474).TimePicker;
 	var DatePicker = __webpack_require__(467).DatePicker;
 	var dateValueChanged = __webpack_require__(312).dateValueChanged;
@@ -79837,7 +79756,7 @@
 	module.exports = SelfExclusionWS;
 
 /***/ },
-/* 595 */
+/* 593 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79848,9 +79767,9 @@
 	var Content = __webpack_require__(447).Content;
 	var detect_hedging = __webpack_require__(312).detect_hedging;
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	var moment = __webpack_require__(313);
-	__webpack_require__(596);
+	__webpack_require__(594);
 	
 	var SettingsDetailsWS = function () {
 	    'use strict';
@@ -80098,7 +80017,7 @@
 	module.exports = SettingsDetailsWS;
 
 /***/ },
-/* 596 */
+/* 594 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var require;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -85829,7 +85748,7 @@
 
 
 /***/ },
-/* 597 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85910,14 +85829,14 @@
 	module.exports = TopUpVirtualWS;
 
 /***/ },
-/* 598 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var BinaryPjax = __webpack_require__(309);
 	var localize = __webpack_require__(426).localize;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	
 	var LostPassword = function () {
 	    'use strict';
@@ -85944,7 +85863,7 @@
 	module.exports = LostPassword;
 
 /***/ },
-/* 599 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85954,8 +85873,8 @@
 	var State = __webpack_require__(306).State;
 	var default_redirect_url = __webpack_require__(310).default_redirect_url;
 	var objectNotEmpty = __webpack_require__(307).objectNotEmpty;
-	var AccountOpening = __webpack_require__(600);
-	var FormManager = __webpack_require__(570);
+	var AccountOpening = __webpack_require__(598);
+	var FormManager = __webpack_require__(550);
 	var toISOFormat = __webpack_require__(432).toISOFormat;
 	var moment = __webpack_require__(313);
 	
@@ -86053,20 +85972,20 @@
 	module.exports = FinancialAccOpening;
 
 /***/ },
-/* 600 */
+/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var generateBirthDate = __webpack_require__(601);
+	var generateBirthDate = __webpack_require__(599);
 	var BinaryPjax = __webpack_require__(309);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	var Cookies = __webpack_require__(303);
-	__webpack_require__(596);
+	__webpack_require__(594);
 	
 	var redirectCookie = function redirectCookie() {
 	    if (Client.get('has_real')) {
@@ -86256,7 +86175,7 @@
 	};
 
 /***/ },
-/* 601 */
+/* 599 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86283,7 +86202,7 @@
 	module.exports = generateBirthDate;
 
 /***/ },
-/* 602 */
+/* 600 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86291,9 +86210,9 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
-	var AccountOpening = __webpack_require__(600);
+	var AccountOpening = __webpack_require__(598);
 	var detect_hedging = __webpack_require__(312).detect_hedging;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	
 	var JapanAccOpening = function () {
 	    var onLoad = function onLoad() {
@@ -86338,14 +86257,14 @@
 	module.exports = JapanAccOpening;
 
 /***/ },
-/* 603 */
+/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Client = __webpack_require__(308).Client;
-	var AccountOpening = __webpack_require__(600);
-	var FormManager = __webpack_require__(570);
+	var AccountOpening = __webpack_require__(598);
+	var FormManager = __webpack_require__(550);
 	
 	var RealAccOpening = function () {
 	    var residenceID = '#residence';
@@ -86410,7 +86329,7 @@
 	module.exports = RealAccOpening;
 
 /***/ },
-/* 604 */
+/* 602 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86419,9 +86338,9 @@
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(310).url_for;
 	var template = __webpack_require__(307).template;
-	var getResidence = __webpack_require__(600).getResidence;
+	var getResidence = __webpack_require__(598).getResidence;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var FormManager = __webpack_require__(570);
+	var FormManager = __webpack_require__(550);
 	var TrafficSource = __webpack_require__(532).TrafficSource;
 	var Cookies = __webpack_require__(303);
 	
@@ -86517,7 +86436,7 @@
 	module.exports = VirtualAccOpening;
 
 /***/ },
-/* 605 */
+/* 603 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86525,8 +86444,8 @@
 	var Client = __webpack_require__(308).Client;
 	var localize = __webpack_require__(426).localize;
 	var Login = __webpack_require__(304).Login;
-	var generateBirthDate = __webpack_require__(601);
-	var FormManager = __webpack_require__(570);
+	var generateBirthDate = __webpack_require__(599);
+	var FormManager = __webpack_require__(550);
 	
 	var ResetPassword = function () {
 	    'use strict';
@@ -86548,7 +86467,7 @@
 	                $form_error.find('a').addClass(hidden_class);
 	            } else {
 	                // special handling as backend return inconsistent format
-	                errMsg = localize(resetErrorTemplate, [error_code === 'InputValidationFailed' ? localize('Token has expired.') : localize(response.error.message)]);
+	                errMsg = localize(resetErrorTemplate, [error_code === 'InputValidationFailed' ? localize('There was some invalid character in an input field.') : localize(response.error.message)]);
 	            }
 	
 	            $('#form_error_msg').text(errMsg);
@@ -86588,14 +86507,14 @@
 	module.exports = ResetPassword;
 
 /***/ },
-/* 606 */
+/* 604 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var toJapanTimeIfNeeded = __webpack_require__(430).Clock.toJapanTimeIfNeeded;
-	var KnowledgeTestUI = __webpack_require__(607).KnowledgeTestUI;
-	var KnowledgeTestData = __webpack_require__(608).KnowledgeTestData;
+	var KnowledgeTestUI = __webpack_require__(605).KnowledgeTestUI;
+	var KnowledgeTestData = __webpack_require__(606).KnowledgeTestData;
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var Header = __webpack_require__(524).Header;
@@ -86789,7 +86708,7 @@
 	module.exports = KnowledgeTest;
 
 /***/ },
-/* 607 */
+/* 605 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86903,7 +86822,7 @@
 	};
 
 /***/ },
-/* 608 */
+/* 606 */
 /***/ function(module, exports) {
 
 	'use strict';

@@ -733,13 +733,17 @@ html.mm-right.mm-opening body .mm-page, html.mm-right.mm-opening body #mm-blocke
 .home-content .signup-box {
   border-radius: 3px;
 }
-.home-content #verify-email-form input {
+.home-content .signup-box .error-msg {
+  text-align: center;
+  margin-top: 5px;
+}
+.home-content #frm_verify_email input {
   width: 100%;
   height: 3em;
   margin: 5px 0;
   font-size: 0.86957rem;
 }
-.home-content #verify-email-form button {
+.home-content #frm_verify_email button {
   margin: 5px 0;
   height: 3rem;
   width: 100%;
@@ -5330,7 +5334,7 @@ body.ES .google-play-badge {
   background-image: url("../images/pages/applications/googleplay_es.svg");
 }
 
-body.RU #verify-email-form button {
+body.RU #frm_verify_email button {
   font-size: 80%;
 }
 body.RU #trading_socket_container #contract_form_name_nav {
@@ -5477,7 +5481,7 @@ body.TH .google-play-badge {
     text-align: center;
   }
 
-  #btn-verify-email {
+  #btn_verify_email {
     font-size: 0.9em;
     padding: 0;
   }
