@@ -18687,12 +18687,7 @@
 	                    GTM.event_handler(response.get_settings);
 	                    Client.set('tnc_status', response.get_settings.client_tnc_status || '-');
 	                    if (!localStorage.getItem('risk_classification')) Client.check_tnc();
-	                    var jpStatus = response.get_settings.jp_account_status;
-	                    if (jpStatus) {
-	                        Client.set('jp_status', jpStatus.status);
-	                    }
 	                    if (response.get_settings.is_authenticated_payment_agent) {
-	                        Client.set('is_authenticated_payment_agent', true);
 	                        $('#topMenuPaymentAgent').removeClass('invisible');
 	                    }
 	                    Client.set('first_name', response.get_settings.first_name);
@@ -39605,7 +39600,6 @@
 	            textApost: 'apostrophe',
 	            textPassword: 'password',
 	            textPasswordsNotMatching: 'The two passwords that you entered do not match.',
-	            textClickHereToRestart: 'Your token has expired. Please click <a href="[_1]">here</a> to restart the verification process.',
 	            featureNotRelevantToVirtual: 'This feature is not relevant to virtual-money accounts.'
 	        };
 	
@@ -68971,6 +68965,9 @@
 	        if (!(options.type === 'float' ? /^\d+(\.\d+)?$/ : /^\d+$/).test(value) || !$.isNumeric(value)) {
 	            is_ok = false;
 	            message = localize('Should be a valid number');
+	        } else if (options.type === 'float' && options.decimals && !new RegExp('^\\d+(\\.\\d{' + options.decimals.replace(/ /g, '') + '})?$').test(value)) {
+	            is_ok = false;
+	            message = localize('Only [_1] decimal points are allowed.', [options.decimals]);
 	        } else if (options.min && +value < +options.min) {
 	            is_ok = false;
 	            message = localize('Should be more than [_1]', [options.min]);
@@ -69344,7 +69341,7 @@
 	    };
 	
 	    var upgrade_message_visibility = function upgrade_message_visibility() {
-	        BinarySocket.wait('authorize', 'landing_company').then(function () {
+	        BinarySocket.wait('authorize', 'landing_company', 'get_settings').then(function () {
 	            var landing_company = State.get(['response', 'landing_company', 'landing_company']);
 	            var loginid_array = Client.get('loginid_array');
 	
@@ -69367,7 +69364,7 @@
 	                    }
 	                }
 	                $upgrade_msg.removeClass(hiddenClass).find('> span').removeClass(hiddenClass).end().find('a').addClass(hiddenClass);
-	                var jp_account_status = Client.get('jp_status');
+	                var jp_account_status = (State.get(['response', 'get_settings', 'get_settings', 'jp_account_status']) || {}).status;
 	                if (jp_account_status && show_upgrade_msg) {
 	                    if (/jp_knowledge_test_(pending|fail)/.test(jp_account_status)) {
 	                        // do not show upgrade for user that filled up form
@@ -75126,7 +75123,7 @@
 	var Cashier = __webpack_require__(562);
 	var DepositWithdraw = __webpack_require__(563);
 	var PaymentAgentListWS = __webpack_require__(564);
-	var PaymentAgentWithdrawWS = __webpack_require__(565);
+	var PaymentAgentWithdraw = __webpack_require__(565);
 	var MBTradePage = __webpack_require__(508);
 	var AssetIndexUI = __webpack_require__(493);
 	var MarketTimesUI = __webpack_require__(495);
@@ -75134,31 +75131,31 @@
 	var TradePage = __webpack_require__(457);
 	var Authenticate = __webpack_require__(566);
 	var ChangePassword = __webpack_require__(567);
-	var PaymentAgentTransferSocket = __webpack_require__(568);
+	var PaymentAgentTransfer = __webpack_require__(568);
 	var PortfolioWS = __webpack_require__(454);
 	var ProfitTableWS = __webpack_require__(476);
-	var APITokenWS = __webpack_require__(572);
-	var AuthorisedApps = __webpack_require__(579);
-	var CashierPassword = __webpack_require__(583);
+	var APITokenWS = __webpack_require__(570);
+	var AuthorisedApps = __webpack_require__(577);
+	var CashierPassword = __webpack_require__(581);
 	var FinancialAssessment = __webpack_require__(519);
-	var IPHistory = __webpack_require__(584);
-	var Limits = __webpack_require__(588);
-	var Settings = __webpack_require__(591);
-	var SelfExclusionWS = __webpack_require__(592);
-	var SettingsDetailsWS = __webpack_require__(593);
+	var IPHistory = __webpack_require__(582);
+	var Limits = __webpack_require__(586);
+	var Settings = __webpack_require__(589);
+	var SelfExclusionWS = __webpack_require__(590);
+	var SettingsDetailsWS = __webpack_require__(591);
 	var StatementWS = __webpack_require__(482);
-	var TopUpVirtualWS = __webpack_require__(595);
-	var LostPassword = __webpack_require__(596);
+	var TopUpVirtualWS = __webpack_require__(593);
+	var LostPassword = __webpack_require__(594);
 	var MetaTrader = __webpack_require__(525);
-	var FinancialAccOpening = __webpack_require__(597);
-	var JapanAccOpening = __webpack_require__(600);
-	var RealAccOpening = __webpack_require__(601);
-	var VirtualAccOpening = __webpack_require__(602);
-	var ResetPassword = __webpack_require__(603);
+	var FinancialAccOpening = __webpack_require__(595);
+	var JapanAccOpening = __webpack_require__(598);
+	var RealAccOpening = __webpack_require__(599);
+	var VirtualAccOpening = __webpack_require__(600);
+	var ResetPassword = __webpack_require__(601);
 	var TNCApproval = __webpack_require__(559);
 	
 	var CashierJP = __webpack_require__(534);
-	var KnowledgeTest = __webpack_require__(604);
+	var KnowledgeTest = __webpack_require__(602);
 	
 	var pages_config = {
 	    account_transferws: { module: AccountTransferWS, is_authenticated: true, only_real: true },
@@ -75205,9 +75202,9 @@
 	    top_up_virtualws: { module: TopUpVirtualWS, is_authenticated: true, only_virtual: true },
 	    trading: { module: TradePage },
 	    trading_beta: { module: TradePage_Beta },
-	    transferws: { module: PaymentAgentTransferSocket, is_authenticated: true, only_real: true },
+	    transferws: { module: PaymentAgentTransfer, is_authenticated: true, only_real: true },
 	    virtualws: { module: VirtualAccOpening, not_authenticated: true },
-	    withdrawws: { module: PaymentAgentWithdrawWS, is_authenticated: true, only_real: true },
+	    withdrawws: { module: PaymentAgentWithdraw, is_authenticated: true, only_real: true },
 	    'deposit-jp': { module: CashierJP.Deposit, is_authenticated: true, only_real: true },
 	    'get-started': { module: GetStarted },
 	    'get-started-jp': { module: GetStartedJP },
@@ -77181,215 +77178,95 @@
 
 	'use strict';
 	
-	var template = __webpack_require__(307).template;
-	var Cookies = __webpack_require__(303);
-	var Content = __webpack_require__(447).Content;
-	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
-	var url_for = __webpack_require__(310).url_for;
+	var localize = __webpack_require__(426).localize;
+	var FormManager = __webpack_require__(550);
+	var Cookies = __webpack_require__(303);
 	
-	var PaymentAgentWithdrawWS = function () {
+	var PaymentAgentWithdraw = function () {
 	    'use strict';
 	
-	    var containerID = void 0,
-	        viewIDs = void 0,
-	        fieldIDs = void 0,
-	        errorClass = void 0,
-	        hiddenClass = void 0,
-	        $views = void 0,
-	        formData = void 0,
-	        isValid = void 0,
-	        withdrawCurrency = void 0,
-	        minAmount = void 0,
-	        maxAmount = void 0;
-	
-	    var init = function init() {
-	        containerID = '#paymentagent_withdrawal';
-	        $views = $(containerID + ' .viewItem');
-	        errorClass = 'errorfield';
-	        hiddenClass = 'hidden';
-	        viewIDs = {
-	            error: '#viewError',
-	            success: '#viewSuccess',
-	            confirm: '#viewConfirm',
-	            form: '#viewForm'
-	        };
-	        fieldIDs = {
-	            verificationCode: '#verification-code',
-	            ddlAgents: '#ddlAgents',
-	            txtAmount: '#txtAmount',
-	            txtDesc: '#txtDescription'
-	        };
-	        withdrawCurrency = 'USD';
-	        minAmount = 10;
-	        maxAmount = 2000;
-	
-	        $views.addClass(hiddenClass);
-	
-	        if (Client.status_detected('withdrawal_locked, cashier_locked', 'any')) {
-	            showPageError('', 'withdrawal-locked-error');
-	        } else {
-	            BinarySocket.send({ paymentagent_list: Cookies.get('residence') });
-	        }
-	
-	        $(viewIDs.form + ' button').click(function (e) {
-	            e.preventDefault();
-	            e.stopPropagation();
-	            formData = formValidate();
-	            if (formData) {
-	                withdrawRequest(true);
-	            }
-	        });
+	    var view_ids = {
+	        error: '#viewError',
+	        success: '#viewSuccess',
+	        confirm: '#viewConfirm',
+	        form: '#viewForm'
 	    };
+	    var field_ids = {
+	        verification_code: '#verification_code',
+	        ddl_agents: '#ddlAgents',
+	        txt_amount: '#txtAmount',
+	        txt_desc: '#txtDescription'
+	    };
+	    var hidden_class = 'hidden';
+	
+	    var $views = void 0,
+	        agent_name = void 0;
 	
 	    // -----------------------
 	    // ----- Agents List -----
 	    // -----------------------
 	    var populateAgentsList = function populateAgentsList(response) {
-	        var $ddlAgents = $(fieldIDs.ddlAgents);
-	        $ddlAgents.empty();
-	        var paList = response.paymentagent_list.list;
-	        if (paList.length > 0) {
+	        var $ddl_agents = $(field_ids.ddl_agents);
+	        $ddl_agents.empty();
+	        var pa_list = (response.paymentagent_list || {}).list;
+	        if (pa_list.length > 0) {
 	            BinarySocket.send({ verify_email: Client.get('email'), type: 'paymentagent_withdraw' });
-	            insertListOption($ddlAgents, localize('Please select a payment agent'), '');
-	            for (var i = 0; i < paList.length; i++) {
-	                insertListOption($ddlAgents, paList[i].name, paList[i].paymentagent_loginid);
+	            insertListOption($ddl_agents, localize('Please select a payment agent'), '');
+	            for (var i = 0; i < pa_list.length; i++) {
+	                insertListOption($ddl_agents, pa_list[i].name, pa_list[i].paymentagent_loginid);
 	            }
-	            setActiveView(viewIDs.form);
+	            setActiveView(view_ids.form);
+	            var form_id = '#' + $(view_ids.form).find('form').attr('id');
+	            FormManager.init(form_id, [{ selector: field_ids.ddl_agents, validations: ['req'], request_field: 'paymentagent_loginid' }, { selector: field_ids.txt_amount, validations: ['req', ['number', { type: 'float', decimals: '1, 2', min: 10, max: 2000 }]], request_field: 'amount' }, { selector: field_ids.txt_desc, validations: ['general'], request_field: 'description' }, { selector: field_ids.verification_code, validations: ['req', 'email_token'] }, { request_field: 'currency', value: 'USD' }, { request_field: 'paymentagent_withdraw', value: 1 }, { request_field: 'dry_run', value: 1 }]);
+	
+	            FormManager.handleSubmit(form_id, {}, withdrawResponse, setAgentName);
 	        } else {
 	            showPageError(localize('The Payment Agent facility is currently not available in your country.'));
 	        }
 	    };
 	
-	    var insertListOption = function insertListOption($ddlObject, itemText, itemValue) {
-	        $ddlObject.append($('<option/>', { value: itemValue, text: itemText }));
+	    var insertListOption = function insertListOption($ddl_object, item_text, item_value) {
+	        $ddl_object.append($('<option/>', { value: item_value, text: item_text }));
 	    };
-	
-	    // ----------------------------
-	    // ----- Form Validations -----
-	    // ----------------------------
-	    var formValidate = function formValidate() {
-	        clearError();
-	        isValid = true;
-	
-	        var agent = $(fieldIDs.ddlAgents).val(),
-	            amount = $(fieldIDs.txtAmount).val().trim(),
-	            desc = $(fieldIDs.txtDesc).val().trim(),
-	            token = $(fieldIDs.verificationCode).val().trim();
-	
-	        var letters = Content.localize().textLetters,
-	            numbers = Content.localize().textNumbers,
-	            space = Content.localize().textSpace,
-	            period = Content.localize().textPeriod,
-	            comma = Content.localize().textComma;
-	
-	        // Payment Agent
-	        isRequiredError(fieldIDs.ddlAgents);
-	
-	        // verification token
-	        if (!isRequiredError(fieldIDs.verificationCode)) {
-	            if (token.length !== 48) {
-	                showError(fieldIDs.verificationCode, Content.errorMessage('valid', localize('verification token')));
-	            }
-	        }
-	
-	        // Amount
-	        if (!isRequiredError(fieldIDs.txtAmount)) {
-	            if (!/^\d+(\.\d+)?$/.test(amount) || !$.isNumeric(amount)) {
-	                showError(fieldIDs.txtAmount, Content.errorMessage('reg', [numbers]));
-	            } else if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
-	                showError(fieldIDs.txtAmount, localize('Only 2 decimal points are allowed.'));
-	            } else if (amount < minAmount) {
-	                showError(fieldIDs.txtAmount, localize('Invalid amount, minimum is') + ' ' + withdrawCurrency + ' ' + minAmount);
-	            } else if (amount > maxAmount) {
-	                showError(fieldIDs.txtAmount, localize('Invalid amount, maximum is') + ' ' + withdrawCurrency + ' ' + maxAmount);
-	            }
-	        }
-	
-	        // Description
-	        if (!/^[a-zA-Z0-9\s\.\,\-']*$/.test(desc)) {
-	            showError(fieldIDs.txtDesc, Content.errorMessage('reg', [letters, numbers, space, period, comma, '- \'']));
-	        }
-	
-	        if (!isValid) {
-	            return false;
-	        }
-	        return {
-	            agent: agent,
-	            agentname: $(fieldIDs.ddlAgents + ' option:selected').text(),
-	            currency: withdrawCurrency,
-	            amount: amount,
-	            desc: desc,
-	            verificationCode: token
-	        };
-	    };
-	
-	    var isRequiredError = function isRequiredError(fieldID) {
-	        if (!$(fieldID).val() || !/.+/.test($(fieldID).val().trim())) {
-	            showError(fieldID, Content.errorMessage('req'));
-	            return true;
-	        }
-	        return false;
-	    };
-	
-	    /* const isCountError = function(fieldID, min, max) {
-	        const fieldValue = $(fieldID).val().trim();
-	        if((fieldValue.length > 0 && fieldValue.length < min) || fieldValue.length > max) {
-	            showError(fieldID, Content.errorMessage('range', '(' + min + '-' + max + ')'));
-	            return true;
-	        } else {
-	            return false;
-	        }
-	    };*/
 	
 	    // ----------------------------
 	    // ----- Withdraw Process -----
 	    // ----------------------------
-	    var withdrawRequest = function withdrawRequest(isDryRun) {
-	        var dry_run = isDryRun ? 1 : 0;
-	        BinarySocket.send({
-	            paymentagent_withdraw: 1,
-	            paymentagent_loginid: formData.agent,
-	            currency: formData.currency,
-	            amount: formData.amount,
-	            description: formData.desc,
-	            dry_run: dry_run,
-	            verification_code: formData.verificationCode
-	        });
-	    };
-	
 	    var withdrawResponse = function withdrawResponse(response) {
-	        var responseCode = response.paymentagent_withdraw;
-	        switch (responseCode) {
+	        var request = response.echo_req;
+	        switch (response.paymentagent_withdraw) {
 	            case 2:
-	                // dry_run success: showing the confirmation page
-	                setActiveView(viewIDs.confirm);
+	                {
+	                    // dry_run success: showing the confirmation page
+	                    setActiveView(view_ids.confirm);
 	
-	                $('#lblAgentName').text(formData.agentname);
-	                $('#lblCurrency').text(formData.currency);
-	                $('#lblAmount').text(formData.amount);
+	                    $('#lblAgentName').text(agent_name);
+	                    $('#lblCurrency').text(request.currency);
+	                    $('#lblAmount').text(request.amount);
 	
-	                $(viewIDs.confirm + ' #btnConfirm').click(function () {
-	                    withdrawRequest(false);
-	                });
-	                $(viewIDs.confirm + ' #btnBack').click(function () {
-	                    setActiveView(viewIDs.form);
-	                });
-	                break;
+	                    FormManager.init(view_ids.confirm, [{ request_field: 'paymentagent_loginid', value: request.paymentagent_loginid }, { request_field: 'amount', value: request.amount }, { request_field: 'description', value: request.description }, { request_field: 'verification_code', value: request.verification_code }, { request_field: 'currency', value: request.currency }, { request_field: 'paymentagent_withdraw', value: 1 }]);
 	
+	                    FormManager.handleSubmit(view_ids.confirm, {}, withdrawResponse);
+	
+	                    $(view_ids.confirm + ' #btnBack').click(function () {
+	                        setActiveView(view_ids.form);
+	                    });
+	                    break;
+	                }
 	            case 1:
 	                // withdrawal success
-	                setActiveView(viewIDs.success);
-	                $('#successMessage').css('display', '').attr('class', 'success-msg').html('<ul class="checked"><li>' + localize('Your request to withdraw [_1] [_2] from your account [_3] to Payment Agent [_4] account has been successfully processed.', [formData.currency, formData.amount, Cookies.get('loginid'), formData.agentname]) + '</li></ul>');
+	                setActiveView(view_ids.success);
+	                $('#successMessage').css('display', '').attr('class', 'success-msg').html('<ul class="checked"><li>' + localize('Your request to withdraw [_1] [_2] from your account [_3] to Payment Agent [_4] account has been successfully processed.', [request.currency, request.amount, Cookies.get('loginid'), agent_name]) + '</li></ul>');
 	                break;
 	
 	            default:
 	                // error
 	                if (response.echo_req.dry_run === 1) {
-	                    setActiveView(viewIDs.form);
-	                    $('#formMessage').css('display', '').attr('class', errorClass).html(response.error.message);
+	                    setActiveView(view_ids.form);
+	                    $('#formMessage').css('display', '').attr('class', 'errorfield').html(response.error.message);
 	                } else if (response.error.code === 'InvalidToken') {
-	                    showPageError(template(Content.localize().textClickHereToRestart, [url_for('paymentagent/withdrawws')]));
+	                    showPageError(localize('Your token has expired. Please click [_1]here[_2] to restart the verification process.', ['<a href="javascript:;" onclick="window.location.reload();">', '</a>']));
 	                } else {
 	                    showPageError(response.error.message);
 	                }
@@ -77401,64 +77278,47 @@
 	    // ----- Message Functions -----
 	    // -----------------------------
 	    var showPageError = function showPageError(errMsg, id) {
-	        $(viewIDs.error + ' > p').addClass(hiddenClass);
+	        $(view_ids.error + ' > p').addClass(hidden_class);
 	        if (id) {
-	            $(viewIDs.error + ' #' + id).removeClass(hiddenClass);
+	            $(view_ids.error + ' #' + id).removeClass(hidden_class);
 	        } else {
-	            $(viewIDs.error + ' #custom-error').html(errMsg).removeClass(hiddenClass);
+	            $(view_ids.error + ' #custom-error').html(errMsg).removeClass(hidden_class);
 	        }
-	        setActiveView(viewIDs.error);
-	    };
-	
-	    var showError = function showError(fieldID, errMsg) {
-	        $(fieldID).parent().append($('<p/>', { class: errorClass, text: errMsg }));
-	        isValid = false;
-	    };
-	
-	    var clearError = function clearError(fieldID) {
-	        $(fieldID || viewIDs.form + ' .' + errorClass).remove();
+	        setActiveView(view_ids.error);
 	    };
 	
 	    // ----- View Control -----
-	    var setActiveView = function setActiveView(viewID) {
-	        $views.addClass(hiddenClass);
-	        $(viewID).removeClass(hiddenClass);
+	    var setActiveView = function setActiveView(view_id) {
+	        $views.addClass(hidden_class);
+	        $(view_id).removeClass(hidden_class);
 	    };
 	
 	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                if (response) {
-	                    var type = response.msg_type;
-	                    switch (type) {
-	                        case 'paymentagent_list':
-	                            PaymentAgentWithdrawWS.populateAgentsList(response);
-	                            break;
-	                        case 'paymentagent_withdraw':
-	                            PaymentAgentWithdrawWS.withdrawResponse(response);
-	                            break;
-	                        default:
-	                            break;
-	                    }
-	                }
+	        BinarySocket.wait('get_account_status').then(function () {
+	            $views = $('#paymentagent_withdrawal').find('.viewItem');
+	            $views.addClass(hidden_class);
+	
+	            if (Client.status_detected('withdrawal_locked, cashier_locked', 'any')) {
+	                showPageError('', 'withdrawal-locked-error');
+	            } else {
+	                BinarySocket.send({ paymentagent_list: Cookies.get('residence') }).then(function (response) {
+	                    return populateAgentsList(response);
+	                });
 	            }
 	        });
+	    };
 	
-	        Content.populate();
-	        BinarySocket.wait('get_account_status').then(function () {
-	            init();
-	        });
+	    var setAgentName = function setAgentName() {
+	        agent_name = $(field_ids.ddl_agents).find('option:selected').text();
+	        return true;
 	    };
 	
 	    return {
-	        onLoad: onLoad,
-	        populateAgentsList: populateAgentsList,
-	        withdrawResponse: withdrawResponse
+	        onLoad: onLoad
 	    };
 	}();
 	
-	module.exports = PaymentAgentWithdrawWS;
+	module.exports = PaymentAgentWithdraw;
 
 /***/ },
 /* 566 */
@@ -77561,180 +77421,72 @@
 
 	'use strict';
 	
-	var PaymentAgentTransfer = __webpack_require__(569).PaymentAgentTransfer;
-	var Content = __webpack_require__(447).Content;
-	
-	var PaymentAgentTransferSocket = function () {
-	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	
-	                if (response) {
-	                    PaymentAgentTransfer.handleResponse(response);
-	                }
-	            }
-	        });
-	        Content.populate();
-	        PaymentAgentTransfer.init();
-	    };
-	
-	    return {
-	        onLoad: onLoad
-	    };
-	}();
-	
-	module.exports = PaymentAgentTransferSocket;
-
-/***/ },
-/* 569 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var onlyNumericOnKeypress = __webpack_require__(473).onlyNumericOnKeypress;
+	var PaymentAgentTransferUI = __webpack_require__(569);
 	var Client = __webpack_require__(308).Client;
-	var PaymentAgentTransferData = __webpack_require__(570).PaymentAgentTransferData;
-	var PaymentAgentTransferUI = __webpack_require__(571).PaymentAgentTransferUI;
+	var State = __webpack_require__(306).State;
+	var Content = __webpack_require__(447).Content;
+	var FormManager = __webpack_require__(550);
 	
 	var PaymentAgentTransfer = function () {
 	    var hiddenClass = 'invisible';
 	
-	    var paymentAgentTransferHandler = function paymentAgentTransferHandler(response) {
-	        var req = response.echo_req;
+	    var balance = void 0,
+	        is_authenticated_payment_agent = void 0,
+	        common_request_fields = void 0,
+	        $insufficient_balance = void 0;
 	
-	        if (response.error) {
-	            if (req.dry_run === 1) {
-	                $('#transfer_error_client_id').removeClass(hiddenClass).text(response.error.message);
-	                return;
+	    var onLoad = function onLoad() {
+	        Content.populate();
+	        PaymentAgentTransferUI.initValues();
+	        BinarySocket.wait('get_settings', 'balance').then(function () {
+	            is_authenticated_payment_agent = State.get(['response', 'get_settings', 'get_settings', 'is_authenticated_payment_agent']);
+	            if (is_authenticated_payment_agent) {
+	                init();
+	            } else {
+	                setFormVisibility(false);
 	            }
-	            PaymentAgentTransferUI.showTransferError(response.error.message);
-	        }
-	
-	        if (response.paymentagent_transfer === 2) {
-	            PaymentAgentTransferUI.hideForm();
-	            PaymentAgentTransferUI.hideDone();
-	            PaymentAgentTransferUI.hideNotes();
-	
-	            PaymentAgentTransferUI.showConfirmation();
-	
-	            PaymentAgentTransferUI.updateConfirmView(response.client_to_full_name, req.transfer_to, req.amount, req.currency);
-	        }
-	
-	        if (response.paymentagent_transfer === 1) {
-	            PaymentAgentTransferUI.hideForm();
-	            PaymentAgentTransferUI.hideConfirmation();
-	            PaymentAgentTransferUI.hideNotes();
-	
-	            PaymentAgentTransferUI.showDone();
-	
-	            PaymentAgentTransferUI.updateDoneView(Client.get('loginid'), req.transfer_to, req.amount, req.currency);
-	        }
+	        });
 	    };
 	
-	    var init = function init(auth) {
-	        var $pa_form = $('#paymentagent_transfer'),
-	            $no_bal_err = $('#no_balance_error'),
-	            currency = Client.get('currency');
+	    var init = function init() {
+	        var form_id = '#frm_paymentagent_transfer';
+	        var $no_bal_err = $('#no_balance_error');
+	        var currency = Client.get('currency');
+	        balance = State.get(['response', 'balance', 'balance', 'balance']);
+	        $insufficient_balance = $('#insufficient_balance');
 	
-	        if (auth && !currency) {
+	        if (!currency || +balance === 0) {
+	            $('#pa_transfer_loading').remove();
 	            $no_bal_err.removeClass(hiddenClass);
-	            $pa_form.addClass(hiddenClass);
-	
 	            return;
 	        }
 	
 	        $no_bal_err.addClass(hiddenClass);
-	        setFormVisibility(Client.get('is_authenticated_payment_agent'));
+	        setFormVisibility(true);
 	        PaymentAgentTransferUI.updateFormView(currency);
 	
-	        var $submitFormButton = $pa_form.find('button#submit');
-	        var $clientIDInput = $pa_form.find('input#client_id');
-	        var $amountInput = $pa_form.find('input[name="amount"]');
+	        common_request_fields = [{ request_field: 'paymentagent_transfer', value: 1 }, { request_field: 'currency', value: currency }];
 	
-	        var $clientIDError = $('#transfer_error_client_id');
-	        var $amountError = $('#transfer_error_amount');
-	        var $insufficientBalError = $('#insufficient-balance-error');
+	        FormManager.init(form_id, [{ selector: '#client_id', validations: ['req', ['regular', { regex: /^\w+\d+$/, message: 'Please enter a valid Login ID.' }]], request_field: 'transfer_to' }, { selector: '#amount', validations: ['req', ['number', { type: 'float', decimals: '1, 2', min: 10, max: 2000 }]] }, { request_field: 'dry_run', value: 1 }].concat(common_request_fields));
 	
-	        var $paConfirmTransferButton = $('#pa_confirm_transfer').find('#confirm_transfer');
-	        var $paConfirmBackButton = $('#back_transfer');
+	        FormManager.handleSubmit(form_id, {}, responseHandler, additionalCheck);
 	
-	        $submitFormButton.off('click').click(function () {
-	            var clientID = $clientIDInput.val();
-	            var amount = $amountInput.val();
-	
-	            if (!clientID) {
-	                $clientIDError.removeClass(hiddenClass);
-	                $clientIDError.text('Please enter the Login ID to transfer funds.');
-	                return;
-	            }
-	
-	            if (!/^\w+\d+$/.test(clientID)) {
-	                $clientIDError.removeClass(hiddenClass);
-	                $clientIDError.text('Please enter a valid Login ID.');
-	                return;
-	            }
-	
-	            if (!amount) {
-	                $amountError.removeClass(hiddenClass);
-	                return;
-	            }
-	
-	            if (amount > 2000 || amount < 10) {
-	                $amountError.removeClass(hiddenClass);
-	                return;
-	            }
-	
-	            var bal = +Client.get('balance');
-	            if (amount > bal) {
-	                $insufficientBalError.removeClass(hiddenClass);
-	                return;
-	            }
-	
-	            PaymentAgentTransferData.transfer(clientID, currency, amount, true);
-	        });
-	
-	        $paConfirmTransferButton.off('click').click(function () {
-	            $paConfirmTransferButton.attr('disabled', 'disabled');
-	            var clientID = $clientIDInput.val();
-	            var amount = $amountInput.val();
-	            PaymentAgentTransferData.transfer(clientID, currency, amount, false);
-	        });
-	
-	        $paConfirmBackButton.off('click').click(function () {
-	            PaymentAgentTransferUI.showForm();
-	            PaymentAgentTransferUI.showNotes();
-	            PaymentAgentTransferUI.hideConfirmation();
-	            PaymentAgentTransferUI.hideDone();
-	        });
-	
-	        $clientIDInput.keyup(function (ev) {
-	            $clientIDError.addClass(hiddenClass);
-	
-	            if (ev.which === 13) {
-	                $submitFormButton.click();
-	            }
-	        });
-	
-	        $amountInput.keypress(onlyNumericOnKeypress);
-	
-	        $amountInput.keyup(function (ev) {
-	            $amountError.addClass(hiddenClass);
-	            $insufficientBalError.addClass(hiddenClass);
-	
-	            if (ev.which === 13) {
-	                $submitFormButton.click();
-	            }
+	        $('#amount').on('input change', function () {
+	            checkBalance($(this).val());
 	        });
 	    };
 	
-	    var error_if_not_pa = function error_if_not_pa(response) {
-	        if (response.get_settings.is_authenticated_payment_agent) {
-	            setFormVisibility(true);
-	            PaymentAgentTransfer.init(true);
-	        } else {
-	            setFormVisibility(false);
+	    var checkBalance = function checkBalance(amount) {
+	        if (+amount > +balance) {
+	            $insufficient_balance.removeClass(hiddenClass);
+	            return false;
 	        }
+	        $insufficient_balance.addClass(hiddenClass);
+	        return true;
+	    };
+	
+	    var additionalCheck = function additionalCheck(req) {
+	        return checkBalance(req.amount);
 	    };
 	
 	    var setFormVisibility = function setFormVisibility(is_visible) {
@@ -77745,65 +77497,66 @@
 	        } else {
 	            PaymentAgentTransferUI.hideForm();
 	            PaymentAgentTransferUI.hideNotes();
-	            if (!Client.get('is_authenticated_payment_agent')) {
+	            if (!is_authenticated_payment_agent) {
 	                $('#pa_transfer_loading').remove();
 	                $('#not_pa_error').removeClass('invisible');
 	            }
 	        }
 	    };
 	
-	    var handleResponse = function handleResponse(response) {
-	        var type = response.msg_type;
-	        if (type === 'get_settings') {
-	            error_if_not_pa(response);
+	    var responseHandler = function responseHandler(response) {
+	        var req = response.echo_req;
+	        var error = response.error;
+	
+	        if (error) {
+	            if (req.dry_run === 1) {
+	                $('#form_error').text(error.message).removeClass(hiddenClass);
+	                return;
+	            }
+	            PaymentAgentTransferUI.showTransferError(error.message);
+	            return;
 	        }
 	
-	        if (type === 'paymentagent_transfer') {
-	            paymentAgentTransferHandler(response);
+	        if (response.paymentagent_transfer === 2) {
+	            PaymentAgentTransferUI.hideFirstForm();
+	            PaymentAgentTransferUI.showConfirmation();
+	            PaymentAgentTransferUI.updateConfirmView(response.client_to_full_name, req.transfer_to.toUpperCase(), req.amount, req.currency);
+	            initConfirm(req);
+	            return;
+	        }
+	
+	        if (response.paymentagent_transfer === 1) {
+	            PaymentAgentTransferUI.hideFirstForm();
+	            PaymentAgentTransferUI.showDone();
+	            PaymentAgentTransferUI.updateDoneView(Client.get('loginid'), req.transfer_to.toUpperCase(), req.amount, req.currency);
 	        }
 	    };
 	
-	    return {
-	        init: init,
-	        handleResponse: handleResponse
-	    };
-	}();
+	    var initConfirm = function initConfirm(req) {
+	        var confirm_form_id = '#frm_confirm_transfer';
 	
-	module.exports = {
-	    PaymentAgentTransfer: PaymentAgentTransfer
-	};
-
-/***/ },
-/* 570 */
-/***/ function(module, exports) {
-
-	'use strict';
+	        FormManager.init(confirm_form_id, [{ request_field: 'transfer_to', value: req.transfer_to }, { request_field: 'amount', value: req.amount }].concat(common_request_fields));
 	
-	var PaymentAgentTransferData = function () {
-	    'use strict';
+	        FormManager.handleSubmit(confirm_form_id, {}, responseHandler);
 	
-	    var transfer = function transfer(transferTo, currency, amount, toDryRun) {
-	        var dryRun = toDryRun ? 1 : 0;
-	        BinarySocket.send({
-	            paymentagent_transfer: 1,
-	            transfer_to: transferTo,
-	            currency: currency,
-	            amount: amount,
-	            dry_run: dryRun
+	        $('#back_transfer').off('click').click(function () {
+	            PaymentAgentTransferUI.showForm();
+	            PaymentAgentTransferUI.showNotes();
+	            PaymentAgentTransferUI.hideConfirmation();
+	            PaymentAgentTransferUI.hideDone();
+	            $('#form_error').addClass(hiddenClass);
 	        });
 	    };
 	
 	    return {
-	        transfer: transfer
+	        onLoad: onLoad
 	    };
 	}();
 	
-	module.exports = {
-	    PaymentAgentTransferData: PaymentAgentTransferData
-	};
+	module.exports = PaymentAgentTransfer;
 
 /***/ },
-/* 571 */
+/* 569 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77813,55 +77566,77 @@
 	var PaymentAgentTransferUI = function () {
 	    'use strict';
 	
-	    var hiddenClass = 'invisible';
+	    var hidden_class = 'invisible';
+	    var $paymentagent_transfer = void 0,
+	        $confirm_transfer = void 0,
+	        $done_transfer = void 0,
+	        $notes_transfer = void 0;
+	
+	    var initValues = function initValues() {
+	        $paymentagent_transfer = $('#frm_paymentagent_transfer');
+	        $confirm_transfer = $('#frm_confirm_transfer');
+	        $done_transfer = $('#pa_transfer_done');
+	        $notes_transfer = $('#paymentagent_transfer_notes');
+	    };
 	
 	    var hideForm = function hideForm() {
-	        $('#paymentagent_transfer').addClass(hiddenClass);
+	        $paymentagent_transfer.addClass(hidden_class);
 	    };
+	
 	    var showForm = function showForm() {
-	        $('#paymentagent_transfer').removeClass(hiddenClass);
+	        $paymentagent_transfer.removeClass(hidden_class);
 	    };
 	
 	    var hideConfirmation = function hideConfirmation() {
-	        $('#pa_confirm_transfer').addClass(hiddenClass);
+	        $confirm_transfer.addClass(hidden_class);
 	    };
+	
 	    var showConfirmation = function showConfirmation() {
-	        $('#pa_confirm_transfer').removeClass(hiddenClass).find('.errorfield').addClass(hiddenClass);
+	        $confirm_transfer.find('.errorfield').addClass(hidden_class).end().removeClass(hidden_class);
 	    };
 	
 	    var hideDone = function hideDone() {
-	        $('#pa_transfer_done').addClass(hiddenClass);
+	        $done_transfer.addClass(hidden_class);
 	    };
+	
 	    var showDone = function showDone() {
-	        $('#pa_transfer_done').removeClass(hiddenClass);
+	        $done_transfer.removeClass(hidden_class);
 	    };
 	
 	    var hideNotes = function hideNotes() {
-	        $('#paymentagent_transfer_notes').addClass(hiddenClass);
-	    };
-	    var showNotes = function showNotes() {
-	        $('#paymentagent_transfer_notes').removeClass(hiddenClass);
-	    };
-	    var updateFormView = function updateFormView(currency) {
-	        $('#paymentagent_transfer').find('label[for="amount"]').text(localize('Amount') + ' ' + currency);
+	        $notes_transfer.addClass(hidden_class);
 	    };
 	
-	    var updateConfirmView = function updateConfirmView(username, loginid, amount, currency) {
-	        $('#pa_confirm_transfer').find('td#user-name').empty().text(username).end().find('td#login-id').empty().text(loginid).end().find('td#amount').empty().text(currency + ' ' + amount);
+	    var showNotes = function showNotes() {
+	        $notes_transfer.removeClass(hidden_class);
 	    };
 	
 	    var showTransferError = function showTransferError(err) {
-	        $('#pa_confirm_transfer').find('.errorfield').removeClass(hiddenClass).text(localize(err));
+	        $confirm_transfer.find('.errorfield').text(localize(err)).removeClass(hidden_class);
+	    };
+	
+	    var updateFormView = function updateFormView(currency) {
+	        $paymentagent_transfer.find('label[for="amount"]').text(localize('Amount') + ' ' + currency);
+	    };
+	
+	    var updateConfirmView = function updateConfirmView(username, loginid, amount, currency) {
+	        $confirm_transfer.find('#user_name').empty().text(username).end().find('#loginid').empty().text(loginid).end().find('#confirm_amount').empty().text(currency + ' ' + amount);
 	    };
 	
 	    var updateDoneView = function updateDoneView(fromID, toID, amount, currency) {
 	        var templateString = 'Your request to transfer [_1] [_2] from [_3] to [_4] has been successfully processed.';
 	        var confirmMsg = localize(templateString, [amount, currency, fromID, toID]);
+	        $done_transfer.find(' > #confirm_msg').text(confirmMsg).removeClass(hidden_class);
+	    };
 	
-	        $('#pa_transfer_done').find(' > #confirm-msg').text(confirmMsg).removeClass(hiddenClass);
+	    var hideFirstForm = function hideFirstForm() {
+	        hideForm();
+	        hideConfirmation();
+	        hideNotes();
 	    };
 	
 	    return {
+	        initValues: initValues,
 	        hideForm: hideForm,
 	        showForm: showForm,
 	        hideConfirmation: hideConfirmation,
@@ -77873,16 +77648,15 @@
 	        showTransferError: showTransferError,
 	        updateFormView: updateFormView,
 	        updateConfirmView: updateConfirmView,
-	        updateDoneView: updateDoneView
+	        updateDoneView: updateDoneView,
+	        hideFirstForm: hideFirstForm
 	    };
 	}();
 	
-	module.exports = {
-	    PaymentAgentTransferUI: PaymentAgentTransferUI
-	};
+	module.exports = PaymentAgentTransferUI;
 
 /***/ },
-/* 572 */
+/* 570 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -77891,14 +77665,14 @@
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
-	var FlexTableUI = __webpack_require__(573).FlexTableUI;
+	var FlexTableUI = __webpack_require__(571).FlexTableUI;
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var ValidateV2 = __webpack_require__(574).ValidateV2;
-	var customError = __webpack_require__(576).customError;
-	var bind_validation = __webpack_require__(576).bind_validation;
-	var ValidationUI = __webpack_require__(576).ValidationUI;
-	var dv = __webpack_require__(575);
+	var ValidateV2 = __webpack_require__(572).ValidateV2;
+	var customError = __webpack_require__(574).customError;
+	var bind_validation = __webpack_require__(574).bind_validation;
+	var ValidationUI = __webpack_require__(574).ValidationUI;
+	var dv = __webpack_require__(573);
 	
 	var APITokenWS = function () {
 	    'use strict';
@@ -78115,7 +77889,7 @@
 	module.exports = APITokenWS;
 
 /***/ },
-/* 573 */
+/* 571 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78177,7 +77951,7 @@
 	};
 
 /***/ },
-/* 574 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78186,7 +77960,7 @@
 	
 	var template = __webpack_require__(307).template;
 	var moment = __webpack_require__(313);
-	var dv = __webpack_require__(575);
+	var dv = __webpack_require__(573);
 	var Content = __webpack_require__(447).Content;
 	var localize = __webpack_require__(426).localize;
 	
@@ -78309,7 +78083,7 @@
 	};
 
 /***/ },
-/* 575 */
+/* 573 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -78390,14 +78164,14 @@
 	module.exports = dv;
 
 /***/ },
-/* 576 */
+/* 574 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var done_typing = __webpack_require__(577).done_typing;
-	var formToObj = __webpack_require__(578).formToObj;
-	var dv = __webpack_require__(575);
+	var done_typing = __webpack_require__(575).done_typing;
+	var formToObj = __webpack_require__(576).formToObj;
+	var dv = __webpack_require__(573);
 	var localize = __webpack_require__(426).localize;
 	
 	var ValidationUI = {
@@ -78563,7 +78337,7 @@
 	};
 
 /***/ },
-/* 577 */
+/* 575 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -78601,7 +78375,7 @@
 	};
 
 /***/ },
-/* 578 */
+/* 576 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -78685,7 +78459,7 @@
 	};
 
 /***/ },
-/* 579 */
+/* 577 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78693,7 +78467,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
-	var ApplicationsInit = __webpack_require__(580);
+	var ApplicationsInit = __webpack_require__(578);
 	
 	var AuthorisedApps = function () {
 	    var onLoad = function onLoad() {
@@ -78717,13 +78491,13 @@
 	module.exports = AuthorisedApps;
 
 /***/ },
-/* 580 */
+/* 578 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var ApplicationsUI = __webpack_require__(581);
-	var ApplicationsData = __webpack_require__(582);
+	var ApplicationsUI = __webpack_require__(579);
+	var ApplicationsData = __webpack_require__(580);
 	
 	var ApplicationsInit = function () {
 	    'use strict';
@@ -78752,7 +78526,7 @@
 	module.exports = ApplicationsInit;
 
 /***/ },
-/* 581 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78761,8 +78535,8 @@
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
 	var localize = __webpack_require__(426).localize;
 	var Button = __webpack_require__(478).Button;
-	var FlexTableUI = __webpack_require__(573).FlexTableUI;
-	var ApplicationsData = __webpack_require__(582);
+	var FlexTableUI = __webpack_require__(571).FlexTableUI;
+	var ApplicationsData = __webpack_require__(580);
 	
 	var ApplicationsUI = function () {
 	    'use strict';
@@ -78854,7 +78628,7 @@
 	module.exports = ApplicationsUI;
 
 /***/ },
-/* 582 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78882,7 +78656,7 @@
 	module.exports = ApplicationsData;
 
 /***/ },
-/* 583 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -78973,12 +78747,12 @@
 	module.exports = CashierPassword;
 
 /***/ },
-/* 584 */
+/* 582 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryInit = __webpack_require__(585);
+	var IPHistoryInit = __webpack_require__(583);
 	var BinaryPjax = __webpack_require__(309);
 	var Content = __webpack_require__(447).Content;
 	var japanese_client = __webpack_require__(311).japanese_client;
@@ -79005,13 +78779,13 @@
 	module.exports = IPHistory;
 
 /***/ },
-/* 585 */
+/* 583 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var IPHistoryUI = __webpack_require__(586);
-	var IPHistoryData = __webpack_require__(587);
+	var IPHistoryUI = __webpack_require__(584);
+	var IPHistoryData = __webpack_require__(585);
 	
 	var IPHistoryInit = function () {
 	    'use strict';
@@ -79048,13 +78822,13 @@
 	module.exports = IPHistoryInit;
 
 /***/ },
-/* 586 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLocalTimeOnHover = __webpack_require__(430).Clock.showLocalTimeOnHover;
-	var FlexTableUI = __webpack_require__(573).FlexTableUI;
+	var FlexTableUI = __webpack_require__(571).FlexTableUI;
 	var moment = __webpack_require__(313);
 	var localize = __webpack_require__(426).localize;
 	
@@ -79128,7 +78902,7 @@
 	module.exports = IPHistoryUI;
 
 /***/ },
-/* 587 */
+/* 585 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -79175,12 +78949,12 @@
 	module.exports = IPHistoryData;
 
 /***/ },
-/* 588 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var LimitsInit = __webpack_require__(589);
+	var LimitsInit = __webpack_require__(587);
 	var Content = __webpack_require__(447).Content;
 	
 	var Limits = function () {
@@ -79209,7 +78983,7 @@
 	module.exports = Limits;
 
 /***/ },
-/* 589 */
+/* 587 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79217,7 +78991,7 @@
 	var template = __webpack_require__(307).template;
 	var Content = __webpack_require__(447).Content;
 	var addComma = __webpack_require__(432).addComma;
-	var LimitsUI = __webpack_require__(590);
+	var LimitsUI = __webpack_require__(588);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var elementTextContent = __webpack_require__(312).elementTextContent;
@@ -79297,7 +79071,7 @@
 	module.exports = LimitsInit;
 
 /***/ },
-/* 590 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79370,7 +79144,7 @@
 	module.exports = LimitsUI;
 
 /***/ },
-/* 591 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79408,19 +79182,19 @@
 	module.exports = Settings;
 
 /***/ },
-/* 592 */
+/* 590 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var showLoadingImage = __webpack_require__(307).showLoadingImage;
 	var Content = __webpack_require__(447).Content;
-	var ValidateV2 = __webpack_require__(574).ValidateV2;
-	var ValidationUI = __webpack_require__(576).ValidationUI;
-	var validate_object = __webpack_require__(576).validate_object;
-	var bind_validation = __webpack_require__(576).bind_validation;
+	var ValidateV2 = __webpack_require__(572).ValidateV2;
+	var ValidationUI = __webpack_require__(574).ValidationUI;
+	var validate_object = __webpack_require__(574).validate_object;
+	var bind_validation = __webpack_require__(574).bind_validation;
 	var moment = __webpack_require__(313);
-	var dv = __webpack_require__(575);
+	var dv = __webpack_require__(573);
 	var TimePicker = __webpack_require__(474).TimePicker;
 	var DatePicker = __webpack_require__(467).DatePicker;
 	var dateValueChanged = __webpack_require__(312).dateValueChanged;
@@ -79756,7 +79530,7 @@
 	module.exports = SelfExclusionWS;
 
 /***/ },
-/* 593 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -79769,7 +79543,7 @@
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
 	var FormManager = __webpack_require__(550);
 	var moment = __webpack_require__(313);
-	__webpack_require__(594);
+	__webpack_require__(592);
 	
 	var SettingsDetailsWS = function () {
 	    'use strict';
@@ -80017,7 +79791,7 @@
 	module.exports = SettingsDetailsWS;
 
 /***/ },
-/* 594 */
+/* 592 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var require;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -85748,7 +85522,7 @@
 
 
 /***/ },
-/* 595 */
+/* 593 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85829,7 +85603,7 @@
 	module.exports = TopUpVirtualWS;
 
 /***/ },
-/* 596 */
+/* 594 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85863,7 +85637,7 @@
 	module.exports = LostPassword;
 
 /***/ },
-/* 597 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85873,7 +85647,7 @@
 	var State = __webpack_require__(306).State;
 	var default_redirect_url = __webpack_require__(310).default_redirect_url;
 	var objectNotEmpty = __webpack_require__(307).objectNotEmpty;
-	var AccountOpening = __webpack_require__(598);
+	var AccountOpening = __webpack_require__(596);
 	var FormManager = __webpack_require__(550);
 	var toISOFormat = __webpack_require__(432).toISOFormat;
 	var moment = __webpack_require__(313);
@@ -85972,12 +85746,12 @@
 	module.exports = FinancialAccOpening;
 
 /***/ },
-/* 598 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var generateBirthDate = __webpack_require__(599);
+	var generateBirthDate = __webpack_require__(597);
 	var BinaryPjax = __webpack_require__(309);
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
@@ -85985,7 +85759,7 @@
 	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
 	var FormManager = __webpack_require__(550);
 	var Cookies = __webpack_require__(303);
-	__webpack_require__(594);
+	__webpack_require__(592);
 	
 	var redirectCookie = function redirectCookie() {
 	    if (Client.get('has_real')) {
@@ -86175,7 +85949,7 @@
 	};
 
 /***/ },
-/* 599 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86202,7 +85976,7 @@
 	module.exports = generateBirthDate;
 
 /***/ },
-/* 600 */
+/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86210,7 +85984,7 @@
 	var BinaryPjax = __webpack_require__(309);
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
-	var AccountOpening = __webpack_require__(598);
+	var AccountOpening = __webpack_require__(596);
 	var detect_hedging = __webpack_require__(312).detect_hedging;
 	var FormManager = __webpack_require__(550);
 	
@@ -86257,13 +86031,13 @@
 	module.exports = JapanAccOpening;
 
 /***/ },
-/* 601 */
+/* 599 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Client = __webpack_require__(308).Client;
-	var AccountOpening = __webpack_require__(598);
+	var AccountOpening = __webpack_require__(596);
 	var FormManager = __webpack_require__(550);
 	
 	var RealAccOpening = function () {
@@ -86329,7 +86103,7 @@
 	module.exports = RealAccOpening;
 
 /***/ },
-/* 602 */
+/* 600 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86338,7 +86112,7 @@
 	var localize = __webpack_require__(426).localize;
 	var url_for = __webpack_require__(310).url_for;
 	var template = __webpack_require__(307).template;
-	var getResidence = __webpack_require__(598).getResidence;
+	var getResidence = __webpack_require__(596).getResidence;
 	var japanese_client = __webpack_require__(311).japanese_client;
 	var FormManager = __webpack_require__(550);
 	var TrafficSource = __webpack_require__(532).TrafficSource;
@@ -86436,7 +86210,7 @@
 	module.exports = VirtualAccOpening;
 
 /***/ },
-/* 603 */
+/* 601 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86444,7 +86218,7 @@
 	var Client = __webpack_require__(308).Client;
 	var localize = __webpack_require__(426).localize;
 	var Login = __webpack_require__(304).Login;
-	var generateBirthDate = __webpack_require__(599);
+	var generateBirthDate = __webpack_require__(597);
 	var FormManager = __webpack_require__(550);
 	
 	var ResetPassword = function () {
@@ -86507,89 +86281,85 @@
 	module.exports = ResetPassword;
 
 /***/ },
-/* 604 */
+/* 602 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var toJapanTimeIfNeeded = __webpack_require__(430).Clock.toJapanTimeIfNeeded;
-	var KnowledgeTestUI = __webpack_require__(605).KnowledgeTestUI;
-	var KnowledgeTestData = __webpack_require__(606).KnowledgeTestData;
+	var KnowledgeTestUI = __webpack_require__(603);
 	var BinaryPjax = __webpack_require__(309);
-	var Client = __webpack_require__(308).Client;
+	var toJapanTimeIfNeeded = __webpack_require__(430).Clock.toJapanTimeIfNeeded;
 	var Header = __webpack_require__(524).Header;
 	var localize = __webpack_require__(426).localize;
+	var url_for = __webpack_require__(310).url_for;
 	
 	var KnowledgeTest = function () {
 	    'use strict';
 	
-	    var hiddenClass = 'invisible';
+	    var hidden_class = 'invisible';
 	
 	    var submitted = {};
-	    var submitCompleted = false;
-	    var randomPicks = [];
-	    var randomPicksObj = {};
-	    var resultScore = 0;
+	    var submit_completed = false;
+	    var random_picks = [];
+	    var obj_random_picks = {};
+	    var result_score = 0;
 	
-	    var passMsg = '{JAPAN ONLY}Congratulations, you have pass the test, our Customer Support will contact you shortly.';
-	    var failMsg = '{JAPAN ONLY}Sorry, you have failed the test, please try again after 24 hours.';
+	    var msg_pass = '{JAPAN ONLY}Congratulations, you have pass the test, our Customer Support will contact you shortly.';
+	    var msg_fail = '{JAPAN ONLY}Sorry, you have failed the test, please try again after 24 hours.';
 	
 	    var questionAnswerHandler = function questionAnswerHandler(ev) {
-	        var selected = ev.target.value;
-	        var qid = ev.target.name;
-	        submitted[qid] = selected === '1';
+	        submitted[ev.target.name] = +ev.target.value === 1;
 	    };
 	
 	    var submitHandler = function submitHandler() {
-	        if (submitCompleted) {
-	            return;
-	        }
-	        var answeredQid = Object.keys(submitted).map(function (k) {
+	        if (submit_completed) return;
+	
+	        var answered_qid = Object.keys(submitted).map(function (k) {
 	            return +k;
 	        });
-	        if (answeredQid.length !== 20) {
+	        if (answered_qid.length !== 20) {
 	            $('#knowledge-test-instructions').addClass('invisible');
 	            $('#knowledge-test-msg').addClass('notice-msg').text(localize('You need to finish all 20 questions.'));
 	
-	            var unAnswered = randomPicks.reduce(function (a, b) {
+	            var unanswered = random_picks.reduce(function (a, b) {
 	                return a.concat(b);
 	            }).find(function (q) {
-	                return answeredQid.indexOf(q.id) === -1;
+	                return answered_qid.indexOf(q.id) === -1;
 	            }).id;
 	
-	            $.scrollTo('a[name="' + unAnswered + '"]', 500, { offset: -10 });
+	            $.scrollTo('a[name="' + unanswered + '"]', 500, { offset: -10 });
 	            return;
 	        }
 	
 	        // compute score
 	        var questions = [];
 	        Object.keys(submitted).forEach(function (k) {
-	            var questionInfo = randomPicksObj[k],
-	                score = submitted[k] === questionInfo.correct_answer ? 1 : 0;
-	            resultScore += score;
-	            questionInfo.answer = submitted[k];
+	            var question_info = obj_random_picks[k];
+	            var score = submitted[k] === question_info.correct_answer ? 1 : 0;
+	            result_score += score;
+	            question_info.answer = submitted[k];
 	            questions.push({
-	                category: questionInfo.category,
-	                id: questionInfo.id,
-	                question: questionInfo.question,
-	                answer: questionInfo.answer ? 1 : 0,
+	                category: question_info.category,
+	                id: question_info.id,
+	                question: question_info.question,
+	                answer: question_info.answer ? 1 : 0,
 	                pass: score
 	            });
 	        });
-	        KnowledgeTestData.sendResult(questions, resultScore);
-	        submitCompleted = true;
+	        sendResult(questions);
+	        submit_completed = true;
 	    };
 	
 	    var showQuestionsTable = function showQuestionsTable() {
-	        for (var j = 0; j < randomPicks.length; j++) {
-	            var table = KnowledgeTestUI.createQuestionTable(randomPicks[j]);
+	        for (var j = 0; j < random_picks.length; j++) {
+	            var table = KnowledgeTestUI.createQuestionTable(random_picks[j]);
 	            $('#section' + (j + 1) + '-question').append(table);
 	        }
 	
 	        var $questions = $('#knowledge-test-questions');
 	        $questions.find('input[type=radio]').click(questionAnswerHandler);
 	        $('#knowledge-test-submit').click(submitHandler);
-	        $questions.removeClass(hiddenClass);
+	        $questions.removeClass(hidden_class);
 	        $('#knowledge-test-msg').text(localize('{JAPAN ONLY}Please complete the following questions.'));
 	        $('#knowledge-test-instructions').removeClass('invisible');
 	    };
@@ -86597,238 +86367,70 @@
 	    var showResult = function showResult(score, time) {
 	        $('#knowledge-test-instructions').addClass('invisible');
 	        $('#knowledge-test-header').text(localize('{JAPAN ONLY}Knowledge Test Result'));
-	        var msg = void 0;
-	        if (score >= 14) {
-	            msg = passMsg;
-	            Client.set('jp_status', 'jp_activation_pending');
-	            Header.upgrade_message_visibility();
-	        } else {
-	            msg = failMsg;
-	        }
+	        var msg = score >= 14 ? msg_pass : msg_fail;
 	        $('#knowledge-test-msg').text(localize(msg));
 	
-	        var $resultTable = KnowledgeTestUI.createResultUI(score, time);
+	        var $result_table = KnowledgeTestUI.createResultUI(score, time);
 	
-	        $('#knowledge-test-container').append($resultTable);
-	        $('#knowledge-test-questions').addClass(hiddenClass);
+	        $('#knowledge-test-container').append($result_table);
+	        $('#knowledge-test-questions').addClass(hidden_class);
 	    };
 	
 	    var showMsgOnly = function showMsgOnly(msg) {
-	        $('#knowledge-test-questions').addClass(hiddenClass);
+	        $('#knowledge-test-questions').addClass(hidden_class);
 	        $('#knowledge-test-msg').text(localize(msg));
 	        $('#knowledge-test-instructions').addClass('invisible');
 	    };
 	
-	    var showDisallowedMsg = function showDisallowedMsg(jpStatus) {
-	        var msgTemplate = '{JAPAN ONLY}Dear customer, you are not allowed to take knowledge test until [_1]. Last test taken at [_2].';
-	
-	        var msg = localize(msgTemplate, [toJapanTimeIfNeeded(jpStatus.next_test_epoch), toJapanTimeIfNeeded(jpStatus.last_test_epoch)]);
-	
-	        showMsgOnly(msg);
-	    };
-	
-	    var showCompletedMsg = function showCompletedMsg() {
-	        var msg = "{JAPAN ONLY}Dear customer, you've already completed the knowledge test, please proceed to next step.";
-	        showMsgOnly(msg);
+	    var showDisallowedMsg = function showDisallowedMsg(jp_status) {
+	        return showMsgOnly(localize('{JAPAN ONLY}Dear customer, you are not allowed to take knowledge test until [_1]. Last test taken at [_2].', [toJapanTimeIfNeeded(jp_status.next_test_epoch), toJapanTimeIfNeeded(jp_status.last_test_epoch)]));
 	    };
 	
 	    var populateQuestions = function populateQuestions() {
-	        randomPicks = KnowledgeTestData.randomPick20();
-	        randomPicks.reduce(function (a, b) {
+	        random_picks = randomPick20();
+	        random_picks.reduce(function (a, b) {
 	            return a.concat(b);
 	        }).forEach(function (question) {
-	            randomPicksObj[question.id] = question;
+	            obj_random_picks[question.id] = question;
 	        });
 	
 	        showQuestionsTable();
 	    };
 	
 	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                var type = response.msg_type;
-	                var passthrough = response.echo_req.passthrough && response.echo_req.passthrough.key;
+	        // need to send get_settings because client status needs to be checked against latest available data
+	        BinarySocket.send({ get_settings: 1 }, true).then(function (response) {
+	            var jp_status = response.get_settings.jp_account_status;
 	
-	                if (type === 'get_settings' && passthrough === 'knowledgetest') {
-	                    var jpStatus = response.get_settings.jp_account_status;
+	            if (!jp_status) {
+	                BinaryPjax.load('/');
+	                return;
+	            }
 	
-	                    if (!jpStatus) {
-	                        BinaryPjax.load('/');
-	                        return;
-	                    }
+	            // show knowledge test link in header after updated get_settings call
+	            Header.upgrade_message_visibility();
 	
-	                    switch (jpStatus.status) {
-	                        case 'jp_knowledge_test_pending':
+	            switch (jp_status.status) {
+	                case 'jp_knowledge_test_pending':
+	                    populateQuestions();
+	                    break;
+	                case 'jp_knowledge_test_fail':
+	                    {
+	                        if (Date.now() >= jp_status.next_test_epoch * 1000) {
+	                            // show Knowledge Test cannot be taken
 	                            populateQuestions();
-	                            break;
-	                        case 'jp_knowledge_test_fail':
-	                            {
-	                                if (Date.now() >= jpStatus.next_test_epoch * 1000) {
-	                                    // show Knowledge Test cannot be taken
-	                                    populateQuestions();
-	                                } else {
-	                                    showDisallowedMsg(jpStatus);
-	                                }
-	                                break;
-	                            }
-	                        case 'jp_activation_pending':
-	                            showCompletedMsg();
-	                            break;
-	                        default:
-	                            {
-	                                console.warn('Unexpected jp status');
-	                                BinaryPjax.load('/');
-	                            }
+	                        } else {
+	                            showDisallowedMsg(jp_status);
+	                        }
+	                        break;
 	                    }
-	                } else if (type === 'jp_knowledge_test') {
-	                    if (!response.error) {
-	                        showResult(resultScore, response.jp_knowledge_test.test_taken_epoch * 1000);
-	                        $('html, body').animate({ scrollTop: 0 }, 'slow');
-	
-	                        $('#knowledgetest-link').addClass(hiddenClass); // hide it anyway
-	                    } else if (response.error.code === 'TestUnavailableNow') {
-	                        showMsgOnly('{JAPAN ONLY}The test is unavailable now, test can only be taken again on next business day with respect of most recent test.');
-	                    } else {
-	                        $('#form-msg').html(response.error.message).removeClass(hiddenClass);
-	                        submitCompleted = false;
+	                default:
+	                    {
+	                        window.location.href = url_for('/'); // needs to be loaded without pjax
 	                    }
-	                }
 	            }
 	        });
-	
-	        BinarySocket.send({ get_settings: 1, passthrough: { key: 'knowledgetest' } }, true);
 	    };
-	
-	    return {
-	        onLoad: onLoad
-	    };
-	}();
-	
-	module.exports = KnowledgeTest;
-
-/***/ },
-/* 605 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var moment = __webpack_require__(313);
-	var localize = __webpack_require__(426).localize;
-	
-	var KnowledgeTestUI = function () {
-	    'use strict';
-	
-	    var createTrueFalseBox = function createTrueFalseBox(question, showAnswer) {
-	        var qid = question.id;
-	        var trueId = qid + 'true';
-	        var falseId = qid + 'false';
-	
-	        var $trueButton = $('<input />', {
-	            type: 'radio',
-	            name: qid,
-	            id: trueId,
-	            value: '1'
-	        });
-	        // var $trueLabel = $('<label></label>', {class: 'img-holder true', for: trueId, value: '1'});
-	        var $trueTd = $('<td></td>').append($trueButton);
-	
-	        var $falseButton = $('<input />', {
-	            type: 'radio',
-	            name: qid,
-	            id: falseId,
-	            value: '0'
-	        });
-	        // var $falseLabel = $('<label></label>', {class: 'img-holder false', for: falseId, value: '0'});
-	        var $falseTd = $('<td></td>').append($falseButton);
-	
-	        if (showAnswer) {
-	            if (question.correct_answer) {
-	                $trueButton.prop('checked', true);
-	            } else {
-	                $falseButton.prop('checked', true);
-	            }
-	            $trueButton.attr('disabled', true);
-	            $falseButton.attr('disabled', true);
-	        }
-	
-	        return [$trueTd, $falseTd];
-	    };
-	
-	    var createQuestionRow = function createQuestionRow(questionNo, question, showAnswer) {
-	        var $questionRow = $('<tr></tr>', { id: questionNo, class: 'question' });
-	        var $questionData = $('<td></td>').text(localize(question.question_localized));
-	        var $questionLink = $('<a></a>', { name: question.id });
-	        $questionData.prepend($questionLink);
-	
-	        var trueFalse = createTrueFalseBox(question, showAnswer);
-	
-	        return $questionRow.append($questionData).append(trueFalse[0]).append(trueFalse[1]);
-	    };
-	
-	    var createQuestionTable = function createQuestionTable(questions, showAnswer) {
-	        var $header = $('<tr></tr>');
-	        var $questionColHeader = $('<th></th>', { id: 'question-header', class: 'question-col' }).text(localize('Questions'));
-	
-	        var $trueColHeader = $('<th></th>', { id: 'true-header', class: 'true-col' }).text(localize('True'));
-	
-	        var $falseColHeader = $('<th></th>', { id: 'fasle-header', class: 'false-col' }).text(localize('False'));
-	
-	        $header.append($questionColHeader).append($trueColHeader).append($falseColHeader);
-	
-	        var $tableContainer = $('<table></table>', { id: 'knowledge-test' });
-	
-	        $tableContainer.append($header);
-	        var qr = void 0;
-	        questions.forEach(function (question, questionNo) {
-	            qr = createQuestionRow(questionNo, question, showAnswer);
-	            $tableContainer.append(qr);
-	        });
-	
-	        return $tableContainer;
-	    };
-	
-	    // function createResultUI(score, time) {
-	    var createResultUI = function createResultUI(score) {
-	        var $resultTable = $('<table></table>', { class: 'kv-pairs' });
-	        var $scoreRow = $('<tr></tr>').append($('<td>' + localize('Score') + '</td>')).append($('<td>' + score + '</td>'));
-	
-	        var date = moment();
-	        var submitDate = moment.utc(date).format('YYYY') + localize('Year') + moment.utc(date).format('MM') + localize('Month') + moment.utc(date).format('DD') + localize('Day') + ' (' + localize('Weekday') + ')';
-	
-	        var $dateRow = $('<tr></tr>').append($('<td>' + localize('Date') + '</td>')).append($('<td>' + submitDate + '</td>'));
-	
-	        $resultTable.append($scoreRow).append($dateRow);
-	
-	        return $resultTable;
-	    };
-	
-	    var createAlreadyCompleteDiv = function createAlreadyCompleteDiv() {
-	        var msg = "{JAPAN ONLY}Dear customer, you've already completed the knowledge test, please proceed to next step.";
-	        return $('<div></div>').text(localize(msg));
-	    };
-	
-	    return {
-	        createTrueFalseBox: createTrueFalseBox,
-	        createQuestionRow: createQuestionRow,
-	        createQuestionTable: createQuestionTable,
-	        createResultUI: createResultUI,
-	        createAlreadyCompleteDiv: createAlreadyCompleteDiv
-	    };
-	}();
-	
-	module.exports = {
-	    KnowledgeTestUI: KnowledgeTestUI
-	};
-
-/***/ },
-/* 606 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	var KnowledgeTestData = function () {
-	    'use strict';
 	
 	    var answers = {
 	        /* eslint-disable */
@@ -86844,26 +86446,23 @@
 	        91: true, 92: true, 93: true, 94: true, 95: false, 96: true, 97: true, 98: false, 99: true, 100: true
 	    };
 	
-	    var randomPick4 = function randomPick4(questionsObj) {
-	        var availables = Object.keys(questionsObj);
+	    var randomPick4 = function randomPick4(obj_questions) {
+	        var availables = Object.keys(obj_questions);
 	
-	        var randomPicks = [];
+	        var random_picks_four = [];
 	        for (var i = 0; i < 4; i++) {
-	            var randomIndex = Math.floor(Math.random() * 100) % availables.length;
-	            var randomQid = availables[randomIndex];
-	            var randomPick = questionsObj[randomQid];
-	            randomPicks.push(randomPick);
-	            availables.splice(randomIndex, 1);
+	            var random_index = Math.floor(Math.random() * 100) % availables.length;
+	            random_picks_four.push(obj_questions[availables[random_index]]);
+	            availables.splice(random_index, 1);
 	        }
 	
-	        return randomPicks;
+	        return random_picks_four;
 	    };
 	
 	    var randomPick20 = function randomPick20() {
 	        var questions = {};
-	        var container = '#data-questions';
 	        // retrieve questions text from html
-	        $(container + ' > div').each(function () {
+	        $('#data-questions').find('> div').each(function () {
 	            // sections
 	            var category = +$(this).attr('data-section-id');
 	            questions['section' + category] = [];
@@ -86883,29 +86482,139 @@
 	
 	        var picked_questions = [];
 	        Object.keys(questions).forEach(function (section) {
-	            picked_questions.push(randomPick4(questions[section]));
+	            return picked_questions.push(randomPick4(questions[section]));
 	        });
 	        return picked_questions;
 	    };
 	
-	    var sendResult = function sendResult(questions, resultScore) {
+	    var sendResult = function sendResult(questions) {
 	        BinarySocket.send({
 	            jp_knowledge_test: 1,
-	            score: resultScore,
-	            status: resultScore >= 14 ? 'pass' : 'fail',
+	            score: result_score,
+	            status: result_score >= 14 ? 'pass' : 'fail',
 	            questions: questions
+	        }).then(function (response) {
+	            if (!response.error) {
+	                showResult(result_score, response.jp_knowledge_test.test_taken_epoch * 1000);
+	                $('html, body').animate({ scrollTop: 0 }, 'slow');
+	                BinarySocket.send({ get_settings: 1 }, true).then(function () {
+	                    Header.upgrade_message_visibility();
+	                });
+	            } else if (response.error.code === 'TestUnavailableNow') {
+	                showMsgOnly('{JAPAN ONLY}The test is unavailable now, test can only be taken again on next business day with respect of most recent test.');
+	            } else {
+	                $('#form-msg').html(response.error.message).removeClass(hidden_class);
+	                submit_completed = false;
+	            }
 	        });
 	    };
-	
 	    return {
-	        randomPick20: randomPick20,
-	        sendResult: sendResult
+	        onLoad: onLoad
 	    };
 	}();
 	
-	module.exports = {
-	    KnowledgeTestData: KnowledgeTestData
-	};
+	module.exports = KnowledgeTest;
+
+/***/ },
+/* 603 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var moment = __webpack_require__(313);
+	var localize = __webpack_require__(426).localize;
+	
+	var KnowledgeTestUI = function () {
+	    'use strict';
+	
+	    var createTrueFalseBox = function createTrueFalseBox(question, show_answer) {
+	        var qid = question.id;
+	        var true_id = qid + 'true';
+	        var false_id = qid + 'false';
+	
+	        var $true_button = $('<input />', {
+	            type: 'radio',
+	            name: qid,
+	            id: true_id,
+	            value: '1'
+	        });
+	        var $true_td = $('<td></td>').append($true_button);
+	
+	        var $false_button = $('<input />', {
+	            type: 'radio',
+	            name: qid,
+	            id: false_id,
+	            value: '0'
+	        });
+	        var $false_td = $('<td></td>').append($false_button);
+	
+	        if (show_answer) {
+	            if (question.correct_answer) {
+	                $true_button.prop('checked', true);
+	            } else {
+	                $false_button.prop('checked', true);
+	            }
+	            $true_button.attr('disabled', true);
+	            $false_button.attr('disabled', true);
+	        }
+	
+	        return [$true_td, $false_td];
+	    };
+	
+	    var createQuestionRow = function createQuestionRow(question_no, question, show_answer) {
+	        var $question_row = $('<tr></tr>', { id: question_no, class: 'question' });
+	        var $question_data = $('<td></td>').text(localize(question.question_localized));
+	        var $question_link = $('<a></a>', { name: question.id });
+	        $question_data.prepend($question_link);
+	
+	        var true_false = createTrueFalseBox(question, show_answer);
+	
+	        return $question_row.append($question_data).append(true_false[0]).append(true_false[1]);
+	    };
+	
+	    var createQuestionTable = function createQuestionTable(questions, show_answer) {
+	        var $header = $('<tr></tr>');
+	        var $question_col_header = $('<th></th>', { id: 'question-header', class: 'question-col' }).text(localize('Questions'));
+	
+	        var $true_col_header = $('<th></th>', { id: 'true-header', class: 'true-col' }).text(localize('True'));
+	
+	        var $false_col_header = $('<th></th>', { id: 'fasle-header', class: 'false-col' }).text(localize('False'));
+	
+	        $header.append($question_col_header).append($true_col_header).append($false_col_header);
+	
+	        var $table_container = $('<table></table>', { id: 'knowledge-test' });
+	
+	        $table_container.append($header);
+	        var qr = void 0;
+	        questions.forEach(function (question, question_no) {
+	            qr = createQuestionRow(question_no, question, show_answer);
+	            $table_container.append(qr);
+	        });
+	
+	        return $table_container;
+	    };
+	
+	    var createResultUI = function createResultUI(score) {
+	        var $result_table = $('<table></table>', { class: 'kv-pairs' });
+	        var $score_row = $('<tr></tr>').append($('<td>' + localize('Score') + '</td>')).append($('<td>' + score + '</td>'));
+	
+	        var date = moment();
+	        var submit_date = moment.utc(date).format('YYYY') + localize('Year') + moment.utc(date).format('MM') + localize('Month') + moment.utc(date).format('DD') + localize('Day') + ' (' + localize('Weekday') + ')';
+	
+	        var $date_row = $('<tr></tr>').append($('<td>' + localize('Date') + '</td>')).append($('<td>' + submit_date + '</td>'));
+	
+	        $result_table.append($score_row).append($date_row);
+	
+	        return $result_table;
+	    };
+	
+	    return {
+	        createQuestionTable: createQuestionTable,
+	        createResultUI: createResultUI
+	    };
+	}();
+	
+	module.exports = KnowledgeTestUI;
 
 /***/ }
 /******/ ]);

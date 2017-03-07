@@ -5024,6 +5024,15 @@ iframe#chart_frame {
   white-space: pre-line;
 }
 
+.kv-pairs {
+  width: auto;
+  margin-left: 15px;
+  margin-bottom: 10px;
+}
+.kv-pairs td {
+  border: none;
+}
+
 #profit-table-ws-container th {
   padding-right: 8px;
 }
@@ -5082,15 +5091,6 @@ button:disabled {
 }
 #virtual-form p.error-message-password, #change-password p.error-message-password, .usersettingssecurityws-content p.error-message-password {
   margin: 0.5em 0;
-}
-
-.kv-pairs {
-  width: auto;
-  margin-left: 15px;
-  margin-bottom: 10px;
-}
-.kv-pairs td {
-  border: none;
 }
 
 .big-error-code {
