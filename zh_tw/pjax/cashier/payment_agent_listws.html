@@ -20,9 +20,17 @@
         <li>將資金存入支付代理。存入資金減去代理佣金的金額將會顯示在您的帳戶中。</li>
     </ol>
 
+
     <p>
         支付代理清單：
-        <select id="target_country"></select>
+        <select id="target_country" class="hidden"></select>
+        <div class="loading"><div class="barspinner dark">
+    <div class="rect1"></div>
+    <div class="rect2"></div>
+    <div class="rect3"></div>
+    <div class="rect4"></div>
+    <div class="rect5"></div>
+</div></div>
     </p>
 
     <div id="pa_list">
@@ -70,7 +78,7 @@
         </div>
     </div>
 
-    <p id="no_paymentagent" class="error-msg hidden">您的國家無可用支付代理。</p>
+    <p id="no_paymentagent" class="notice-msg center-text hidden">您的國家無可用支付代理。</p>
 
     <p>
         申請成為 Binary.com <a href="/zh_tw/payment-agent.html">支付代理</a>。

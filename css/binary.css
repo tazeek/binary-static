@@ -349,6 +349,11 @@ input[type=checkbox]#email_consent {
   margin-bottom: 30px;
 }
 
+button .barspinner.white {
+  height: 13px;
+  margin: 3px auto;
+}
+
 *, *:after, *:before {
   transition: opacity 0.2s, color 0.2s, background 0.2s;
 }
@@ -1958,10 +1963,6 @@ ol.start {
 }
 #mt_account_management .fst-container #fst_action .close:hover {
   background-color: #15212d;
-}
-#mt_account_management .fst-container #fst_action button .barspinner.white {
-  height: 13px;
-  margin: 3px;
 }
 
 #pa_list #accordion table {
@@ -3729,6 +3730,9 @@ fieldset .error-msg {
 #mb_trading .prices-wrapper .price-row:nth-child(odd) {
   background: #f2f2f2;
 }
+#mb_trading .prices-wrapper:nth-child(odd) .price-rows .price-button {
+  background: #c03;
+}
 #mb_trading .base-value {
   font-size: 9px;
 }
@@ -3761,7 +3765,7 @@ fieldset .error-msg {
   color: #fff;
   text-align: center;
   line-height: 100%;
-  background: #2e8836;
+  background: #29abe2;
   border-radius: 3px;
   padding: 10px 0;
   cursor: pointer;
@@ -3785,14 +3789,15 @@ fieldset .error-msg {
   right: 3px;
 }
 #mb_trading .price-button:hover {
-  background-color: #14602b;
+  opacity: 0.8;
 }
 #mb_trading .inactive {
   color: #dedede;
 }
-#mb_trading .inactive.price-button {
+#mb_trading .inactive.price-button, #mb_trading .inactive:hover {
   color: #fff;
-  background: #dedede;
+  background: #dedede !important;
+  opacity: 1;
   cursor: default;
   overflow: visible;
 }
@@ -3810,7 +3815,7 @@ fieldset .error-msg {
   max-width: 420px;
   line-height: 1.4em;
 }
-#mb_trading .details-heading {
+#mb_trading .contract-type {
   padding: 45px 16px 0;
   margin-bottom: 0;
   background-repeat: no-repeat;
@@ -3821,30 +3826,6 @@ fieldset .error-msg {
       -ms-flex-item-align: start;
           align-self: flex-start;
   white-space: nowrap;
-}
-#mb_trading .details-heading.CALLE {
-  background-image: url("https://www.binary.com/images/pages/trade/rise_1.png");
-}
-#mb_trading .details-heading.PUT {
-  background-image: url("https://www.binary.com/images/pages/trade/fall_1.png");
-}
-#mb_trading .details-heading.ONETOUCH {
-  background-image: url("https://www.binary.com/images/pages/trade/touch_1.png");
-}
-#mb_trading .details-heading.NOTOUCH {
-  background-image: url("https://www.binary.com/images/pages/trade/no-touch_1.png");
-}
-#mb_trading .details-heading.EXPIRYRANGEE {
-  background-image: url("https://www.binary.com/images/pages/trade/ends-between_1.png");
-}
-#mb_trading .details-heading.EXPIRYMISS {
-  background-image: url("https://www.binary.com/images/pages/trade/ends-outside_1.png");
-}
-#mb_trading .details-heading.RANGE {
-  background-image: url("https://www.binary.com/images/pages/trade/stay-in-between_1.png");
-}
-#mb_trading .details-heading.UPORDOWN {
-  background-image: url("https://www.binary.com/images/pages/trade/stay-out_1.png");
 }
 #mb_trading .select {
   margin-right: 10px;
@@ -3899,9 +3880,6 @@ fieldset .error-msg {
   padding-right: 0;
   margin-left: 5px;
   line-height: 16px;
-}
-#mb_trading .select-box .payout-input .hint, #mb_trading .select-box .payout-input span, #mb_trading .select-box .payout-input label {
-  font-size: 10px;
 }
 #mb_trading .select-box .payout-input select#currency {
   margin: 6px 0;
@@ -5240,6 +5218,9 @@ body.JA #footer #footer-regulatory #regulatory-text {
 }
 body.JA #footer #footer-regulatory .gr-9, body.JA #footer #footer-regulatory .gr-p-7 {
   width: 100% !important;
+}
+body.JA #mb_trading .payout-input .hint, body.JA #mb_trading .payout-input span, body.JA #mb_trading .payout-input label {
+  font-size: 10px;
 }
 
 /*Vietnamese Language */
