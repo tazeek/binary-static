@@ -20322,19 +20322,23 @@
 	        }
 	    }
 	    if (!element) return;
+	    element.appendChild(makeOption(text, value, disabled, el_class));
+	};
+	
+	var makeOption = function makeOption(text, value, disabled, el_class) {
 	    var option = document.createElement('option');
 	    option.text = text;
 	    // setting null value helps with detecting required error
 	    // on 'Please select' options
 	    // that have no value of their own
 	    option.value = value || '';
-	    if (disabled === 'disabled') {
+	    if (disabled && disabled.toLowerCase() === 'disabled') {
 	        option.setAttribute('disabled', 'disabled');
 	    }
 	    if (el_class) {
 	        option.className = el_class;
 	    }
-	    element.appendChild(option);
+	    return option;
 	};
 	
 	var isValidDate = function isValidDate(day, month, year) {
@@ -20415,6 +20419,7 @@
 	    detect_hedging: detect_hedging,
 	    jqueryuiTabsToDropdown: jqueryuiTabsToDropdown,
 	    appendTextValueChild: appendTextValueChild,
+	    makeOption: makeOption,
 	    isValidDate: isValidDate,
 	    isVisible: isVisible,
 	    checkInput: checkInput,
@@ -75078,7 +75083,7 @@
 	var TermsAndConditions = __webpack_require__(557);
 	var WhyUs = __webpack_require__(559);
 	
-	var AccountTransferWS = __webpack_require__(560);
+	var AccountTransfer = __webpack_require__(560);
 	var Cashier = __webpack_require__(561);
 	var DepositWithdraw = __webpack_require__(562);
 	var PaymentAgentList = __webpack_require__(563);
@@ -75117,7 +75122,7 @@
 	var KnowledgeTest = __webpack_require__(601);
 	
 	var pages_config = {
-	    account_transferws: { module: AccountTransferWS, is_authenticated: true, only_real: true },
+	    account_transfer: { module: AccountTransfer, is_authenticated: true, only_real: true },
 	    api_tokenws: { module: APITokenWS, is_authenticated: true },
 	    assessmentws: { module: FinancialAssessment, is_authenticated: true, only_real: true },
 	    asset_indexws: { module: AssetIndexUI },
@@ -75630,9 +75635,10 @@
 	
 	    var initForm = function initForm(form_selector, fields) {
 	        var $form = $(form_selector + ':visible');
+	        var $btn = $form.find('button[type="submit"]');
 	        if ($form.length) {
 	            forms[form_selector] = {
-	                $btn_submit: $form.find('button[type="submit"]'),
+	                $btn_submit: $btn,
 	                can_submit: true
 	            };
 	            if (Array.isArray(fields) && fields.length) {
@@ -75648,6 +75654,8 @@
 	                });
 	            }
 	        }
+	        // handle firefox
+	        $btn.removeAttr('disabled');
 	        Validation.init(form_selector, fields);
 	    };
 	
@@ -75671,7 +75679,7 @@
 	                    // if label, take the text
 	                    // if checkbox, take checked value
 	                    // otherwise take the value
-	                    value = field.value ? field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
+	                    value = field.value ? typeof field.value === 'function' ? field.value() : field.value : $selector.attr('data-value') || (/lbl_/.test(key) ? field.value || $selector.text() : $selector.is(':checkbox') ? $selector.is(':checked') ? 1 : 0 : Array.isArray(val) ? val.join(',') : val || '');
 	
 	                    key = key.replace(/lbl_|#|\./g, '');
 	                    if (field.parent_node) {
@@ -76461,250 +76469,120 @@
 
 	'use strict';
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-	
+	var Client = __webpack_require__(308).Client;
 	var localize = __webpack_require__(426).localize;
+	var FormManager = __webpack_require__(549);
 	
-	var AccountTransferWS = function () {
+	var AccountTransfer = function () {
 	    'use strict';
 	
-	    var availableCurr = [];
-	    var $form = void 0,
-	        account_from = void 0,
-	        account_to = void 0,
-	        currType = void 0,
-	        account_bal = void 0;
+	    var form_id = '#frm_account_transfer';
+	    var hidden_class = 'invisible';
 	
-	    var init = function init() {
-	        $form = $('#account_transfer');
-	        account_bal = 0;
+	    var accounts = void 0,
+	        $transfer = void 0;
 	
-	        BinarySocket.send({ transfer_between_accounts: '1', req_id: 4 });
+	    var populateAccounts = function populateAccounts(response) {
+	        accounts = response.accounts;
+	        var $form = $(form_id);
+	        $transfer = $form.find('#transfer');
+	        var text = void 0,
+	            from_loginid = void 0,
+	            to_loginid = void 0;
 	
-	        $form.find('button').on('click', function (e) {
-	            e.preventDefault();
-	            e.stopPropagation();
-	
-	            if (!validateForm()) {
-	                return;
+	        accounts.forEach(function (account, idx) {
+	            if (+account.balance) {
+	                from_loginid = accounts[idx].loginid;
+	                to_loginid = accounts[1 - idx].loginid;
+	                text = localize('from [_1] to [_2]', [from_loginid, to_loginid]);
+	                $transfer.append($('<option/>', {
+	                    text: text,
+	                    'data-from': from_loginid,
+	                    'data-to': to_loginid,
+	                    'data-currency': accounts[idx].currency,
+	                    'data-balance': accounts[idx].balance
+	                }));
 	            }
+	        });
 	
-	            var amt = $form.find('#acc_transfer_amount').val();
-	            BinarySocket.send({
-	                transfer_between_accounts: '1',
-	                account_from: account_from,
-	                account_to: account_to,
-	                currency: currType,
-	                amount: amt
+	        // show client's login id on top
+	        var $client_option = $transfer.find('option[data-from="' + Client.get('loginid') + '"]');
+	        if ($client_option.length !== 0) {
+	            $client_option.insertBefore($transfer.find('option:eq(0)')).attr('selected', 'selected');
+	        }
+	
+	        if (from_loginid) {
+	            showForm($form);
+	        } else {
+	            $('#client_message').removeClass(hidden_class);
+	        }
+	    };
+	
+	    var showForm = function showForm($form) {
+	        var $currency = $form.find('#currency');
+	        $transfer.on('change', function () {
+	            updateCurrency($currency, $(this));
+	            bindValidation();
+	        });
+	        updateCurrency($currency);
+	        $form.removeClass(hidden_class);
+	        bindValidation();
+	        FormManager.handleSubmit({
+	            form_selector: form_id,
+	            fnc_response_handler: responseHandler
+	        });
+	    };
+	
+	    var updateCurrency = function updateCurrency($currency) {
+	        $currency.text(getTransferAttr('data-currency'));
+	    };
+	
+	    var getTransferAttr = function getTransferAttr(attribute) {
+	        return $transfer.find('option:selected').attr(attribute);
+	    };
+	
+	    var bindValidation = function bindValidation() {
+	        FormManager.init(form_id, [{ selector: '#amount', validations: ['req', ['number', { type: 'float', decimals: '1, 2', min: 0.1, max: getTransferAttr('data-balance') }]] }, { request_field: 'transfer_between_accounts', value: 1 }, { request_field: 'account_from', value: function value() {
+	                return getTransferAttr('data-from');
+	            } }, { request_field: 'account_to', value: function value() {
+	                return getTransferAttr('data-to');
+	            } }, { request_field: 'currency', value: function value() {
+	                return getTransferAttr('data-currency');
+	            } }]);
+	    };
+	
+	    var responseHandler = function responseHandler(response) {
+	        if (response.error) {
+	            $('#form_error').text(response.error.message).removeClass(hidden_class);
+	        } else {
+	            BinarySocket.send({ transfer_between_accounts: 1 }).then(function (data) {
+	                return populateReceipt(data);
 	            });
-	        });
-	
-	        $form.find('#transfer_account_transfer').on('change', function () {
-	            $form.find('#invalid_amount').text('');
-	            set_account_from_to();
-	
-	            BinarySocket.send({ payout_currencies: '1' });
-	        });
-	
-	        $form.find('#acc_transfer_submit').on('click', function () {
-	            var amount = $('#acc_transfer_amount').val();
-	            if (!/^[0-9]+\.?[0-9]{0,2}$/.test(amount) || amount < 0.1) {
-	                $('#invalid_amount').removeClass('invisible').show();
-	                return false;
-	            }
-	            $('#acc_transfer_submit').submit();
-	            return true;
-	        });
-	    };
-	    var set_account_from_to = function set_account_from_to() {
-	        var accounts = $('#transfer_account_transfer').find('option:selected').text();
-	        var matches = accounts.split('(').filter(function (v) {
-	            return v.indexOf(')') > -1;
-	        }).map(function (value) {
-	            return value.split(')')[0];
-	        });
-	
-	        account_from = matches[0];
-	        account_to = matches[1];
-	
-	        $.each(availableCurr, function (index, value) {
-	            if (value.account === account_from) {
-	                currType = value.currency;
-	                account_bal = value.balance;
-	            }
-	        });
-	
-	        $form.find('#currencyType').html(currType);
-	    };
-	    var validateForm = function validateForm() {
-	        var amt = $form.find('#acc_transfer_amount').val();
-	        var isValid = true;
-	
-	        if (amt.length <= 0) {
-	            $form.find('#invalid_amount').text(localize('Invalid amount. Minimum transfer amount is 0.10, and up to 2 decimal places.'));
-	            isValid = false;
-	        }
-	
-	        return isValid;
-	    };
-	
-	    var apiResponse = function apiResponse(response) {
-	        var type = response.msg_type;
-	        if (type === 'transfer_between_accounts' || type === 'error' && 'transfer_between_accounts' in response.echo_req) {
-	            responseMessage(response);
-	        } else if (type === 'payout_currencies' || type === 'error' && 'payout_currencies' in response.echo_req) {
-	            responseMessage(response);
 	        }
 	    };
 	
-	    var responseMessage = function responseMessage(response) {
-	        if ('error' in response) {
-	            if ('message' in response.error) {
-	                if ($('#transfer_account_transfer').find('option').length > 0) {
-	                    $form.removeClass('invisible');
-	                    $form.find('#invalid_amount').text(localize(response.error.message));
-	                } else {
-	                    $('#client_message').removeClass('invisible').find('p').html(localize(response.error.message));
-	                    $('#success_form').addClass('invisible');
-	                    $form.addClass('invisible');
-	                }
-	                return false;
-	            }
-	
-	            return false;
-	        } else if ('transfer_between_accounts' in response) {
-	            if (response.req_id === 5) {
-	                $.each(response.accounts, function (key, value) {
-	                    $form.addClass('invisible');
-	                    $('#success_form').removeClass('invisible');
-	                    $('#client_message').addClass('invisible');
-	
-	                    if (value.loginid === account_from) {
-	                        $('#loginid_1').html(value.loginid);
-	                        $('#balance_1').html(value.balance);
-	                    } else if (value.loginid === account_to) {
-	                        $('#loginid_2').html(value.loginid);
-	                        $('#balance_2').html(value.balance);
-	                    }
-	                });
-	            } else if (response.req_id === 4) {
-	                var _ret = function () {
-	                    $form.removeClass('invisible');
-	                    var secondacct = void 0,
-	                        firstacct = void 0,
-	                        str = void 0,
-	                        optionValue = void 0,
-	                        selectedIndex = -1;
-	
-	                    $.each(response.accounts, function (index, value) {
-	                        var currObj = {};
-	
-	                        if ($.isEmptyObject(firstacct)) {
-	                            firstacct = value.loginid;
-	                            currObj.account = value.loginid;
-	                            currObj.currency = value.currency;
-	                            currObj.balance = value.balance;
-	
-	                            if (value.balance > 0 && selectedIndex < 0) {
-	                                selectedIndex = index;
-	                            }
-	
-	                            availableCurr.push(currObj);
-	                        } else {
-	                            secondacct = value.loginid;
-	                            str = localize('from account (' + firstacct + ') to account (' + secondacct + ')');
-	                            optionValue = firstacct + '_to_' + secondacct;
-	                            $form.find('#transfer_account_transfer').append($('<option></option>').attr('value', optionValue).text(str));
-	                            str = localize('from account (' + secondacct + ') to account (' + firstacct + ')');
-	                            optionValue = secondacct + '_to_' + firstacct;
-	                            $form.find('#transfer_account_transfer').append($('<option></option>').attr('value', optionValue).text(str));
-	
-	                            currObj.account = value.loginid;
-	                            currObj.currency = value.currency;
-	                            currObj.balance = value.balance;
-	
-	                            availableCurr.push(currObj);
-	
-	                            firstacct = {};
-	
-	                            if (selectedIndex < 0 && value.balance) {
-	                                selectedIndex = index;
-	                            }
-	                        }
-	
-	                        if ($.isEmptyObject(firstacct) === false && $.isEmptyObject(secondacct) === false) {
-	                            str = localize('from account (' + secondacct + ') to account (' + firstacct + ')');
-	                            optionValue = secondacct + '_to_' + firstacct;
-	                            $form.find('#transfer_account_transfer').append($('<option></option>').attr('value', optionValue).text(str));
-	                        }
-	                        secondacct = {};
-	
-	                        if (value.balance <= 0) {
-	                            $form.find('#transfer_account_transfer option:last').remove();
-	                        } else if (selectedIndex < 0) {
-	                            selectedIndex = index;
-	                        }
-	                    });
-	
-	                    for (var i = 0; i < selectedIndex; i++) {
-	                        $form.find('#transfer_account_transfer option').eq(i).remove();
-	                    }
-	
-	                    if (selectedIndex >= 0) {
-	                        $form.find('#transfer_account_transfer option').eq(selectedIndex).attr('selected', 'selected');
-	                    }
-	
-	                    set_account_from_to();
-	
-	                    if (account_bal <= 0 && response.accounts.length > 1) {
-	                        $('#client_message').removeClass('invisible');
-	                        $('#success_form').addClass('invisible');
-	                        $form.addClass('invisible');
-	                        return {
-	                            v: false
-	                        };
-	                    } else if (account_to === undefined || account_from === undefined || $.isEmptyObject(account_to)) {
-	                        $('#client_message').removeClass('invisible').find('p').html(localize('The account transfer is unavailable for your account.'));
-	                        $('#success_form').addClass('invisible');
-	                        $form.addClass('invisible');
-	                        return {
-	                            v: false
-	                        };
-	                    }
-	
-	                    BinarySocket.send({ payout_currencies: '1' });
-	                }();
-	
-	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	            } else {
-	                BinarySocket.send({
-	                    transfer_between_accounts: '1',
-	                    req_id: 5
-	                });
-	            }
-	        }
-	        return true;
+	    var populateReceipt = function populateReceipt(response) {
+	        $(form_id).addClass(hidden_class);
+	        accounts = response.accounts;
+	        accounts.forEach(function (account, idx) {
+	            $('#loginid_' + (idx + 1)).text(account.loginid);
+	            $('#balance_' + (idx + 1)).text(account.currency + ' ' + account.balance);
+	        });
+	        $('#success_form').removeClass(hidden_class);
 	    };
 	
 	    var onLoad = function onLoad() {
-	        BinarySocket.init({
-	            onmessage: function onmessage(msg) {
-	                var response = JSON.parse(msg.data);
-	                if (response) {
-	                    apiResponse(response);
-	                }
-	            }
+	        BinarySocket.send({ transfer_between_accounts: 1 }).then(function (response) {
+	            return populateAccounts(response);
 	        });
-	        init();
 	    };
 	
 	    return {
-	        init: init,
 	        onLoad: onLoad
 	    };
 	}();
 	
-	module.exports = AccountTransferWS;
+	module.exports = AccountTransfer;
 
 /***/ },
 /* 561 */
@@ -79544,7 +79422,7 @@
 	var State = __webpack_require__(306).State;
 	var Content = __webpack_require__(447).Content;
 	var detect_hedging = __webpack_require__(312).detect_hedging;
-	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
+	var makeOption = __webpack_require__(312).makeOption;
 	var FormManager = __webpack_require__(549);
 	var moment = __webpack_require__(313);
 	__webpack_require__(591);
@@ -79708,33 +79586,23 @@
 	
 	    var populateResidence = function populateResidence(response) {
 	        var residence_list = response.residence_list;
-	        var obj_residence_el = {
-	            place_of_birth: document.getElementById('place_of_birth'),
-	            tax_residence: document.getElementById('tax_residence')
-	        };
-	        if (obj_residence_el.place_of_birth.childElementCount !== 0) return;
-	        var text = void 0,
-	            value = void 0;
+	        var $place_of_birth = $('#place_of_birth');
+	        var $tax_residence = $('#tax_residence');
 	        if (residence_list.length > 0) {
-	            for (var j = 0; j < residence_list.length; j++) {
-	                var current_residence = residence_list[j];
-	                text = current_residence.text;
-	                value = current_residence.value;
-	                appendIfExist(obj_residence_el, text, value);
-	            }
-	            $('#tax_residence').select2().val(tax_residence_values).trigger('change').removeClass('invisible');
-	            obj_residence_el.place_of_birth.value = place_of_birth_value || residence;
+	            (function () {
+	                var $options = $('<div/>');
+	                residence_list.forEach(function (res) {
+	                    $options.append(makeOption(res.text, res.value));
+	                });
+	                $place_of_birth.html($options.html());
+	                $tax_residence.html($options.html()).promise().done(function () {
+	                    setTimeout(function () {
+	                        $tax_residence.select2().val(tax_residence_values).trigger('change').removeClass('invisible');
+	                    }, 500);
+	                });
+	                $place_of_birth.val(place_of_birth_value || residence);
+	            })();
 	        }
-	    };
-	
-	    var appendIfExist = function appendIfExist(object_el, text, value) {
-	        var object_el_key = void 0;
-	        Object.keys(object_el).forEach(function (key) {
-	            object_el_key = object_el[key];
-	            if (object_el_key) {
-	                appendTextValueChild(object_el_key, text, value);
-	            }
-	        });
 	    };
 	
 	    var populateStates = function populateStates(response) {
@@ -85750,7 +85618,7 @@
 	var localize = __webpack_require__(426).localize;
 	var Client = __webpack_require__(308).Client;
 	var State = __webpack_require__(306).State;
-	var appendTextValueChild = __webpack_require__(312).appendTextValueChild;
+	var makeOption = __webpack_require__(312).makeOption;
 	var FormManager = __webpack_require__(549);
 	var Cookies = __webpack_require__(303);
 	__webpack_require__(591);
@@ -85796,47 +85664,43 @@
 	};
 	
 	var handleResidenceList = function handleResidenceList(residence_list) {
-	    var obj_residence_el = {
-	        residence: document.getElementById('residence'),
-	        place_of_birth: document.getElementById('place_of_birth'),
-	        tax_residence: document.getElementById('tax_residence')
-	    };
-	    Object.keys(obj_residence_el).forEach(function (key) {
-	        if (obj_residence_el[key] === null || obj_residence_el[key].childElementCount !== 0) {
-	            delete obj_residence_el[key];
-	        }
-	    });
-	    if (obj_residence_el.length === 0) return;
+	    var $residence = $('#residence');
+	    var $place_of_birth = $('#place_of_birth');
+	    var $tax_residence = $('#tax_residence');
 	    var phoneElement = document.getElementById('phone');
 	    var residenceValue = Client.get('residence');
-	    var text = void 0,
-	        value = void 0;
 	    if (residence_list.length > 0) {
-	        for (var j = 0; j < residence_list.length; j++) {
-	            var residence = residence_list[j];
-	            text = residence.text;
-	            value = residence.value;
-	            appendIfExist(obj_residence_el, text, value, residence.disabled ? 'disabled' : undefined);
-	
-	            if (residenceValue !== 'jp' && phoneElement && phoneElement.value === '' && residence.phone_idd && residenceValue === residence.value) {
-	                phoneElement.value = '+' + residence.phone_idd;
-	            }
-	        }
-	        if (obj_residence_el.tax_residence) {
-	            $('#tax_residence').select2().val(residenceValue).trigger('change').removeClass('invisible');
-	        }
-	        if (residenceValue) {
-	            if (obj_residence_el.residence) {
-	                obj_residence_el.residence.value = residenceValue;
-	            }
-	            if (obj_residence_el.place_of_birth) {
-	                obj_residence_el.place_of_birth.value = residenceValue || '';
-	            }
-	        } else {
-	            BinarySocket.wait('website_status').then(function (data) {
-	                return handleWebsiteStatus(data.website_status);
+	        (function () {
+	            var $options_with_disabled = $('<div/>');
+	            residence_list.forEach(function (res) {
+	                $options_with_disabled.append(makeOption(res.text, res.value, res.disabled));
+	                if (residenceValue !== 'jp' && phoneElement && phoneElement.value === '' && res.phone_idd && residenceValue === res.value) {
+	                    phoneElement.value = '+' + res.phone_idd;
+	                }
 	            });
-	        }
+	
+	            var $options = $('<div/>');
+	            residence_list.forEach(function (res) {
+	                $options.append(makeOption(res.text, res.value));
+	            });
+	
+	            $residence.html($options_with_disabled.html());
+	            $place_of_birth.html($options.html());
+	            $tax_residence.html($options.html()).promise().done(function () {
+	                setTimeout(function () {
+	                    $tax_residence.select2().val(residenceValue).trigger('change').removeClass('invisible');
+	                }, 500);
+	            });
+	
+	            if (residenceValue) {
+	                $residence.val(residenceValue);
+	                $place_of_birth.val(residenceValue || '');
+	            } else {
+	                BinarySocket.wait('website_status').then(function (data) {
+	                    return handleWebsiteStatus(data.website_status);
+	                });
+	            }
+	        })();
 	    }
 	};
 	
@@ -85880,16 +85744,6 @@
 	
 	        if (formID && typeof getValidations === 'function') {
 	            FormManager.init(formID, getValidations());
-	        }
-	    });
-	};
-	
-	var appendIfExist = function appendIfExist(object_el, text, value, disabled) {
-	    var object_el_key = void 0;
-	    Object.keys(object_el).forEach(function (key) {
-	        object_el_key = object_el[key];
-	        if (object_el_key) {
-	            appendTextValueChild(object_el_key, text, value, disabled && key === 'residence' ? disabled : undefined);
 	        }
 	    });
 	};
