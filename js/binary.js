@@ -36900,17 +36900,17 @@
 	
 	    var getTemplate = function getTemplate(contract_type) {
 	        var templates = {
-	            CALLE: {
-	                opposite: 'PUT',
-	                order: 0,
-	                name: 'Higher',
-	                description: '[_1] [_2] payout if [_3] is strictly higher than or equal to Barrier at close on [_4].'
-	            },
 	            PUT: {
 	                opposite: 'CALLE',
-	                order: 1,
+	                order: 0,
 	                name: 'Lower',
 	                description: '[_1] [_2] payout if [_3] is strictly lower than Barrier at close on [_4].'
+	            },
+	            CALLE: {
+	                opposite: 'PUT',
+	                order: 1,
+	                name: 'Higher',
+	                description: '[_1] [_2] payout if [_3] is strictly higher than or equal to Barrier at close on [_4].'
 	            },
 	            ONETOUCH: {
 	                opposite: 'NOTOUCH',
@@ -68091,11 +68091,11 @@
 	            lineColor: '#606060',
 	            fillColor: false,
 	            spotColor: '#00f000',
-	            minSpotColor: '#f00000',
-	            maxSpotColor: '#0000f0',
+	            minSpotColor: '#0000f0',
+	            maxSpotColor: '#f00000',
 	            highlightSpotColor: '#ffff00',
 	            highlightLineColor: '#000000',
-	            spotRadius: 1.25,
+	            spotRadius: 2,
 	            width: 200,
 	            height: 25
 	        };

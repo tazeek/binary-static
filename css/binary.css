@@ -3965,8 +3965,24 @@ fieldset .error-msg {
   }
 }
 
-#trading_bottom_content #tab_portfolio-content {
+.mb-trading-wrapper #trading_bottom_content #tab_portfolio-content {
   overflow-x: auto;
+}
+.mb-trading-wrapper #trading_bottom_content #tab_explanation-content #winning_higherlower {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.mb-trading-wrapper #trading_bottom_content #tab_explanation-content #winning_higherlower p {
+  margin-top: 0;
+}
+.mb-trading-wrapper #trading_bottom_content #tab_explanation-content #winning_higherlower p:first-child {
+  -webkit-order: 2;
+      -ms-flex-order: 2;
+          order: 2;
 }
 
 @keyframes spinning {
