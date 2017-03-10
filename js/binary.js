@@ -18635,7 +18635,7 @@
 	                        }
 	                        LocalStore.set('reality_check.ack', 0);
 	                        Client.send_logout_request(isActiveTab);
-	                    } else if (response.authorize.loginid !== Client.get('loginid')) {
+	                    } else if (response.authorize.loginid !== Cookies.get('loginid')) {
 	                        Client.send_logout_request(true);
 	                    } else if (dispatch_to !== 'cashier_password') {
 	                        authorized = true;
@@ -68893,6 +68893,9 @@
 	    var validGeneral = function validGeneral(value) {
 	        return !/[`~!@#$%^&*)(_=+\[}{\]\\\/";:\?><,|]+/.test(value);
 	    };
+	    var validAddress = function validAddress(value) {
+	        return !/[`~!#$%^&*)(_=+\[}{\]\\";:\?><,|]+/.test(value);
+	    };
 	    var validPostCode = function validPostCode(value) {
 	        return (/^[a-zA-Z\d-]*$/.test(value)
 	        );
@@ -68948,6 +68951,7 @@
 	        email: { func: validEmail, message: 'Invalid email address' },
 	        password: { func: validPassword, message: 'Password should have lower and uppercase letters with numbers.' },
 	        general: { func: validGeneral, message: 'Only letters, numbers, space, hyphen, period, and apostrophe are allowed.' },
+	        address: { func: validAddress, message: 'Only letters, numbers, space, hyphen, period, and apostrophe are allowed.' },
 	        letter_symbol: { func: validLetterSymbol, message: 'Only letters, space, hyphen, period, and apostrophe are allowed.' },
 	        postcode: { func: validPostCode, message: 'Only letters, numbers, and hyphen are allowed.' },
 	        phone: { func: validPhone, message: 'Only numbers and spaces are allowed.' },
@@ -79553,7 +79557,7 @@
 	                validations.push({ selector: '#' + $(this).attr('id'), validations: ['req'], parent_node: 'jp_settings' });
 	            });
 	        } else {
-	            validations = [{ selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['phone', ['length', { min: 6, max: 35 }]] }, { selector: '#place_of_birth', validations: Client.is_financial() ? ['req'] : '' }, { selector: '#tax_residence', validations: Client.is_financial() ? ['req'] : '' }];
+	            validations = [{ selector: '#address_line_1', validations: ['req', 'address'] }, { selector: '#address_line_2', validations: ['address'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['req', 'phone', ['length', { min: 6, max: 35 }]] }, { selector: '#place_of_birth', validations: Client.is_financial() ? ['req'] : '' }, { selector: '#tax_residence', validations: Client.is_financial() ? ['req'] : '' }];
 	            var tax_id_validation = { selector: '#tax_identification_number', validations: ['postcode', ['length', { min: 0, max: 20 }]] };
 	            if (Client.is_financial()) {
 	                tax_id_validation.validations[1][1].min = 1;
@@ -85759,7 +85763,7 @@
 	};
 	
 	var commonValidations = function commonValidations() {
-	    var req = [{ selector: '#salutation', validations: ['req'] }, { selector: '#first_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#last_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode'] }, { selector: '#phone', validations: ['req', 'phone', ['min', { min: 6, max: 35 }]] }, { selector: '#secret_question', validations: ['req'] }, { selector: '#secret_answer', validations: ['req', 'letter_symbol', ['min', { min: 4, max: 50 }]] }, { selector: '#tnc', validations: [['req', { message: localize('Please accept the terms and conditions.') }]], exclude_request: 1 }, { request_field: 'residence', value: Client.get('residence') }];
+	    var req = [{ selector: '#salutation', validations: ['req'] }, { selector: '#first_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#last_name', validations: ['req', ['length', { min: 2, max: 30 }], 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'address'] }, { selector: '#address_line_2', validations: ['address'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: $('#address_state').prop('nodeName') === 'SELECT' ? '' : ['letter_symbol'] }, { selector: '#address_postcode', validations: ['postcode', ['length', { min: 0, max: 20 }]] }, { selector: '#phone', validations: ['req', 'phone', ['min', { min: 6, max: 35 }]] }, { selector: '#secret_question', validations: ['req'] }, { selector: '#secret_answer', validations: ['req', 'general', ['min', { min: 4, max: 50 }]] }, { selector: '#tnc', validations: [['req', { message: localize('Please accept the terms and conditions.') }]], exclude_request: 1 }, { request_field: 'residence', value: Client.get('residence') }];
 	
 	    if (Cookies.get('affiliate_tracking')) {
 	        req.push({ request_field: 'affiliate_token', value: Cookies.getJSON('affiliate_tracking').t });
@@ -85849,7 +85853,7 @@
 	            AccountOpening.populateForm();
 	            var formID = '#japan-form';
 	
-	            FormManager.init(formID, [{ selector: '#first_name', validations: ['req', 'letter_symbol'] }, { selector: '#last_name', validations: ['req', 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'general'] }, { selector: '#address_line_2', validations: ['general'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: ['req'] }, { selector: '#address_postcode', validations: ['req', ['regular', { regex: /^\d{3}-\d{4}$/, message: 'Please follow the pattern 3 numbers, a dash, followed by 4 numbers.' }]] }, { selector: '#phone', validations: ['req', ['regular', { regex: /^\+?[0-9\s-]+$/, message: 'Only numbers, space, and hyphen are allowed.' }], ['min', { min: 6, max: 35 }]] }, { selector: '#secret_answer', validations: ['req', ['min', { min: 1, max: 50 }]] }, { selector: '#daily_loss_limit', validations: ['req', 'number'] }, { selector: '#hedge_asset_amount', validations: ['req', 'number'] }, { request_field: 'residence', value: Client.get('residence') }, { request_field: 'new_account_japan', value: 1 }].concat(AccountOpening.selectCheckboxValidation(formID)));
+	            FormManager.init(formID, [{ selector: '#first_name', validations: ['req', 'letter_symbol'] }, { selector: '#last_name', validations: ['req', 'letter_symbol'] }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#address_line_1', validations: ['req', 'address'] }, { selector: '#address_line_2', validations: ['address'] }, { selector: '#address_city', validations: ['req', 'letter_symbol'] }, { selector: '#address_state', validations: ['req'] }, { selector: '#address_postcode', validations: ['req', ['regular', { regex: /^\d{3}-\d{4}$/, message: 'Please follow the pattern 3 numbers, a dash, followed by 4 numbers.' }]] }, { selector: '#phone', validations: ['req', ['regular', { regex: /^\+?[0-9\s-]+$/, message: 'Only numbers, space, and hyphen are allowed.' }], ['min', { min: 6, max: 35 }]] }, { selector: '#secret_answer', validations: ['req', ['min', { min: 1, max: 50 }]] }, { selector: '#daily_loss_limit', validations: ['req', 'number'] }, { selector: '#hedge_asset_amount', validations: ['req', 'number'] }, { request_field: 'residence', value: Client.get('residence') }, { request_field: 'new_account_japan', value: 1 }].concat(AccountOpening.selectCheckboxValidation(formID)));
 	
 	            detect_hedging($('#trading_purpose'), $('.hedging-assets'));
 	
