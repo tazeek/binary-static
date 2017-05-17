@@ -25,20 +25,49 @@
 
         <title>Modalità di pagamento | Binary.com</title>
 
+        <link rel="manifest" href="/binary-static/manifest.json">
+        <script type="text/javascript" src="//cdn.pushwoosh.com/webpush/pushwoosh-web-notifications.js" async></script>
+
         <link rel="apple-touch-icon" sizes="57x57" href="https://style.binary.com/images/favicons/apple-touch-icon-57x57.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="https://style.binary.com/images/favicons/apple-touch-icon-114x114.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="https://style.binary.com/images/favicons/apple-touch-icon-72x72.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="https://style.binary.com/images/favicons/apple-touch-icon-144x144.png">
-        <link rel="apple-touch-icon" sizes="60x60" href="https://style.binary.com/images/favicons/apple-touch-icon-60x60.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="https://style.binary.com/images/favicons/apple-touch-icon-120x120.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="https://style.binary.com/images/favicons/apple-touch-icon-76x76.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="https://style.binary.com/images/favicons/apple-touch-icon-152x152.png">
-        <link rel="apple-touch-icon" sizes="180x180" href="https://style.binary.com/images/favicons/apple-touch-icon-180x180.png">
-        <link rel="icon" type="image/png" sizes="192x192" href="https://style.binary.com/images/favicons/favicon-192x192.png">
-        <link rel="icon" type="image/png" sizes="160x160" href="https://style.binary.com/images/favicons/favicon-160x160.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="https://style.binary.com/images/favicons/favicon-96x96.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="https://style.binary.com/images/favicons/favicon-16x16.png" >
-        <link rel="icon" type="image/png" sizes="32x32" href="https://style.binary.com/images/favicons/favicon-32x32.png" >
+    
+    
+    <link rel="apple-touch-icon" sizes="114x114" href="https://style.binary.com/images/favicons/apple-touch-icon-114x114.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="72x72" href="https://style.binary.com/images/favicons/apple-touch-icon-72x72.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="144x144" href="https://style.binary.com/images/favicons/apple-touch-icon-144x144.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="60x60" href="https://style.binary.com/images/favicons/apple-touch-icon-60x60.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="120x120" href="https://style.binary.com/images/favicons/apple-touch-icon-120x120.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="76x76" href="https://style.binary.com/images/favicons/apple-touch-icon-76x76.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="152x152" href="https://style.binary.com/images/favicons/apple-touch-icon-152x152.png">
+    
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="https://style.binary.com/images/favicons/apple-touch-icon-180x180.png">
+    
+    
+    <link rel="icon" sizes="192x192" type="image/png" href="https://style.binary.com/images/favicons/favicon-192x192.png">
+    
+    
+    <link rel="icon" sizes="160x160" type="image/png" href="https://style.binary.com/images/favicons/favicon-160x160.png">
+    
+    
+    <link rel="icon" sizes="96x96" type="image/png" href="https://style.binary.com/images/favicons/favicon-96x96.png">
+    
+    
+    <link rel="icon" sizes="16x16" type="image/png" href="https://style.binary.com/images/favicons/favicon-16x16.png">
+    
+    
+    <link rel="icon" sizes="32x32" type="image/png" href="https://style.binary.com/images/favicons/favicon-32x32.png">
 
           <link rel="alternate" href="/binary-static/en/cashier/payment_methods.html" hreflang="EN" /> 
           <link rel="alternate" href="/binary-static/de/cashier/payment_methods.html" hreflang="DE" /> 
@@ -55,19 +84,19 @@
           <link rel="alternate" href="/binary-static/zh_cn/cashier/payment_methods.html" hreflang="ZH_CN" /> 
           <link rel="alternate" href="/binary-static/zh_tw/cashier/payment_methods.html" hreflang="ZH_TW" /> 
         
-         <link rel="stylesheet" href="/binary-static/css/binary.min.css?uu76c4ct">
-         <link rel="stylesheet" href="https://style.binary.com/binary.css?uu76c4ct">
-        
-        <script src='/binary-static/js/binary.js?uu76c4ct'></script>  <script src='https://style.binary.com/binary.js?uu76c4ct'></script>
-    </head>
+         <link rel="stylesheet" href="/binary-static/css/binary.min.css?p4xw8s9i">
+         <link rel="stylesheet" href="https://style.binary.com/binary.css?p4xw8s9i">
+          <script src='/binary-static/js/binary.js?p4xw8s9i'></script>  <script src='https://style.binary.com/binary.js?p4xw8s9i'></script>  </head>
 
 
-<body class="IT">
-    <div id='page-wrapper'>
+
+    <body class="IT">
+        <div id="msg_notification" class="notice-msg center-text"></div>
+<div id='page-wrapper'>
     <div id="topbar" class="no-print primary-color-dark">
         <div class="container">
             <div class="gr-row">
-                <div id="topbar-msg" class='gr-6 gr-5-t gr-12-p gr-12-m invisible upgrademessage'>
+                <div id="topbar-msg" class='gr-6 gr-5-t gr-12-p gr-12-m invisible upgrademessage center-text'>
                     <span class='gr-hide-m invisible'>
                         <span id='virtual-text'>Stai utilizzando un Account virtuale.</span>
                     </span>
@@ -75,30 +104,30 @@
                 </div>
                 <div class='gr-6 gr-7-t gr-12-p gr-12-m' id='topbar-info'>
                     <div class="gr-row">
-                        <div class='gr-5 gr-6-m no-underline' id="gmt-clock" data-balloon-pos="down"></div>
+                        <div class='gr-5 gr-6-m no-underline nowrap' id="gmt-clock" data-balloon-pos="down"></div>
                         <div class='gr-2 gr-hide-m' id='contact-us'>
                             <a href="/binary-static/it/contact.html">Contattaci</a>
                         </div>
                         <div class='gr-5 gr-6-m'>
                             <div class="languages invisible">
                                 <ul id="display_language">
-                                    <li>
-                                        <span class="world world-white"></span>
-                                        <div class="language-wrapper">
-                                            <span class="language"></span>
-                                        </div>
-                                        <span class="nav-caret"></span>
-                                    </li>
-                                </ul>
+    <li>
+        <span class="world world-white"></span>
+        <div class="language-wrapper">
+            <span class="language"></span>
+        </div>
+        <span class="nav-caret"></span>
+    </li>
+</ul>
                                 <ul id="select_language">
-                                    <li>
-                                        <span class="world world-black"></span>
-                                        <div class="language-wrapper">
-                                            <span class="language"></span>
-                                        </div>
-                                        <span class="nav-caret"></span>
-                                    </li>
-                                </ul>
+    <li>
+        <span class="world world-black"></span>
+        <div class="language-wrapper">
+            <span class="language"></span>
+        </div>
+        <span class="nav-caret"></span>
+    </li>
+</ul>
                             </div>
                         </div>
                     </div>
@@ -125,77 +154,110 @@
                     </div>
                     <div class='gr-6 gr-hide-m gr-hide-p gr-padding-10'>
                         <div id='main-navigation'>
-                            <ul id="menu-top">
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/why-us.html">Perché noi?</a>
-                                </li>
-                                <li class="all-hide ja-show-inline-block">
-                                    <a href="/binary-static/it/why-us-jp.html">Perché noi?</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/get-started.html">Inizia</a>
-                                </li>
-                                <li class="all-hide ja-show-inline-block">
-                                  <a href="/binary-static/it/get-started-jp.html">Inizia</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/tour.html">Tour</a>
-                                </li>
-                                <li class="all-hide ja-show-inline-block">
-                                    <a href="/binary-static/it/tour-jp.html">Tour</a>
-                                </li>
-                                <li class="ja-hide" id="main-navigation-trading">
-                                    <a href="/binary-static/it/platforms.html">Piattaforme</a>
-                                </li>
-                                <li class="all-hide ja-show-inline-block" id="main-navigation-jptrading">
-                                    <a href="/binary-static/it/multi_barriers_trading.html">Trade</a>
-                                </li>
-                            </ul>
+                            <ul class="center-text nowrap" id="menu-top">
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/why-us.html" >
+     Perché noi? 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/why-us-jp.html" >
+     Perché noi? 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/get-started.html" >
+     Inizia 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/get-started-jp.html" >
+     Inizia 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/tour.html" >
+     Tour 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/tour-jp.html" >
+     Tour 
+    </a>
+</li>
+        
+            <li class="ja-hide" id="main-navigation-trading">
+    
+    <a href="/binary-static/it/platforms.html" >
+     Piattaforme 
+    </a>
+</li>
+        
+            <li class="invisible ja-show" id="main-navigation-jptrading">
+    
+    <a href="/binary-static/it/multi_barriers_trading.html" >
+     Trade 
+    </a>
+</li>
+        
+    </ul>
                         </div>
                     </div>
                     <div id="client-logged-in" class="gr-3 gr-7-m gr-8-p gr-no-gutter client_real client_virtual center-text invisible">
-                      <div id="main-logout">
-                        <ul id="main-account" class="nav-menu main-nav">
-                            <li class="account">
-                                <a href="javascript:;">
-                                    <div class="main-account">
-                                        <div class="account-type"></div>
-                                        <div class="account-id"></div>
-                                        <div class="topMenuBalance">0</div>
-                                    </div>
-                                    <div class="nav-caret"></div>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul id="all-accounts" class="nav-menu main-nav">
-                            <li class="account">
-                                <a href="javascript:;">
-                                    <div class="main-account">
-                                        <div class="account-type"></div>
-                                        <div class="account-id"></div>
-                                        <div class="topMenuBalance">0</div>
-                                    </div>
-                                    <div class="nav-caret"></div>
-                                </a>
-                                <ul>
-                                    <a class="link" href="/binary-static/it/user/settingsws.html">
-                                        <li class="topMenuProfile">Profilo</li>
-                                    </a>
-                                    <a class="link" href="/binary-static/it/user/securityws.html">
-                                        <li class="topMenuSecurity">Protezione e limiti</li>
-                                    </a>
-                                    <a class="link invisible" id="user_menu_metatrader" href="/binary-static/it/user/metatrader.html">
-                                        <li class="topMenuMetaTrader">MetaTrader</li>
-                                    </a>
-                                    <div class="separator-line-thin-gray"></div>
-                                    <div class="login-id-list"></div>
-                                    <a href="javascript:;" id="btn_logout" class="logout">
-                                        <li>Esci</li>
-                                    </a>
-                                </ul>
-                            </li>
-                        </ul>
-                      </div>
+                        <div id="main-logout">
+                            <ul id="main-account" class="nav-menu main-nav">
+                                <li class="account">
+                                    <a href="javascript:;">
+    <div class="main-account">
+        <div class="account-type nowrap"></div>
+        <div class="account-id"></div>
+        <div class="topMenuBalance">0</div>
+    </div>
+    <div class="nav-caret"></div>
+</a>
+                                </li>
+                            </ul>
+                            <ul id="all-accounts" class="nav-menu main-nav">
+                                <li class="account">
+                                    <a href="javascript:;">
+    <div class="main-account">
+        <div class="account-type nowrap"></div>
+        <div class="account-id"></div>
+        <div class="topMenuBalance">0</div>
+    </div>
+    <div class="nav-caret"></div>
+</a>
+                                    <ul>
+                                        <a class="link" href="/binary-static/it/user/settingsws.html">
+                                            <li class="topMenuProfile">Profilo</li>
+                                        </a>
+                                        <a class="link" href="/binary-static/it/user/securityws.html">
+                                            <li class="topMenuSecurity">Protezione e limiti</li>
+                                        </a>
+                                        <a class="link invisible" id="user_menu_metatrader" href="/binary-static/it/user/metatrader.html">
+                                            <li class="topMenuMetaTrader">MetaTrader</li>
+                                        </a>
+                                        <div class="separator-line-thin-gray"></div>
+                                        <div class="login-id-list"></div>
+                                        <a href="javascript:;" id="btn_logout" class="logout">
+                                            <li>Esci</li>
+                                        </a>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div id="client-logged-out" class="gr-3 gr-8-m gr-8-p gr-no-gutter client_logged_out invisible gr-padding-10">
                         <a id="btn_login" class="button" href="javascript:;"><span>Login</span></a>
@@ -212,13 +274,13 @@
         </div>
     </div>
     <div id="content-holder">
-    <div id="main-menu" class="tab-menu no-print fill-bg-color border-color">
+        <div id="main-menu" class="tab-menu no-print fill-bg-color border-color">
     <div class="tab-menu-wrap container gr-hide-m gr-hide-p">
         <div class="gr-12 gr-no-gutter">
-            <ul class="items">  <li id="topMenuTrading" class="item ja-hide hide-tablet-mobile">
+            <ul class="items">  <li id="topMenuTrading" class="item ja-hide gr-hide-m gr-hide-p">
                     <a class="link" target="" href="/binary-static/it/trading.html">Trade</a>
                     
-                </li>  <li id="topMenuJPTrading" class="item all-hide ja-show hide-tablet-mobile">
+                </li>  <li id="topMenuJPTrading" class="item invisible ja-show gr-hide-m gr-hide-p">
                     <a class="link" target="" href="/binary-static/it/multi_barriers_trading.html">Trade</a>
                     
                 </li>  <li id="topMenuPortfolio" class="item client_logged_in invisible">
@@ -252,30 +314,48 @@
         </div>
     </div>
 </div>
-    <div class='gr-hide gr-show-m gr-show-p' id='mobile-menu-container'>
+        <div class='gr-hide gr-show-m gr-show-p' id='mobile-menu-container'>
     <div class='gr-hide' id='mobile-menu'>
         <ul>
             <li class="ja-hide">
-                <a href="/binary-static/it/why-us.html">Perché noi?</a>
-            </li>
-            <li class="all-hide ja-show-block">
-                <a href="/binary-static/it/why-us-jp.html">Perché noi?</a>
-            </li>
+    
+    <a href="/binary-static/it/why-us.html" >
+     Perché noi? 
+    </a>
+</li>
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/why-us-jp.html" >
+     Perché noi? 
+    </a>
+</li>
             <li class="ja-hide">
-              <a href="/binary-static/it/get-started.html">Inizia</a>
-            </li>
-            <li class="all-hide ja-show-block">
-                <a href="/binary-static/it/get-started-jp.html">Inizia</a>
-            </li>
+    
+    <a href="/binary-static/it/get-started.html" >
+     Inizia 
+    </a>
+</li>
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/get-started-jp.html" >
+     Inizia 
+    </a>
+</li>
             <li class="ja-hide">
-                <a href="/binary-static/it/tour.html">Tour</a>
-            </li>
-            <li class="all-hide ja-show-block">
-                <a href="/binary-static/it/tour-jp.html">Tour</a>
-            </li>  <li id="topMenuTrading" class="item ja-hide hide-tablet-mobile">
+    
+    <a href="/binary-static/it/tour.html" >
+     Tour 
+    </a>
+</li>
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/tour-jp.html" >
+     Tour 
+    </a>
+</li>  <li id="topMenuTrading" class="item ja-hide gr-hide-m gr-hide-p">
                 <a class="link " href="/binary-static/it/trading.html">Trade</a>
                 
-            </li>  <li id="topMenuJPTrading" class="item all-hide ja-show hide-tablet-mobile">
+            </li>  <li id="topMenuJPTrading" class="item invisible ja-show gr-hide-m gr-hide-p">
                 <a class="link " href="/binary-static/it/multi_barriers_trading.html">Trade</a>
                 
             </li>  <li id="topMenuPortfolio" class="item client_logged_in invisible">
@@ -305,16 +385,22 @@
             </li>  <li id="topMenuPaymentAgent" class="item invisible">
                 <a class="link " href="/binary-static/it/paymentagent/transferws.html">Agente di pagamento</a>
                 
-            </li>  <li class="ja-hide">
-                <a href="/binary-static/it/platforms.html">Piattaforme</a>
-            </li>
-            <li class="all-hide ja-show-block">
-                <a href="/binary-static/it/multi_barriers_trading.html">Trade</a>
-            </li>
+            </li>  <li class="ja-hide" id="main-navigation-trading">
+    
+    <a href="/binary-static/it/platforms.html" >
+     Piattaforme 
+    </a>
+</li>
+            <li class="invisible ja-show" id="main-navigation-jptrading">
+    
+    <a href="/binary-static/it/multi_barriers_trading.html" >
+     Trade 
+    </a>
+</li>
         </ul>
     </div>
 </div>
-    <!-- Google Tag Manager -->
+        <!-- Google Tag Manager -->
 <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MZWFF7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -324,14 +410,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-MZWFF7');</script>
 <!-- End Google Tag Manager -->
     <!-- FlushHead -->
+    <a href="javascript:;" id="scrollup"></a>
 
-    <div id="content" class="payment_methods-content">
-        <div id="page_info" style="display:none;">
-            <title>Modalità di pagamento | Binary.com</title>
-            <div id="content_class">payment_methods-content</div>
-        </div>
-        
-        <div class="container">
+        <div id="content" class="payment_methods-content">
+            <div id="page_info" style="display:none;">
+                <title>Modalità di pagamento | Binary.com</title>
+                <div id="content_class">payment_methods-content</div>
+            </div>
+
+            <div class="container">
+
 
 
   <div id='cashier-content'>
@@ -343,449 +431,191 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
             <p>
                 <a href="/binary-static/it/home.html" class="toggle button client_logged_out invisible">
-                    <span>Apri un account adesso</span>
-                </a>
+    <span>Apri un account adesso</span>
+</a>
                 <a href="/binary-static/it/cashier/forwardws.html#deposit" class="toggle button client_real invisible">
-                    <span class="deposit">Deposita</span>
-                </a>
+    <span class="deposit">Deposita</span>
+</a>
                 <a href="/binary-static/it/cashier/forwardws.html#withdraw" class="toggle button client_real invisible">
-                    <span class="withdraw">Preleva</span>
-                </a>
+    <span class="withdraw">Preleva</span>
+</a>
             </p>
         </div>
     </div>
 
-    <div class="gr-padding-10 table-header gr-row">
-        <div class="gr-2 gr-6-m">
-            Metodo
+    
+    
+
+
+    <div id="payment_methods">
+    <div class="gr-row gr-padding-10">
+            <div class="gr-12">
+                <h3>Bonifico bancario/Trasferimento di denaro</h3>
+            </div>
+        </div>
+        <div class="gr-row gr-padding-10 table-header">
+            <div class="gr-2 gr-6-m">Metodo</div>
+            <div class="gr-2 gr-6-m">Valute</div>
+            <div class="gr-2 gr-hide-m">Deposito min/max</div>
+            <div class="gr-3 gr-hide-m">Prelievo min/max</div>
+            <div class="gr-3 gr-hide-m">Tempo di elaborazione*</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="int_bank_wire" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">25 - 100,000</div>
+            <div class="gr-3 gr-hide-m">25 - 100,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: 1 giorno lavorativo<br />Prelievo: 1 giorno lavorativo</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="local_bank_transfer" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">25 - 50,000</div>
+            <div class="gr-3 gr-hide-m">25 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: 1 giorno lavorativo<br />Prelievo: 1 giorno lavorativo</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="western_union" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">10 - 3,000</div>
+            <div class="gr-3 gr-hide-m">50 - 250</div>
+            <div class="gr-3 gr-hide-m">Deposito: 1 giorno lavorativo<br />Prelievo: 1 giorno lavorativo</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="citadel" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">100 - 5,000</div>
+            <div class="gr-3 gr-hide-m">100 - 5,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: 1 giorno lavorativo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
 
-        <div class="gr-2 gr-6-m">
-            Valute
+    <div class="gr-row gr-padding-10">
+            <div class="gr-12">
+                <h3>Carta di Credito/Debito</h3>
+            </div>
+        </div>
+        <div class="gr-row gr-padding-10 table-header">
+            <div class="gr-2 gr-6-m">Metodo</div>
+            <div class="gr-2 gr-6-m">Valute</div>
+            <div class="gr-2 gr-hide-m">Deposito min/max</div>
+            <div class="gr-3 gr-hide-m">Prelievo min/max</div>
+            <div class="gr-3 gr-hide-m">Tempo di elaborazione*</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="visa" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">10 - 10,000</div>
+            <div class="gr-3 gr-hide-m">10 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="mastercard" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">10 - 10,000</div>
+            <div class="gr-3 gr-hide-m">10 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
+        </div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="cuo_credit_card" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD</div>
+            <div class="gr-2 gr-hide-m">10 - 1,000</div>
+            <div class="gr-3 gr-hide-m"></div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: non applicabile</div>
         </div>
 
-        <div class="gr-2 gr-hide-m">
-            Deposito min/max
+    <div class="gr-row gr-padding-10">
+            <div class="gr-12">
+                <h3>E-cash</h3>
+            </div>
         </div>
-
-        <div class="gr-3 gr-hide-m">
-            Prelievo min/max
+        <div class="gr-row gr-padding-10 table-header">
+            <div class="gr-2 gr-6-m">Metodo</div>
+            <div class="gr-2 gr-6-m">Valute</div>
+            <div class="gr-2 gr-hide-m">Deposito min/max</div>
+            <div class="gr-3 gr-hide-m">Prelievo min/max</div>
+            <div class="gr-3 gr-hide-m">Tempo di elaborazione*</div>
         </div>
-
-       <div class="gr-3 gr-hide-m">
-            Tempo di elaborazione
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="okpay" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-
-        <div class="gr-12">
-            <h3>Bonifico bancario/Trasferimento di denaro</h3>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="fastpay" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-2 gr-6-m">
-            <div id="int_bank_wire"></div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="perfect_money" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="moneybrokers" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-2 gr-hide-m">
-            25 - 100,000
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="neteller" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD GBP EUR AUD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-3 gr-hide-m">
-            25 - 100,000
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="moneta" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD EUR</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-3 gr-hide-m">
-                Deposito: 5 giorni lavorativi<br>
-                Prelievo: 5 giorni lavorativi
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="webmoney" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD EUR</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="local_bank_transfer"></div>
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="qiwi" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD EUR</div>
+            <div class="gr-2 gr-hide-m">5 - 200 (USD)<br />5 - 150 (EUR)</div>
+            <div class="gr-3 gr-hide-m">5 - 200 (USD)<br />5 - 150 (EUR)</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="yandex" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD EUR</div>
+            <div class="gr-2 gr-hide-m">25 - 640</div>
+            <div class="gr-3 gr-hide-m"></div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo</div>
         </div>
-
-        <div class="gr-2 gr-hide-m">
-            25 - 50,000
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="paysafecard" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD EUR</div>
+            <div class="gr-2 gr-hide-m">5 - 750</div>
+            <div class="gr-3 gr-hide-m">5 - 750</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
-
-        <div class="gr-3 gr-hide-m">
-            25 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-                Deposito: 5 giorni lavorativi<br>
-                Prelievo: 5 giorni lavorativi
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="western_union"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            10 - 3,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            50 - 250
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-                Deposito: 1 giorni lavorativi<br>
-                Prelievo: 2 giorni lavorativi
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="citadel"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            100 - 5,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            100 - 5,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: 5 giorni lavorativi<br>
-            Prelievo: 5 giorni lavorativi
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-
-        <div class="gr-12">
-            <h3>Carta di Credito/Debito</h3>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            <div id="visa"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            10 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            10 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-                Deposito: istantaneo<br>Prelievo: 3 giorni lavorativi
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="mastercard"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            10 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            10 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 3 giorni lavorativi
+    <div class="gr-row gr-padding-10 table-body">
+            <div class="gr-2 gr-6-m"><div id="bitcoin" class="payment-logo"></div></div>
+            <div class="gr-2 gr-6-m">USD</div>
+            <div class="gr-2 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">5 - 10,000</div>
+            <div class="gr-3 gr-hide-m">Deposito: istantaneo<br />Prelievo: 1 giorno lavorativo</div>
         </div>
     </div>
 
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="cuo-credit-card"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            10 - 1,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: non applicabile
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-
-        <div class="gr-12">
-            <h3>E-cash</h3>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            <div id="okpay"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="fastpay"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo<br>
-        </div>
-
-   </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="perfect_money"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="moneybrokers"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="neteller"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD GBP
-            EUR AUD
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="moneta"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD EUR
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="webmoney"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD EUR
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 10,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="qiwi"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD EUR
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 200 (USD)<br>
-            5 - 150 (EUR)
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            5 - 200 (USD)<br>
-            5 - 150 (EUR)
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: 1 giorno lavorativo<br>
-            Prelievo: 1 giorno lavorativo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="yandex"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD EUR
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            25 - 640
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo
-        </div>
-    </div>
-
-    <div class="gr-padding-10 table-body gr-row">
-        <div class="gr-2 gr-6-m">
-            <div id="paysafecard"></div>
-        </div>
-
-        <div class="gr-2 gr-6-m">
-            USD EUR
-        </div>
-
-        <div class="gr-2 gr-hide-m">
-            5 - 1,000
-        </div>
-
-        <div class="gr-3 gr-hide-m">
-        </div>
-
-       <div class="gr-3 gr-hide-m">
-            Deposito: istantaneo
-        </div>
+    <div class="gr-padding-10">
+        <p class="hint">*All your deposits and withdrawals are processed by Binary.com within 24 hours. However, there may be additional processing time required by your bank or money transfer service.</p>
     </div>
 </div>
 
@@ -795,158 +625,308 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div> 
 </div>
 <div id="footer" class="no-print">
-    <div id="footer-menu" class="primary-bg-color">
+    <div id="footer-menu" class="primary-bg-color gr-padding-10">
         <div class="container">
             <div class="gr-row gr-padding-10">
                 <div class="gr-6 gr-12-m gr-parent gr-no-gutter">
                     <div class="gr-row">
-                        <div class="gr-4">
-                            <h4 class="secondary-color">La nostra società</h4>
-                            <ul>
-                                <li>
-                                    <a href="/binary-static/it/about-us.html">Chi siamo</a>
-                                </li>
-                                <li class="id-hide ar-hide">
-                                    <a href="/binary-static/it/regulation.html">Regulatory Information</a>
-                                </li>
-                                <li>
-                                    <a href="/binary-static/it/group-history.html">Storia del gruppo</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/careers.html">Lavora con noi</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="http://binarycom.statuspage.io" target="_blank">Stato della rete</a>
-                                </li>
-                                <li class="ja-hide id-hide">
-                                    <a href="/binary-static/it/legal/us_patents.html" class="us_patent_link">Brevetti</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="gr-4">
-                            <h4 class="secondary-color">Formazione</h4>
-                            <ul>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/why-us.html">Perché noi?</a>
-                                </li>
-                                <li class="all-hide ja-show-block">
-                                    <a href="/binary-static/it/why-us-jp.html">Perché noi?</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/get-started.html">Per iniziare</a>
-                                </li>
-                                <li class="all-hide ja-show-block">
-                                    <a href="/binary-static/it/get-started-jp.html">Per iniziare</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/tour.html">Tour della piattaforma</a>
-                                </li>
-                                <li class="hidden ja-show-block">
-                                    <a href="/binary-static/it/tour-jp.html">Tour della piattaforma</a>
-                                </li>
-                                <li class="hidden ja-show-block">
-                                    <a href="/binary-static/it/service-announcements.html">{JAPAN ONLY}Service Announcements</a>
-                                </li>
-                                <li class="ja-hide id-hide">
-                                    <a href="http://www.gamcare.org.uk/" target="_blank">GamCare</a>
-                                </li>
-                                <li class="ja-hide academy">
-                                    <a href="http://academy.binary.com" target="_blank">Academy</a>
-                                </li>
-                                <li class='ja-hide id-hide'>
-                                    <a href="https://academy.binary.com/en/events/" target="_blank">Webinar</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="gr-4">
-                            <h4 class="secondary-color">Credito</h4>
-                            <ul>
-                                <li>
-                                    <a href="/binary-static/it/cashier.html">Cassa</a>
-                                </li>
-                                <li class="ja-hide">
-                                    <a href="/binary-static/it/cashier/payment_methods.html">Modalità di pagamento</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <div class="gr-4 ">
+    <h4 class="secondary-color"><strong>La nostra società</strong></h4>
+    <ul>
+        
+            <li>
+    
+    <a href="/binary-static/it/about-us.html" >
+     Chi siamo 
+    </a>
+</li>
+        
+            <li class="gr-hide gr-show-m">
+    
+    <a href="/binary-static/it/contact.html" >
+     Contattaci 
+    </a>
+</li>
+        
+            <li class="id-hide ar-hide">
+    
+    <a href="/binary-static/it/regulation.html" >
+     Regulatory Information 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="/binary-static/it/group-history.html" >
+     Storia del gruppo 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/careers.html" >
+     Lavora con noi 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="https://binarycom.statuspage.io"  target="_blank">
+     Stato della rete 
+    </a>
+</li>
+        
+            <li class="ja-hide id-hide">
+    
+    <a href="/binary-static/it/legal/us_patents.html" >
+     Brevetti 
+    </a>
+</li>
+        
+    </ul>
+</div>
+
+                        <div class="gr-4 ">
+    <h4 class="secondary-color"><strong>Formazione</strong></h4>
+    <ul>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/why-us.html" >
+     Perché noi? 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/why-us-jp.html" >
+     Perché noi? 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/get-started.html" >
+     Per iniziare 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/get-started-jp.html" >
+     Per iniziare 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/tour.html" >
+     Tour della piattaforma 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/tour-jp.html" >
+     Tour della piattaforma 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/service-announcements.html" >
+     {JAPAN ONLY}Service Announcements 
+    </a>
+</li>
+        
+            <li class="ja-hide id-hide">
+    
+    <a href="http://www.gamcare.org.uk/"  target="_blank">
+     GamCare 
+    </a>
+</li>
+        
+            <li class="ja-hide academy">
+    
+    <a href="https://academy.binary.com"  target="_blank">
+     Accademia 
+    </a>
+</li>
+        
+            <li class="ja-hide id-hide">
+    
+    <a href="https://academy.binary.com/en/events/"  target="_blank">
+     Webinar 
+    </a>
+</li>
+        
+    </ul>
+</div>
+
+                        <div class="gr-4 ">
+    <h4 class="secondary-color"><strong>Credito</strong></h4>
+    <ul>
+        
+            <li>
+    
+    <a href="/binary-static/it/cashier.html" >
+     Cassa 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/cashier/payment_methods.html" >
+     Modalità di pagamento 
+    </a>
+</li>
+        
+    </ul>
+</div>
                     </div>
                 </div>
                 <div class="gr-6 gr-12-m gr-parent gr-no-gutter">
                     <div class="gr-row">
-                        <div class="gr-4">
-                           <h4 class="secondary-color">Legale</h4>
-                           <ul>
-                               <li class='ja-hide'>
-                                   <a href="/binary-static/it/terms-and-conditions.html">Termini e condizioni</a>
-                               </li>
-                               <li class='hidden ja-show-block'>
-                                   <a href="/binary-static/it/terms-and-conditions-jp.html">Termini e condizioni</a>
-                               </li>
-                               <li class='ja-hide'>
-                                   <a href="/binary-static/it/terms-and-conditions.html?#privacy">Sicurezza e privacy</a>
-                               </li>
-                               <li class='hidden ja-show-block'>
-                                   <a href="/binary-static/it/terms-and-conditions-jp.html?#account-privacy">Sicurezza e privacy</a>
-                               </li>
-                               <li class="ja-hide">
-                                   <a href="/binary-static/it/responsible-trading.html">Trading responsabile</a>
-                               </li>
-                               <li class="ja-hide">
-                                   <a href="/binary-static/it/terms-and-conditions.html?section=complaints-disputes#legal-binary">Reclami</a>
-                               </li>
-                           </ul>
-                       </div>
-                       <div class="gr-4 ja-hide">
-                           <h4 class="secondary-color">Trading</h4>
-                           <ul>
-                               <li>
-                                   <a href="/binary-static/it/platforms.html">Piattaforme</a>
-                               </li>
-                               <li>
-                                   <a href="/binary-static/it/resources/asset_indexws.html">Indice degli asset</a>
-                               </li>
-                           </ul>
-                       </div>
-                       <div class="gr-4 ja-hide">
-                           <h4 class="secondary-color">Collabora con noi</h4>
-                           <ul class="partner">
-                               <li>
-                                   <a href="/binary-static/it/affiliate/signup.html">Programma di affiliazione</a>
-                               </li>
-                               <li>
-                                   <a href="https://developers.binary.com" target="_blank">API</a>
-                               </li>
-                               <li>
-                                   <a target="_blank" href="https://shop.binary.com">Shop di Binary</a>
-                               </li>
-                               <li>
-                                   <a href="/binary-static/it/partners.html">Tutte le opzioni di partnership</a>
-                               </li>
-                           </ul>
-                       </div>
-                       <div class="gr-4 all-hide ja-show">
-                           <h4 class="secondary-color">{JAPAN ONLY}Company Profile</h4>
-                           <ul>
-                               <li>
-                                   <a href="/binary-static/it/company-profile.html">{JAPAN ONLY}Company Profile & Disclosure</a>
-                               </li>
-                           </ul>
-                       </div>
+                        <div class="gr-4 ">
+    <h4 class="secondary-color"><strong>Legale</strong></h4>
+    <ul>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/terms-and-conditions.html" >
+     Termini e condizioni 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/terms-and-conditions-jp.html" >
+     Termini e condizioni 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/terms-and-conditions.html?#privacy" >
+     Sicurezza e privacy 
+    </a>
+</li>
+        
+            <li class="invisible ja-show">
+    
+    <a href="/binary-static/it/terms-and-conditions-jp.html?#account-privacy" >
+     Sicurezza e privacy 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/responsible-trading.html" >
+     Trading responsabile 
+    </a>
+</li>
+        
+            <li class="ja-hide">
+    
+    <a href="/binary-static/it/terms-and-conditions.html?section=complaints-disputes" >
+     Reclami 
+    </a>
+</li>
+        
+    </ul>
+</div>
+
+                        <div class="gr-4 ja-hide">
+    <h4 class="secondary-color"><strong>Trading</strong></h4>
+    <ul>
+        
+            <li>
+    
+    <a href="/binary-static/it/platforms.html" >
+     Piattaforme 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="/binary-static/it/resources/asset_indexws.html" >
+     Indice degli asset 
+    </a>
+</li>
+        
+    </ul>
+</div>
+
+                        <div class="gr-4 ja-hide">
+    <h4 class="secondary-color"><strong>Collabora con noi</strong></h4>
+    <ul>
+        
+            <li>
+    
+    <a href="/binary-static/it/affiliate/signup.html" >
+     Programma di affiliazione 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="https://developers.binary.com"  target="_blank">
+     API 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="https://shop.binary.com"  target="_blank">
+     Shop di Binary 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="/binary-static/it/charity.html" >
+     Charitable Activities 
+    </a>
+</li>
+        
+            <li>
+    
+    <a href="/binary-static/it/partners.html" >
+     Tutte le opzioni di partnership 
+    </a>
+</li>
+        
+    </ul>
+</div>
+
+                        <div class="gr-4 invisible ja-show">
+    <h4 class="secondary-color"><strong>{JAPAN ONLY}Company Profile</strong></h4>
+    <ul>
+        
+            <li>
+    
+    <a href="/binary-static/it/company-profile.html" >
+     {JAPAN ONLY}Company Profile & Disclosure 
+    </a>
+</li>
+        
+    </ul>
+</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="footer-regulatory" class="primary-color-dark">
+    <div id="footer-regulatory" class="primary-color-dark gr-padding-10 gr-child">
         <div class="container">
             <div class="gr-row">
-                <div id="regulatory-text" class="gr-9 gr-12-m gr-7-p gr-padding-10 gr-parent content-inverse-color">
-                    Questo sito internet è commercializzato nel Regno Unito e nell'Isola di Man da parte di Binary (IOM) Ltd., First Floor, Millennium House, Victoria Road, Douglas, IM2 4RW, Isola di Man, Arcipelago britannico, autorizzata e regolamentata dalla (1) Gambling Supervision Commission dell'Isola di Man, Arcipelago britannico, autorizzazione attuale sul gioco d'azzardo online rilasciata il 31 agosto 2012, e per i clienti del Regno Unito dalla (2) UK Gambling Commission - <a href='https://secure.gamblingcommission.gov.uk/gccustomweb/PublicRegister/PRSearch.aspx?ExternalAccountId=39172' target='_blank'>vedi autorizzazione</a>. Questo sito internet è commercializzato nel resto d'Europa, per i prodotti d'investimento, da parte della Binary Investments (Europe) Ltd., Mompalao Building, Suite 2, Tower Road, Msida MSD1825, Malta, autorizzata e regolamentata come provider di Servizi d'investimento, Categoria 3, da parte della Malta Financial Services Authority (autorizzazione n. IS/70156), e per i prodotti d'azzardo da Binary (Europe) Ltd., Mompalao Building, Suite 2, Tower Road, Msida MSD1825, Malta, autorizzata e regolamentata dalla (1) Malta Gaming Authority a Malta, autorizzazione n. MGA/CL2/118/2000 del 26 maggio 2015 e per i clienti del Regno Unito da parte della (2) UK Gambling Commission - <a href='https://secure.gamblingcommission.gov.uk/gccustomweb/PublicRegister/PRSearch.aspx?ExternalAccountId=39495' target='_blank'>vedi autorizzazione</a> e per i clienti irlandesi da parte della (3) Revenue Commissioners dell'Irlanda, attuale autorizzazione di remote bookmaker emessa il 29 settembre 2015 (autorizzazione n. 1010285). In alcuni paesi i servizi di questo sito internet non sono disponibili come negli Stati Uniti d'America, Costa Rica, Hong Kong, o per le persone minorenni.
-                </div>
+                <p id="regulatory-text" class="gr-9 gr-12-m gr-7-p gr-padding-10 gr-parent content-inverse-color no-margin">
+                    Questo sito internet è commercializzato nel Regno Unito e nell'Isola di Man da parte di Binary (IOM) Ltd., First Floor, Millennium House, Victoria Road, Douglas, IM2 4RW, Isola di Man, Arcipelago britannico, autorizzata e regolamentata dalla (1) Gambling Supervision Commission dell'Isola di Man, Arcipelago britannico, autorizzazione attuale sul gioco d'azzardo online rilasciata il 31 agosto 2012, e per i clienti del Regno Unito dalla (2) UK Gambling Commission - <a href='https://secure.gamblingcommission.gov.uk/gccustomweb/PublicRegister/PRSearch.aspx?ExternalAccountId=39172' target='_blank'>vedi autorizzazione</a>. Questo sito internet è commercializzato nel resto d'Europa, per i prodotti d'investimento, da parte della Binary Investments (Europe) Ltd., Mompalao Building, Suite 2, Tower Road, Msida MSD1825, Malta, autorizzata e regolamentata come provider di Servizi d'investimento, Categoria 3, da parte della Malta Financial Services Authority (autorizzazione n. IS/70156), e per i prodotti d'di scommessa da Binary (Europe) Ltd., Mompalao Building, Suite 2, Tower Road, Msida MSD1825, Malta, autorizzata e regolamentata dalla (1) Malta Gaming Authority a Malta, autorizzazione n. MGA/CL2/118/2000 del 26 maggio 2015 e per i clienti del Regno Unito da parte della (2) UK Gambling Commission - <a href='https://secure.gamblingcommission.gov.uk/gccustomweb/PublicRegister/PRSearch.aspx?ExternalAccountId=39495' target='_blank'>vedi autorizzazione</a> e per i clienti irlandesi da parte della (3) Revenue Commissioners dell'Irlanda, attuale autorizzazione di remote bookmaker emessa il 29 settembre 2015 (autorizzazione n. 1010285). In alcuni paesi i servizi di questo sito internet non sono disponibili come negli Stati Uniti d'America, Costa Rica, Hong Kong, o per le persone minorenni.
+                </p>
                 <div class="ja-hide gr-3 gr-12-m gr-5-p center-text" id="social-networks">
                     <div class="gr-row ja-hide id-hide">
                         <div class="gr-5">
-                            <a href="http://www.gov.im/gambling/" target="_blank">
+                            <a href="https://www.gov.im/gambling/" target="_blank">
                                 <img id="iom_icon_footer" class="responsive" src="/binary-static/images/pages/footer/isle-of-man.png"/>
                             </a>
                         </div>
@@ -956,45 +936,46 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                             </a>
                         </div>
                     </div>
-                    <div id="fb-root">
-</div>
-<div class="social-icons gr-padding-10">
-    <a href="http://www.youtube.com/user/BinaryTradingVideos" target="_blank">
-        <img class="responsive social-network-icon" src="/binary-static/images/pages/footer/youtube.svg"/>
-    </a>
-    <a href="https://plus.google.com/106251151552682209951" rel="publisher" target="_blank">
-        <img class="responsive social-network-icon" src="/binary-static/images/pages/footer/google-plus.svg"/>
-    </a>
-    <a href="https://www.facebook.com/binarydotcom" target="_blank">
-        <img class="responsive social-network-icon" src="/binary-static/images/pages/footer/facebook.svg"/>
+                    
 
-    </a>
-    <a href="https://twitter.com/Binarydotcom" target="_blank">
-        <img class="responsive social-network-icon" src="/binary-static/images/pages/footer/twitter.svg"/>
-    </a>
-    <a href="https://www.linkedin.com/company/binary-com" target="_blank">
-        <img class="responsive social-network-icon" src="/binary-static/images/pages/footer/linkedin.svg"/>
-    </a>
-</div>
+                    <div class="gr-padding-10 gr-row">
+                            <div class="gr-2 gr-1-p gr-3-m"></div>
+                            
+                                <a href="https://www.youtube.com/user/BinaryTradingVideos" target="_blank" class="gr-2 gr-1-m gr-no-gutter-right">
+                                    <img class="responsive" src="/binary-static/images/pages/footer/youtube.svg"/>
+                                </a>
+                            
+                                <a href="https://plus.google.com/106251151552682209951" target="_blank" class="gr-2 gr-1-m gr-no-gutter-right">
+                                    <img class="responsive" src="/binary-static/images/pages/footer/google-plus.svg"/>
+                                </a>
+                            
+                                <a href="https://www.facebook.com/binarydotcom" target="_blank" class="gr-2 gr-1-m gr-no-gutter-right">
+                                    <img class="responsive" src="/binary-static/images/pages/footer/facebook.svg"/>
+                                </a>
+                            
+                                <a href="https://twitter.com/Binarydotcom" target="_blank" class="gr-2 gr-1-m gr-no-gutter-right">
+                                    <img class="responsive" src="/binary-static/images/pages/footer/twitter.svg"/>
+                                </a>
+                            
+                                <a href="https://www.linkedin.com/company/binary-com" target="_blank" class="gr-2 gr-1-m gr-no-gutter-right">
+                                    <img class="responsive" src="/binary-static/images/pages/footer/linkedin.svg"/>
+                                </a>
+                            
+                        </div>
                 </div>
-            </div>
-        </div>
-        <div id="ratelimit-error-message">
-            <div class="message">
-                You have reached the rate limit of requests per second. Please try later.
             </div>
         </div>
     </div>
     <div id="footer-last" class="primary-bg-color">
         <div class="container">
             <div class="gr-padding-10">
-                <p class="gambling content-inverse-color">
-                    Trading binary options may not be suitable for everyone, so please ensure that you fully understand the risks involved. Your losses can exceed your initial deposit and you do not own or have any interest in the underlying asset. In regards to binary options which are gambling products, remember that gambling can be addictive - please play responsibly. <span class="ja-hide">Read about <a href="/binary-static/it/responsible-trading.html">Responsible Trading</a>.</span>
+                <p class="gambling content-inverse-color no-para-margin">
+                    Il trading in opzioni binarie può non essere adatto a tutti, quindi assicurati di aver compreso appieno i rischi connessi. Le tue perdite possono superare il deposito iniziale e non possiederai, ne avrai alcun interesse su alcun asset sottostante. In merito alle opzioni binarie, che sono prodotti d'azzardo, si ricorda che il gioco d'azzardo può creare dipendenza, gioca responsabilmente. <span class="ja-hide">Leggi altro sul <a href="/binary-static/it/responsible-trading.html">Trading responsabile</a>.</span>
                 </p>
             </div>
         </div>
     </div>
-    <div id="end-note" class="invisible"></div>
+    <div id="end-note" class="invisible content-inverse-color center-text"></div>
 </div>
 
         </div>

@@ -1,10 +1,11 @@
 <div id="content" class="forwardws-content">
-        <div id="page_info" style="display:none;">
-            <title>收銀台 | Binary.com</title>
-            <div id="content_class">forwardws-content</div>
-        </div>
-        
-        <div class="container">
+            <div id="page_info" style="display:none;">
+                <title>收銀台 | Binary.com</title>
+                <div id="content_class">forwardws-content</div>
+            </div>
+
+            <div class="container">
+
 
 
   <div id="deposit_withdraw">
@@ -27,6 +28,8 @@
             <span id="knowledge_test_error">要啟動此帳戶，您必須完成知識測試。欲知詳情請聯繫<a href="/binary-static/zh_tw/contact.html">客服部</a>。</span>
             <span id="activation_error">帳戶未啟動。欲知詳細資訊，請聯繫<a href="/binary-static/zh_tw/contact.html">客服部</a>。</span>
             <span id="age_error">帳戶需要通過年齡驗證。欲知詳細資訊，請聯繫<a href="/binary-static/zh_tw/contact.html">客服部</a>。</span>
+            <span id="tnc_error">請<a href="/binary-static/zh_tw/user/tnc_approvalws.html">接受更新條款和條件</a>。</span>
+            <span id="limits_error">請到<a href="/binary-static/zh_tw/user/security/self_exclusionws.html#max_30day_turnover">自我禁止工具</a>設定30天交易限額，以存取收銀台。</span>
             <span id="custom_error">對不起，在處理您的請求時發生錯誤。</span>
         </p>
     </div>
@@ -51,36 +54,57 @@
 
     <form id="frm_currency" class="invisible">
         <fieldset>
-            <div class="gr-padding-10 gr-row clear">
-                <div class="gr-4 form_label">
-                    <label for="select_currency">交易</label>
-                </div>
-                <div class="gr-8">
-                    <select id="select_currency"></select>
-                </div>
+        
+        
+            <div class="gr-row form-row center-text-m ">
+        <div class="gr-4 gr-12-m">
+            <label for="select_currency">
+                交易
+            </label>
+        </div>
+        <div class="gr-8 gr-12-m">
+                                <select id="select_currency" class="form_input " >                     </select>
+            
+        </div>
+    </div>
+            <div class="center-text ">
+            
+        
+        
+        <div class="gr-padding-10">
+            <button id="btn_submit" type="submit">繼續</button>
+        </div>
+    
             </div>
-            <div class="gr-padding-10 row clear center-text">
-                <div class="gr-8">
-                    <button class="button" type="submit">繼續</button>
-                </div>
-            </div>
-        </fieldset>
+        
+    </fieldset>
     </form>
 
     <form id="frm_withdraw" class="invisible">
         <fieldset>
-            <div class="gr-row gr-parent gr-padding-10">
-                <div class="form_label gr-4">
-                    <label for="verification_code">驗證權杖</label>
-                </div>
-                <div class="gr-8">
-                    <input id="verification_code" name="verification_code" type="text" maxlength="48" autocomplete="off" />
-                    <div class="hint">請檢查您的電郵領取此權杖編號</div>
-                </div>
-            </div>
-        </fieldset>
-        <div class="gr-12 gr-parent gr-centered center-text">
-            <button class="button" type="submit">送出</button>
+        
+        
+            <div class="gr-row form-row center-text-m ">
+        <div class="gr-4 gr-12-m">
+            <label for="verification_code">
+                驗證權杖
+            </label>
         </div>
+        <div class="gr-8 gr-12-m">
+                                <input type="text" id="verification_code" maxlength="8" autocomplete="off" />
+            <div class="hint">請檢查您的電郵領取此權杖編號</div>
+        </div>
+    </div>
+        
+    </fieldset>
+        <div class="center-text ">
+            
+        
+        
+        <div class="gr-padding-10">
+            <button id="btn_submit" type="submit">送出</button>
+        </div>
+    
+            </div>
     </form>
 </div>
