@@ -81777,6 +81777,12 @@
 	        $statement_row.children('.date').addClass('pre');
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
+	        $statement_row.hover(function () {
+	            $(this).css('background-color', 'yellow');
+	        }, function () {
+	            $(this).css('background-color', 'white');
+	        });
+
 	        // create view button and append
 	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
 	            var $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: statement_data.id });
