@@ -81782,6 +81782,9 @@
 	        }, function () {
 	            $(this).css('background-color', 'white');
 	        });
+	        $statement_row.click(function () {
+	            console.log('CLICKED!');
+	        });
 
 	        // create view button and append
 	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
