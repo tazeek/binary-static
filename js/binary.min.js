@@ -36679,6 +36679,7 @@
 	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
 	        $(container_selector).on('click', '.open_contract_details', function (e) {
 	            e.preventDefault();
+	            window.alert('CLICKED!');
 	            init(this);
 	        });
 	    };
@@ -36686,7 +36687,6 @@
 	    var rowOnClick = function rowOnClick(container_selector) {
 	        $(container_selector).on('click', '.statement_row', function (e) {
 	            e.preventDefault();
-	            window.alert('CLICKED!');
 	            init(this);
 	        });
 	    };
@@ -81794,9 +81794,7 @@
 	        }, function () {
 	            $(this).css('background-color', 'white');
 	        });
-	        $statement_row.click(function () {
-	            window.alert('CLICKED');
-	        });
+
 	        // create view button and append
 	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
 	            var $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: statement_data.id });
