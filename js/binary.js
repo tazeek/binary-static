@@ -36677,7 +36677,7 @@
 	    };
 
 	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
-	        $(container_selector).on('click', '.open_contract_details', function (e) {
+	        $(container_selector).on('click', '.statement-row', function (e) {
 	            e.preventDefault();
 	            init(this);
 	        });
@@ -81782,9 +81782,6 @@
 	            $(this).css('background-color', '#E98024');
 	        }, function () {
 	            $(this).css('background-color', 'white');
-	        });
-	        $statement_row.click(function () {
-	            window.alert('This row was clicked!');
 	        });
 
 	        // create view button and append
