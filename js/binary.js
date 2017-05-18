@@ -36685,9 +36685,9 @@
 	    };
 
 	    var rowOnClick = function rowOnClick(container_selector) {
-	        $(container_selector).on('click', '.statement_row', function (e) {
+	        $(container_selector).on('click', 'table tr', function (e) {
 	            e.preventDefault();
-	            init(this);
+	            window.alert('CLICKED');
 	        });
 	    };
 
