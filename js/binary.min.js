@@ -36679,6 +36679,7 @@
 	    var viewOnClick = function viewOnClick(container_selector) {
 	        $(container_selector).on('click', '.statement_row', function (e) {
 	            e.preventDefault();
+	            $(this).css('background-color', '#2A3052');
 	            init(this);
 	        });
 	    };
