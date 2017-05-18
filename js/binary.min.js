@@ -81776,6 +81776,7 @@
 	        $statement_row.children('.credit').addClass(credit_debit_type);
 	        $statement_row.children('.date').addClass('pre');
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
+	        $statement_row.addClass('.statement-row');
 
 	        $statement_row.hover(function () {
 	            $(this).css('background-color', '#E98024');
