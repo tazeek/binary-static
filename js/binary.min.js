@@ -81778,12 +81778,12 @@
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
 	        $statement_row.hover(function () {
-	            $(this).css('background-color', 'yellow');
+	            $(this).css('background-color', 'red');
 	        }, function () {
 	            $(this).css('background-color', 'white');
 	        });
 	        $statement_row.click(function () {
-	            console.log('CLICKED!');
+	            window.alert('This row was clicked!');
 	        });
 
 	        // create view button and append
