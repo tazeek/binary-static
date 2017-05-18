@@ -36683,9 +36683,17 @@
 	        });
 	    };
 
+	    var rowOnClick = function rowOnClick(container_selector) {
+	        $(container_selector).on('click', '.statement-row', function (e) {
+	            e.preventDefault();
+	            init(this);
+	        });
+	    };
+
 	    return {
 	        init: init,
-	        viewButtonOnClick: viewButtonOnClick
+	        viewButtonOnClick: viewButtonOnClick,
+	        rowOnClick: rowOnClick
 	    };
 	}();
 
@@ -81783,7 +81791,7 @@
 	        $statement_row.hover(function () {
 	            $(this).css('background-color', '#E98024');
 	        }, function () {
-	            $(this).css('background-color', 'green');
+	            $(this).css('background-color', 'white');
 	        });
 
 	        // create view button and append
