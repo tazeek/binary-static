@@ -36684,7 +36684,7 @@
 	    };
 
 	    var rowOnClick = function rowOnClick(container_selector) {
-	        $(container_selector).on('click', '.statement-row', function (e) {
+	        $(container_selector).on('click', '.statement_row', function (e) {
 	            e.preventDefault();
 	            window.alert('CLICKED!');
 	            init(this);
@@ -81795,7 +81795,7 @@
 	            $(this).css('background-color', 'white');
 	        });
 	        $statement_row.click(function () {
-	            window.alert('CLICKED!!');
+	            window.alert('CLICKED');
 	        });
 	        // create view button and append
 	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
