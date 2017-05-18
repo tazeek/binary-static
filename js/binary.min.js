@@ -81783,7 +81783,7 @@
 	        $statement_row.hover(function () {
 	            $(this).css('background-color', '#E98024');
 	        }, function () {
-	            $(this).css('background-color', 'red');
+	            $(this).css('background-color', 'green');
 	        });
 
 	        // create view button and append
