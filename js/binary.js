@@ -81778,7 +81778,7 @@
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
 	        $statement_row.hover(function () {
-	            $(this).css('background-color', 'red');
+	            $(this).css('background-color', '#E98024');
 	        }, function () {
 	            $(this).css('background-color', 'white');
 	        });
