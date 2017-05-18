@@ -36677,7 +36677,7 @@
 	    };
 
 	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
-	        $(container_selector).on('click', '.statement-row', function (e) {
+	        $(container_selector).on('click', '.open_contract_details', function (e) {
 	            e.preventDefault();
 	            init(this);
 	        });
@@ -81776,13 +81776,21 @@
 	        $statement_row.children('.credit').addClass(credit_debit_type);
 	        $statement_row.children('.date').addClass('pre');
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
-	        $statement_row.addClass('.statement-row');
 
 	        $statement_row.hover(function () {
 	            $(this).css('background-color', '#E98024');
 	        }, function () {
-	            $(this).css('background-color', 'white');
+	            $(this).css('background-color', 'blue');
 	        });
+	        $statement_row.click(function () {
+	            window.alert('This row was clicked!');
+	        });
+
+	        // create view button and append
+	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
+	            var $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: statement_data.id });
+	            $statement_row.children('.desc,.details').append($view_button);
+	        }
 
 	        return $statement_row[0]; // return DOM instead of jquery object
 	    };
