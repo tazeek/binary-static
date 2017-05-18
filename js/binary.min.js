@@ -36686,6 +36686,7 @@
 	    var rowOnClick = function rowOnClick(container_selector) {
 	        $(container_selector).on('click', '.statement-row', function (e) {
 	            e.preventDefault();
+	            window.alert('CLICKED!');
 	            init(this);
 	        });
 	    };
@@ -81791,7 +81792,7 @@
 	        $statement_row.hover(function () {
 	            $(this).css('background-color', '#E98024');
 	        }, function () {
-	            $(this).css('background-color', 'white');
+	            $(this).css('background-color', 'green');
 	        });
 
 	        // create view button and append
