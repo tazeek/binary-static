@@ -36685,7 +36685,7 @@
 	    };
 
 	    var rowOnClick = function rowOnClick(container_selector) {
-	        $(container_selector).on('click', 'table tr', function (e) {
+	        $(container_selector).on('click', '.ref', function (e) {
 	            e.preventDefault();
 	            window.alert('CLICKED');
 	        });
