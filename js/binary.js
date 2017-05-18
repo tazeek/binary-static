@@ -36676,7 +36676,7 @@
 	        }
 	    };
 
-	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
+	    var viewOnClick = function viewOnClick(container_selector) {
 	        $(container_selector).on('click', '.statement_row', function (e) {
 	            e.preventDefault();
 	            init(this);
@@ -36685,7 +36685,7 @@
 
 	    return {
 	        init: init,
-	        viewButtonOnClick: viewButtonOnClick
+	        viewOnClick: viewOnClick
 	    };
 	}();
 
@@ -81704,7 +81704,7 @@
 	    var onLoad = function onLoad() {
 	        initPage();
 	        attachDatePicker();
-	        ViewPopup.viewButtonOnClick('#statement-container');
+	        ViewPopup.viewOnClick('#statement-container');
 	    };
 
 	    return {
@@ -81778,7 +81778,6 @@
 
 	        $statement_row.children('.credit').addClass(credit_debit_type);
 	        $statement_row.children('.date').addClass('pre');
-	        $statement_row.children('.ref').attr('contract_id', statement_data.id);
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
 	        $statement_row.hover(function () {
