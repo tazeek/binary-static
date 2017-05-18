@@ -36677,24 +36677,16 @@
 	    };
 
 	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
-	        $(container_selector).on('click', '.open_contract_details', function (e) {
+	        $(container_selector).on('click', '.ref', function (e) {
 	            e.preventDefault();
 	            window.alert('CLICKED!');
 	            init(this);
 	        });
 	    };
 
-	    var rowOnClick = function rowOnClick(container_selector) {
-	        $(container_selector).on('click', '.ref', function (e) {
-	            e.preventDefault();
-	            window.alert('CLICKED');
-	        });
-	    };
-
 	    return {
 	        init: init,
-	        viewButtonOnClick: viewButtonOnClick,
-	        rowOnClick: rowOnClick
+	        viewButtonOnClick: viewButtonOnClick
 	    };
 	}();
 
