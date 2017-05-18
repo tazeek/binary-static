@@ -81784,12 +81784,6 @@
 	            $(this).css('background-color', 'white');
 	        });
 
-	        // create view button and append
-	        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
-	            var $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: statement_data.id });
-	            $statement_row.children('.desc,.details').append($view_button);
-	        }
-
 	        return $statement_row[0]; // return DOM instead of jquery object
 	    };
 
