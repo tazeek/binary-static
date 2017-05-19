@@ -36816,7 +36816,7 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show();
+	        con.show('slide');
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
 	        $('.popup_page_overlay').click(function () {
