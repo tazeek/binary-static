@@ -36817,12 +36817,12 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show();
+	        con.show(1000, 'swing');
 	        $('#contract_tabs').click(function () {
-	            $('#contract_information_content').toggle('slow');
+	            $('#contract_information_content').toggle(1000);
 	        });
 	        $('#trade_details_current_title').click(function () {
-	            $('#trade_information_content').toggle('slow');
+	            $('#trade_information_content').toggle(1000);
 	        });
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
