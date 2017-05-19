@@ -36817,7 +36817,7 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show('fold');
+	        con.show('fold', { direction: 'left' });
 	        $('#contract_tabs').click(function () {
 	            $('#contract_information_content').toggle();
 	        });
