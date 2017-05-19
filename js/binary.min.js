@@ -36821,6 +36821,9 @@
 	        $('#contract_tabs').click(function () {
 	            $('#contract_information_content').toggle();
 	        });
+	        $('#trade_details_current_title').click(function () {
+	            $('#trade_information_content').toggle();
+	        });
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
 	        $('.popup_page_overlay').click(function () {
