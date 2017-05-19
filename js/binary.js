@@ -36677,7 +36677,7 @@
 	    };
 
 	    var viewOnClick = function viewOnClick(container_selector) {
-	        $(container_selector).on('click', '.statement_row', function (e) {
+	        $(container_selector).on('click', '.open_contract_details', function (e) {
 	            e.preventDefault();
 	            $(this).css('background-color', '#2A3052');
 	            init(this);
@@ -74024,7 +74024,7 @@
 	        });
 	        getNextBatchTransactions();
 	        onScrollLoad();
-	        ViewPopup.viewButtonOnClick('#profit-table-container');
+	        ViewPopup.viewOnClick('#profit-table-container');
 	    };
 
 	    return {
@@ -74119,9 +74119,13 @@
 	            $(this).wrapInner('<div class="new-width"></div>');
 	        });
 
-	        // create view button and append
-	        var $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: profit_table_data.id });
-	        $row.children('.contract,.details').append($view_button);
+	        $row.attr('class', 'open_contract_details');
+	        $row.attr('contract_id', profit_table_data.id);
+	        $row.hover(function () {
+	            $(this).css('background-color', '#E98024');
+	        }, function () {
+	            $(this).css('background-color', 'white');
+	        });
 
 	        return $row[0];
 	    };
@@ -81774,7 +81778,7 @@
 
 	        var $statement_row = Table.createFlexTableRow([statement_data.date, '<span ' + showTooltip(statement_data.app_id, oauth_apps[statement_data.app_id]) + '>' + statement_data.ref + '</span>', statement_data.payout, localize(statement_data.action), '', statement_data.amount, statement_data.balance, ''], columns, 'data');
 
-	        $statement_row.attr('class', 'statement_row');
+	        $statement_row.attr('class', 'open_contract_details');
 	        $statement_row.attr('contract_id', statement_data.id);
 
 	        $statement_row.children('.credit').addClass(credit_debit_type);
