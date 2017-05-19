@@ -36816,7 +36816,10 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show('slow', 'linear');
+
+	        var direction_flow = { direction: 'left' };
+	        var duration = 500;
+	        con.toggle('slide', direction_flow, duration);
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
 	        $('.popup_page_overlay').click(function () {
