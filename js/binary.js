@@ -36818,7 +36818,7 @@
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
 	        con.show('slide');
-	        con.children('#contract_tabs').click(function () {
+	        $('tr#contract_tabs').click(function () {
 	            window.alert('CLICKED');
 	        });
 	        // $('html').addClass('no-scroll');
