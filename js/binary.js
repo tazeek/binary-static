@@ -36818,7 +36818,9 @@
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
 	        con.show('slide');
-
+	        con.children('#contract_tabs').click(function () {
+	            $('#contract_information_content').toggle();
+	        });
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
 	        $('.popup_page_overlay').click(function () {
