@@ -36819,7 +36819,7 @@
 	        body.append(con);
 	        con.show('slide');
 	        con.children('#contract_tabs').click(function () {
-	            $('#contract_information_content').toggle();
+	            window.alert('CLICKED');
 	        });
 	        // $('html').addClass('no-scroll');
 	        $(document.body).append($('<div/>', { class: 'popup_page_overlay' }));
