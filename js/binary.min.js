@@ -36684,8 +36684,16 @@
 	        });
 	    };
 
+	    var viewButtonOnClick = function viewButtonOnClick(container_selector) {
+	        $(container_selector).on('click', '.open_contract_details', function (e) {
+	            e.preventDefault();
+	            init(this);
+	        });
+	    };
+
 	    return {
 	        init: init,
+	        viewButtonOnClick: viewButtonOnClick,
 	        viewOnClick: viewOnClick
 	    };
 	}();
