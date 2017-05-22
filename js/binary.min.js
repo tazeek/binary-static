@@ -81721,6 +81721,14 @@
 	        if ($(jump_to).attr('data-picker') !== 'native') $(jump_to).val(localize('Today'));
 	    };
 
+	    var findReference = function findReference() {
+	        var reference_input = '#reference-input';
+	        $(reference_input).keyup(function () {
+	            var ref_search = this.value;
+	            var statement_rows = $("tbody").find("tr");
+	        });
+	    };
+
 	    var onLoad = function onLoad() {
 	        initPage();
 	        attachDatePicker();
@@ -81730,6 +81738,7 @@
 	    return {
 	        init: initPage,
 	        statementHandler: statementHandler,
+	        findReference: findReference,
 	        onLoad: onLoad,
 	        onUnload: onUnload
 	    };
