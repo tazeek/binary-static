@@ -81724,8 +81724,9 @@
 	    var findReference = function findReference() {
 	        var reference_input = '#reference-input';
 	        $(reference_input).keyup(function () {
-	            var ref_search = this.value;
-	            var statement_rows = $("tbody").find("tr");
+	            // const ref_search = this.value;
+	            var $statement_rows = $('tbody tr');
+	            console.log($statement_rows);
 	        });
 	    };
 
