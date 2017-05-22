@@ -81723,11 +81723,11 @@
 
 	    var findReference = function findReference() {
 	        var reference_input = '#reference-input';
-	        $(reference_input).keyup(function () {
-	            var ref_search = this.value.split(' ');
+	        $(reference_input).attr('data-value').change(function () {
+	            // const ref_search = this.value.split(' ');
 	            // const $statement_rows = $('tbody tr');
-	            window.alert(ref_search);
-	            console.log(ref_search);
+	            window.alert('CHANGED');
+	            // console.log(ref_search);
 	        });
 	    };
 
