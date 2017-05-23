@@ -81664,11 +81664,15 @@
 	        });
 	    };
 
-	    var filterReferences = function filterReferences(reference_id) {
-	        console.log(reference_id);
+	    var filterReferences = function filterReferences(input_reference_id) {
+	        console.log(input_reference_id);
 	        $('#statement-table > tbody > tr').each(function () {
 	            var ref_id = $(this).find('.ref > span').html();
-	            console.log(ref_id);
+	            if (ref_id.indexOf(input_reference_id) > -1) {
+	                $(this).css('display', '');
+	            } else {
+	                $(this).css('display', 'none');
+	            }
 	        });
 	    };
 
