@@ -81660,8 +81660,14 @@
 	            console.log('WORKS!');
 	        });
 	        $(document.body).find('#reference-input').on('keyup', function () {
-	            console.log(this.value);
+	            filterReferences(this.value);
 	        });
+	    };
+
+	    var filterReferences = function filterReferences(reference_id) {
+	        console.log(reference_id);
+	        var table_rows = $('#statement-table > tbody');
+	        console.log(table_rows);
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
