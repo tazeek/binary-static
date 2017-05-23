@@ -81667,8 +81667,10 @@
 	    var filterReferences = function filterReferences(reference_id) {
 	        console.log(reference_id);
 	        var table_rows = $('#statement-table > tbody > tr');
-	        for (var i = 0; i < table_rows.length; i++) {
+	        for (var i = 0; i < 10; i++) {
 	            console.log(table_rows[i]);
+	            var td_ref = table_rows[i].getElementsByTagName('td')[1];
+	            console.log(td_ref);
 	        }
 	    };
 
