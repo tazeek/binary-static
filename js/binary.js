@@ -81666,8 +81666,10 @@
 
 	    var filterReferences = function filterReferences(reference_id) {
 	        console.log(reference_id);
-	        var table_rows = $('#statement-table > tbody');
-	        console.log(table_rows);
+	        var table_rows = $('#statement-table > tbody > tr');
+	        for (var i = 0; i < table_rows.length; i++) {
+	            console.log(table_rows[i]);
+	        }
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
