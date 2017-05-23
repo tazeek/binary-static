@@ -81660,7 +81660,7 @@
 	            console.log('WORKS!');
 	        });
 	        $(document.body).find('#reference-input').on('keyup', function () {
-	            console.log('CHANGING!');
+	            console.log(this.value);
 	        });
 	    };
 
