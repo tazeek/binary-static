@@ -81666,12 +81666,10 @@
 
 	    var filterReferences = function filterReferences(reference_id) {
 	        console.log(reference_id);
-	        var table_rows = $('#statement-table > tbody > tr');
-	        for (var i = 0; i < 10; i++) {
-	            console.log(table_rows[i]);
-	            var td_ref = table_rows[i].getElementsByTagName('td')[1].innerHTML;
-	            console.log(td_ref);
-	        }
+	        $('#statement-table > tbody > tr').each(function () {
+	            var ref_id = $(this).find('.ref > span').html();
+	            console.log(ref_id);
+	        });
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
