@@ -81656,7 +81656,7 @@
 	    };
 
 	    var headerEventHandler = function headerEventHandler(header) {
-	        header.find('#reference-input').on('keyup', function () {
+	        header.find('.date').on('click', function () {
 	            console.log('WORKS!');
 	        });
 	    };
