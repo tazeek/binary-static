@@ -81669,7 +81669,7 @@
 	        var table_rows = $('#statement-table > tbody > tr');
 	        for (var i = 0; i < 10; i++) {
 	            console.log(table_rows[i]);
-	            var td_ref = table_rows[i].getElementsByTagName('td')[1];
+	            var td_ref = table_rows[i].getElementsByTagName('td')[1].innerHTML;
 	            console.log(td_ref);
 	        }
 	    };
