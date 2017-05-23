@@ -2105,6 +2105,11 @@ div.kineticjs-content {
   border: 1px solid #dedede;
 }
 
+.open_contract_details {
+  background-color: '#E98024';
+  cursor: 'pointer';
+}
+
 #sell_popup_container {
   width: 90%;
   font-size: 0.86957rem;
