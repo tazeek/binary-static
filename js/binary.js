@@ -81633,7 +81633,9 @@
 	        }
 
 	        if (!tableExist()) {
-	            StatementUI.createEmptyStatementTable().appendTo('#statement-container');
+	            var $header = StatementUI.createEmptyStatementTable();
+	            headerEventHandler($header);
+	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
 
@@ -81650,12 +81652,13 @@
 	            }
 	        }
 
-	        $('#reference-input').keyup(updateReference());
 	        showLocalTimeOnHover('td.date');
 	    };
 
-	    var updateReference = function updateReference() {
-	        console.log(undefined);
+	    var headerEventHandler = function headerEventHandler(header) {
+	        header.find('#reference-input').on('keyup', function () {
+	            console.log('WORKS!');
+	        });
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
