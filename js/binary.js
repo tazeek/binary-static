@@ -36679,7 +36679,6 @@
 	    var viewOnClick = function viewOnClick(container_selector) {
 	        $(container_selector).on('click', '.open_contract_details', function (e) {
 	            e.preventDefault();
-	            $(this).css('background-color', '#2A3052');
 	            init(this);
 	        });
 	    };
@@ -81810,6 +81809,12 @@
 	        $statement_row.children('.credit').addClass(credit_debit_type);
 	        $statement_row.children('.date').addClass('pre');
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
+
+	        $statement_row.hover(function () {
+	            $(this).css('background-color', '#E98024');$(this).css('cursor', 'pointer');
+	        }, function () {
+	            $(this).css('background-color', 'white');$(this).css('cursor', 'auto');
+	        });
 
 	        return $statement_row[0]; // return DOM instead of jquery object
 	    };

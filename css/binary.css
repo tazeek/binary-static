@@ -818,10 +818,6 @@ table td {
 .table-container #statement-table tr td, .table-container #profit-table tr td {
   overflow: initial;
 }
-.table-container #statement-table tr.hover, .table-container #profit-table tr.hover {
-  background-color: 'E98024';
-  cursor: 'pointer';
-}
 @media (max-width: 600px) {
   .table-container #statement-table tr > th.details, .table-container #statement-table tr > td.details, .table-container #profit-table tr > th.details, .table-container #profit-table tr > td.details {
     display: table-cell !important;
