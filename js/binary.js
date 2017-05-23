@@ -36824,7 +36824,7 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show();
+	        con.show('fold');
 	        $('#contract_tabs').click(function () {
 	            $('#contract_information_content').toggle();
 	        });
@@ -81649,7 +81649,13 @@
 	                }
 	            }
 	        }
+
+	        $('#reference-input').keyup(updateReference());
 	        showLocalTimeOnHover('td.date');
+	    };
+
+	    var updateReference = function updateReference() {
+	        console.log(undefined);
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
@@ -81720,16 +81726,6 @@
 	        if ($(jump_to).attr('data-picker') !== 'native') $(jump_to).val(localize('Today'));
 	    };
 
-	    var findReference = function findReference() {
-	        var reference_input = '#reference-input';
-	        $(reference_input).attr('data-value').change(function () {
-	            // const ref_search = this.value.split(' ');
-	            // const $statement_rows = $('tbody tr');
-	            window.alert('CHANGED');
-	            // console.log(ref_search);
-	        });
-	    };
-
 	    var onLoad = function onLoad() {
 	        initPage();
 	        attachDatePicker();
@@ -81739,7 +81735,6 @@
 	    return {
 	        init: initPage,
 	        statementHandler: statementHandler,
-	        findReference: findReference,
 	        onLoad: onLoad,
 	        onUnload: onUnload
 	    };
