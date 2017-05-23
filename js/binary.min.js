@@ -36824,7 +36824,7 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show(1000);
+	        con.show();
 	        $('#contract_tabs').click(function () {
 	            $('#contract_information_content').toggle();
 	        });
