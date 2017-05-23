@@ -2105,8 +2105,12 @@ div.kineticjs-content {
   border: 1px solid #dedede;
 }
 
-.open_contract_details:hover {
-  background-color: '#E98024';
+.open_contract_details {
+  background-color: '#white';
+  cursor: 'auto';
+}
+.open_contract_details.hover {
+  background-color: 'E98024';
   cursor: 'pointer';
 }
 
