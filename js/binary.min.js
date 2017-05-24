@@ -81634,7 +81634,6 @@
 
 	        if (!tableExist()) {
 	            var $header = StatementUI.createEmptyStatementTable();
-	            uniqueAction();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
@@ -81651,6 +81650,7 @@
 	                    });
 	                }
 	            }
+	            uniqueAction();
 	        }
 
 	        showLocalTimeOnHover('td.date');
