@@ -81551,6 +81551,8 @@
 
 	'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var moment = __webpack_require__(305);
 	var StatementUI = __webpack_require__(569);
 	var ViewPopup = __webpack_require__(435);
@@ -81659,7 +81661,8 @@
 	    var uniqueAction = function uniqueAction() {
 	        var action_list = [];
 	        $('#statement-table > tbody > tr').each(function () {
-	            var action = $(this).find('.act').html();
+	            var action = String($(this).find('.act').html());
+	            console.log(typeof action === 'undefined' ? 'undefined' : _typeof(action));
 	            if (action_list.indexOf(action) === -1) {
 	                action_list.push(action);
 	            }
