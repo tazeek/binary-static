@@ -81658,7 +81658,9 @@
 
 	    var uniqueAction = function uniqueAction() {
 	        var action_list = [];
+	        console.log('ACTIONS!');
 	        $('#statement-table > tbody > tr').each(function () {
+	            console.log($(this));
 	            var action = $(this).find('.act').html();
 	            console.log(action);
 	            if (action_list.indexOf(action) === -1) {
