@@ -81660,6 +81660,7 @@
 	        var action_list = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = $(this).find('.act').html();
+	            console.log(action);
 	            if (action_list.indexOf(action) === -1) {
 	                action_list.push(action);
 	            }
