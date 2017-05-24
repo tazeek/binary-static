@@ -81664,6 +81664,12 @@
 	                action_list.push(action);
 	            }
 	        });
+	        $.each(action_list, function (i, action) {
+	            $('#action-list').append($('<option>', {
+	                value: action.toLowerCase(),
+	                text: action
+	            }));
+	        });
 	    };
 
 	    var headerEventHandler = function headerEventHandler() {
