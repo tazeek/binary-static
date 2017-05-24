@@ -81634,6 +81634,7 @@
 
 	        if (!tableExist()) {
 	            var $header = StatementUI.createEmptyStatementTable();
+	            uniqueAction();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
@@ -81653,6 +81654,17 @@
 	        }
 
 	        showLocalTimeOnHover('td.date');
+	    };
+
+	    var uniqueAction = function uniqueAction() {
+	        var action_list = [];
+	        $('#statement-table > tbody > tr').each(function () {
+	            var action = $(this).find('.act').html();
+	            if (action_list.indexOf(action) === -1) {
+	                action_list.append(action);
+	            }
+	        });
+	        console.log(action_list);
 	    };
 
 	    var headerEventHandler = function headerEventHandler() {
