@@ -81650,13 +81650,13 @@
 	                    });
 	                }
 	            }
-	            uniqueAction();
+	            uniqueActionList();
 	        }
 
 	        showLocalTimeOnHover('td.date');
 	    };
 
-	    var uniqueAction = function uniqueAction() {
+	    var uniqueActionList = function uniqueActionList() {
 	        var action_list = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
@@ -81679,16 +81679,20 @@
 	        $(document.body).find('#debit-credit-list').on('change', function () {
 	            filterTable();
 	        });
+	        $(document.body).find('#action-list').on('change', function () {
+	            filterTable();
+	        });
 	    };
 
 	    var filterTable = function filterTable() {
 	        var input_ref = $('#reference-input').val();
 	        var input_selected = $('#debit-credit-list').val();
+	        var input_action = $('#action-list').val();
 	        $('#statement-table > tbody > tr').each(function () {
 	            var ref_id = $(this).find('.ref > span').html();
 	            var profit_loss_class = $(this).find('.credit').attr('class');
-
-	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class)) {
+	            var action = $(this).find('.act').html();
+	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findPL(input_action, action)) {
 	                $(this).css('display', '');
 	            } else {
 	                $(this).css('display', 'none');
