@@ -81682,7 +81682,11 @@
 	        console.log(input_selected);
 	        $('#statement-table > tbody > tr').each(function () {
 	            var profit_loss_class = $(this).find('.credit').attr('class');
-	            console.log(profit_loss_class);
+	            if (profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') {
+	                $(this).css('display', '');
+	            } else {
+	                $(this).css('display', 'none');
+	            }
 	        });
 	    };
 
