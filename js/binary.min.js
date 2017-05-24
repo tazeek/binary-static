@@ -81665,45 +81665,34 @@
 	    };
 
 	    var filterTable = function filterTable() {
-	        // const ref_id = $(this).find('.ref > span').html();
-	        // const profit_loss_class = $(this).find('.credit').attr('class');
-
 	        var input_ref = $('#reference-input').val();
 	        var input_selected = $('#debit-credit-list').val();
+	        $('#statement-table > tbody > tr').each(function () {
+	            var ref_id = $(this).find('.ref > span').html();
+	            var profit_loss_class = $(this).find('.credit').attr('class');
 
-	        console.log(input_ref);
-	        console.log(input_selected);
-	    };
-	    /*
-	        const filterReferences = (input_reference_id) => {
-	            $('#statement-table > tbody > tr').each(function () {
-	                const ref_id = $(this).find('.ref > span').html();
-	                if (ref_id.indexOf(input_reference_id) > -1 && visibleRow($(this))) {
-	                    $(this).css('display', '');
-	                } else {
-	                    $(this).css('display', 'none');
-	                }
-	            });
-	        };
-	    
-	        const filterDebitCredit = (input_selected) => {
-	            $('#statement-table > tbody > tr').each(function () {
-	                const profit_loss_class = $(this).find('.credit').attr('class');
-	                if (profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') {
-	                    $(this).css('display', '');
-	                } else {
-	                    $(this).css('display', 'none');
-	                }
-	            });
-	        };
-	    
-	        const visibleRow = (row) => {
-	            if (row.css('display') !== 'none') {
-	                return true;
+	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class)) {
+	                $(this).css('display', '');
+	            } else {
+	                $(this).css('display', 'none');
 	            }
-	            return false;
-	        };
-	    */
+	        });
+	    };
+
+	    var findRef = function findRef(input_ref, ref_id) {
+	        if (ref_id.indexOf(input_ref) > -1) {
+	            return true;
+	        }
+	        return false;
+	    };
+
+	    var findPL = function findPL(input_selected, profit_loss_class) {
+	        if (profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') {
+	            return true;
+	        }
+	        return false;
+	    };
+
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
 	        $(document).scroll(function () {
 	            var hidableHeight = function hidableHeight(percentage) {
