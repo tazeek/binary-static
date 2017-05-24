@@ -81634,7 +81634,7 @@
 
 	        if (!tableExist()) {
 	            var $header = StatementUI.createEmptyStatementTable();
-	            headerEventHandler($header);
+	            headerEventHandler();
 	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
@@ -81655,47 +81655,55 @@
 	        showLocalTimeOnHover('td.date');
 	    };
 
-	    var headerEventHandler = function headerEventHandler(header) {
-	        header.find('.date').on('click', function () {
-	            console.log('WORKS!');
-	        });
+	    var headerEventHandler = function headerEventHandler() {
 	        $(document.body).find('#reference-input').on('keyup', function () {
-	            filterReferences(this.value);
+	            filterTable();
 	        });
 	        $(document.body).find('#debit-credit-list').on('change', function () {
-	            filterDebitCredit(this.value);
+	            filterTable();
 	        });
 	    };
 
-	    var filterReferences = function filterReferences(input_reference_id) {
-	        $('#statement-table > tbody > tr').each(function () {
-	            var ref_id = $(this).find('.ref > span').html();
-	            if (ref_id.indexOf(input_reference_id) > -1 && visibleRow($(this))) {
-	                $(this).css('display', '');
-	            } else {
-	                $(this).css('display', 'none');
+	    var filterTable = function filterTable() {
+	        // const ref_id = $(this).find('.ref > span').html();
+	        // const profit_loss_class = $(this).find('.credit').attr('class');
+
+	        var input_ref = $('#reference-input').val();
+	        var input_selected = $('#debit-credit-list').val();
+
+	        console.log(input_ref);
+	        console.log(input_selected);
+	    };
+	    /*
+	        const filterReferences = (input_reference_id) => {
+	            $('#statement-table > tbody > tr').each(function () {
+	                const ref_id = $(this).find('.ref > span').html();
+	                if (ref_id.indexOf(input_reference_id) > -1 && visibleRow($(this))) {
+	                    $(this).css('display', '');
+	                } else {
+	                    $(this).css('display', 'none');
+	                }
+	            });
+	        };
+	    
+	        const filterDebitCredit = (input_selected) => {
+	            $('#statement-table > tbody > tr').each(function () {
+	                const profit_loss_class = $(this).find('.credit').attr('class');
+	                if (profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') {
+	                    $(this).css('display', '');
+	                } else {
+	                    $(this).css('display', 'none');
+	                }
+	            });
+	        };
+	    
+	        const visibleRow = (row) => {
+	            if (row.css('display') !== 'none') {
+	                return true;
 	            }
-	        });
-	    };
-
-	    var filterDebitCredit = function filterDebitCredit(input_selected) {
-	        $('#statement-table > tbody > tr').each(function () {
-	            var profit_loss_class = $(this).find('.credit').attr('class');
-	            if (profit_loss_class.indexOf(input_selected) > -1 && visibleRow($(this)) || input_selected === 'all') {
-	                $(this).css('display', '');
-	            } else {
-	                $(this).css('display', 'none');
-	            }
-	        });
-	    };
-
-	    var visibleRow = function visibleRow(row) {
-	        if (row.css('display') !== 'none') {
-	            return true;
-	        }
-	        return false;
-	    };
-
+	            return false;
+	        };
+	    */
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
 	        $(document).scroll(function () {
 	            var hidableHeight = function hidableHeight(percentage) {
