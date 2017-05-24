@@ -81661,7 +81661,7 @@
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = $(this).find('.act').html();
 	            if (action_list.indexOf(action) === -1) {
-	                action_list.append(action);
+	                action_list.push(action);
 	            }
 	        });
 	        console.log(action_list);
