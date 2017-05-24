@@ -81662,6 +81662,10 @@
 	        $(document.body).find('#reference-input').on('keyup', function () {
 	            filterReferences(this.value);
 	        });
+	        $(document.body).find('#debit-credit-list').on('change', function () {
+	            console.log(this.value);
+	            // filterDebitCredit(this.value);
+	        });
 	    };
 
 	    var filterReferences = function filterReferences(input_reference_id) {
