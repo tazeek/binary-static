@@ -81680,6 +81680,10 @@
 
 	    var filterDebitCredit = function filterDebitCredit(input_selected) {
 	        console.log(input_selected);
+	        $('#statement-table > tbody > tr').each(function () {
+	            var profit_loss_class = $(this).find('.credit').attr('class');
+	            console.log(profit_loss_class);
+	        });
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
