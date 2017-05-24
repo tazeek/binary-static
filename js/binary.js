@@ -81665,7 +81665,6 @@
 	                action_list.push(action);
 	            }
 	        });
-	        console.log(action_list);
 	    };
 
 	    var headerEventHandler = function headerEventHandler() {
