@@ -81663,8 +81663,7 @@
 	            filterReferences(this.value);
 	        });
 	        $(document.body).find('#debit-credit-list').on('change', function () {
-	            console.log(this.value);
-	            // filterDebitCredit(this.value);
+	            filterDebitCredit(this.value);
 	        });
 	    };
 
@@ -81677,6 +81676,10 @@
 	                $(this).css('display', 'none');
 	            }
 	        });
+	    };
+
+	    var filterDebitCredit = function filterDebitCredit(input_selected) {
+	        console.log(input_selected);
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
