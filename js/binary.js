@@ -36824,7 +36824,7 @@
 	        var body = $(document.body);
 	        con.css('position', 'fixed').css('z-index', getHighestZIndex() + 100);
 	        body.append(con);
-	        con.show('fold');
+	        con.show();
 	        $('#contract_tabs').click(function () {
 	            $('#contract_information_content').toggle();
 	        });
@@ -81665,7 +81665,6 @@
 	    };
 
 	    var filterReferences = function filterReferences(input_reference_id) {
-	        console.log(input_reference_id);
 	        $('#statement-table > tbody > tr').each(function () {
 	            var ref_id = $(this).find('.ref > span').html();
 	            if (ref_id.indexOf(input_reference_id) > -1) {
