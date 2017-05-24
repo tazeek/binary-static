@@ -81670,7 +81670,7 @@
 	    var filterReferences = function filterReferences(input_reference_id) {
 	        $('#statement-table > tbody > tr').each(function () {
 	            var ref_id = $(this).find('.ref > span').html();
-	            if (ref_id.indexOf(input_reference_id) > -1 && $(this).css('display') === 'none') {
+	            if (ref_id.indexOf(input_reference_id) > -1 && visibleRow()) {
 	                $(this).css('display', '');
 	            } else {
 	                $(this).css('display', 'none');
@@ -81681,12 +81681,19 @@
 	    var filterDebitCredit = function filterDebitCredit(input_selected) {
 	        $('#statement-table > tbody > tr').each(function () {
 	            var profit_loss_class = $(this).find('.credit').attr('class');
-	            if ((profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') && $(this).css('display') === 'none') {
+	            if (profit_loss_class.indexOf(input_selected) > -1 && visibleRow() || input_selected === 'all') {
 	                $(this).css('display', '');
 	            } else {
 	                $(this).css('display', 'none');
 	            }
 	        });
+	    };
+
+	    var visibleRow = function visibleRow() {
+	        if ($(undefined).css('display') !== 'none') {
+	            return true;
+	        }
+	        return false;
 	    };
 
 	    var loadStatementChunkWhenScroll = function loadStatementChunkWhenScroll() {
