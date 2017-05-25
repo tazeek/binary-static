@@ -81634,7 +81634,7 @@
 
 	        if (!tableExist()) {
 	            var $header = StatementUI.createEmptyStatementTable();
-	            headerEventHandler($header);
+	            headerEventHandler();
 	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
@@ -81672,10 +81672,7 @@
 	        });
 	    };
 
-	    var headerEventHandler = function headerEventHandler(header) {
-	        header.find('.date').on('click', function () {
-	            sortTable(0);
-	        });
+	    var headerEventHandler = function headerEventHandler() {
 	        $(document.body).find('#reference-input').on('keyup', function () {
 	            filterTable();
 	        });
@@ -81685,43 +81682,6 @@
 	        $(document.body).find('#action-list').on('change', function () {
 	            filterTable();
 	        });
-	    };
-
-	    var sortTable = function sortTable(col_num) {
-	        var table = document.getElementById('statement-table');
-	        var switching = true;
-	        var dir = 'asc';
-	        var switchcount = 0;
-	        var shouldSwitch = void 0;
-	        while (switching) {
-	            switching = false;
-	            var rows = table.getElementsByTagName('tr');
-	            var i = 1;
-	            for (; i < rows.length; i++) {
-	                shouldSwitch = false;
-	                var x = rows[i].getElementsByTagName('td')[col_num];
-	                var y = rows[i + 1].getElementsByTagName('td')[col_num];
-	                if (dir === 'asc') {
-	                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-	                        shouldSwitch = true;
-	                        break;
-	                    }
-	                } else if (dir === 'desc') {
-	                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-	                        shouldSwitch = true;
-	                        break;
-	                    }
-	                }
-	            }
-	            if (shouldSwitch) {
-	                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-	                switching = true;
-	                switchcount++;
-	            } else if (switchcount === 0 && dir === 'asc') {
-	                dir = 'desc';
-	                switching = true;
-	            }
-	        }
 	    };
 
 	    var filterTable = function filterTable() {
