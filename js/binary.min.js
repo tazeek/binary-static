@@ -81634,7 +81634,7 @@
 
 	        if (!tableExist()) {
 	            var $header = StatementUI.createEmptyStatementTable();
-	            headerEventHandler();
+	            headerEventHandler($header);
 	            $header.appendTo('#statement-container');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
@@ -81672,7 +81672,10 @@
 	        });
 	    };
 
-	    var headerEventHandler = function headerEventHandler() {
+	    var headerEventHandler = function headerEventHandler(header) {
+	        header.find('.date').on('click', function () {
+	            console.log('CLICKED!');
+	        });
 	        $(document.body).find('#reference-input').on('keyup', function () {
 	            filterTable();
 	        });
