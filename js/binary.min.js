@@ -81692,7 +81692,7 @@
 	            var ref_id = $(this).find('.ref > span').html();
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
-	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findPL(input_action, action)) {
+	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
 	                $(this).css('display', '');
 	            } else {
 	                $(this).css('display', 'none');
@@ -81709,6 +81709,13 @@
 
 	    var findPL = function findPL(input_selected, profit_loss_class) {
 	        if (profit_loss_class.indexOf(input_selected) > -1 || input_selected === 'all') {
+	            return true;
+	        }
+	        return false;
+	    };
+
+	    var findAction = function findAction(input_action, action) {
+	        if (action.toLowerCase() === input_action || input_action === 'all') {
 	            return true;
 	        }
 	        return false;
