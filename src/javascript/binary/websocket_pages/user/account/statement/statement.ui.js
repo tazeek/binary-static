@@ -66,15 +66,14 @@ const StatementUI = (() => {
             '',
         ], columns, 'data');
 
+        $statement_row.attr('class', 'open_contract_details');
+        $statement_row.attr('contract_id', statement_data.id);
+
         $statement_row.children('.credit').addClass(credit_debit_type);
         $statement_row.children('.date').addClass('pre');
         $statement_row.children('.desc').html(`${localize(statement_data.desc)}<br>`);
 
-        // create view button and append
-        if (statement_data.action === 'Sell' || statement_data.action === 'Buy') {
-            const $view_button = $('<button/>', { class: 'button open_contract_details', text: localize('View'), contract_id: statement_data.id });
-            $statement_row.children('.desc,.details').append($view_button);
-        }
+        $statement_row.hover(function() { $(this).css('background-color', '#E98024'); $(this).css('cursor', 'pointer'); }, function() { $(this).css('background-color', 'white'); $(this).css('cursor', 'auto'); });
 
         return $statement_row[0];        // return DOM instead of jquery object
     };
