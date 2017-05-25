@@ -81688,7 +81688,7 @@
 	    };
 
 	    var sortTable = function sortTable(col_num) {
-	        var table = $('#statement-table');
+	        var table = document.getElementById('statement-table');
 	        var switching = true;
 	        var dir = 'asc';
 	        var switchcount = 0;
@@ -81699,8 +81699,8 @@
 	            var i = 1;
 	            for (; i < rows.length; i++) {
 	                shouldSwitch = false;
-	                var x = rows[i].getElementsByTagName('TD')[col_num];
-	                var y = rows[i + 1].getElementsByTagName('TD')[col_num];
+	                var x = rows[i].getElementsByTagName('td')[col_num];
+	                var y = rows[i + 1].getElementsByTagName('td')[col_num];
 	                if (dir === 'asc') {
 	                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
 	                        shouldSwitch = true;
