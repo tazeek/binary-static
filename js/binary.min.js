@@ -81754,6 +81754,7 @@
 	            }
 
 	            if (!finishedConsumed()) StatementUI.updateStatementTable(getNextChunkStatement());
+	            filterTable();
 	        });
 	    };
 
