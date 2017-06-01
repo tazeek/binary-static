@@ -81698,7 +81698,7 @@
 	            var ref_id = $(this).find('.ref > span').html();
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
-	            if ($(this).attr('class') === 'open_contract_details' && findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
+	            if ($(this).attr('class').indexOf('details') > -1 && findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
 	                $(this).css('display', '');
 	                foundRow = true;
 	            } else {
