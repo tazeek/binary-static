@@ -81873,8 +81873,11 @@
 	        var credit_debit_type = parseFloat(transaction.amount) >= 0 ? 'profit' : 'loss';
 
 	        var $statement_row = Table.createFlexTableRow([statement_data.date, '<span ' + showTooltip(statement_data.app_id, oauth_apps[statement_data.app_id]) + '>' + statement_data.ref + '</span>', statement_data.payout, localize(statement_data.action), '', statement_data.amount, statement_data.balance, ''], columns, 'data');
-
-	        $statement_row.attr('class', 'open_contract_details');
+	        var class_name = 'open_contract_details';
+	        if ($statement_row.childen('.act').html() === 'Deposit') {
+	            class_name = 'deposit_details';
+	        }
+	        $statement_row.attr('class', class_name);
 	        $statement_row.attr('contract_id', statement_data.id);
 
 	        $statement_row.children('.credit').addClass(credit_debit_type);
