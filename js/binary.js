@@ -81661,7 +81661,7 @@
 	    };
 
 	    var updateActionList = function updateActionList() {
-	        // const action_list = [];
+	        // const temp = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
 	            if (action_list.indexOf(action) === -1) {
@@ -81754,7 +81754,7 @@
 
 	            if (!finishedConsumed()) StatementUI.updateStatementTable(getNextChunkStatement());
 	            filterTable();
-	            updateActionList();
+	            // updateActionList();
 	        });
 	    };
 
