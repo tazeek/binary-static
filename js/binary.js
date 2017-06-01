@@ -81625,8 +81625,11 @@
 	        pending = false;
 
 	        var statement = response.statement;
+	        console.log(statement);
 	        current_batch = statement.transactions;
+	        console.log(current_batch);
 	        transactions_received += current_batch.length;
+	        console.log(transactions_received);
 
 	        if (current_batch.length < batch_size) {
 	            no_more_data = true;
