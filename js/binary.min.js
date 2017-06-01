@@ -81636,7 +81636,8 @@
 	            var $header = StatementUI.createEmptyStatementTable();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
-	            $('#statement-container').css('width', '80%');
+	            $('#statement-container').css('width', '95%');
+	            $('#statement-container').css('padding-left', '35px');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
 
@@ -81831,7 +81832,7 @@
 	    var columns = ['date', 'ref', 'payout', 'act', 'desc', 'credit', 'bal', 'details'];
 
 	    var createEmptyStatementTable = function createEmptyStatementTable() {
-	        var header = [localize('Date'), localize('Ref.'), localize('Potential Payout'), localize('Action'), localize('Description'), localize('Credit/Debit'), localize('Balance'), localize('Details')];
+	        var header = [localize('Date'), localize('Ref.'), localize('Potential Payout'), localize('Action'), localize('Description'), localize('Credit/Debit'), localize('Balance')];
 
 	        var jp_client = jpClient();
 	        var currency = Client.get('currency');
@@ -81860,7 +81861,7 @@
 	        }));
 	        var credit_debit_type = parseFloat(transaction.amount) >= 0 ? 'profit' : 'loss';
 
-	        var $statement_row = Table.createFlexTableRow([statement_data.date, '<span ' + showTooltip(statement_data.app_id, oauth_apps[statement_data.app_id]) + '>' + statement_data.ref + '</span>', statement_data.payout, localize(statement_data.action), '', statement_data.amount, statement_data.balance, ''], columns, 'data');
+	        var $statement_row = Table.createFlexTableRow([statement_data.date, '<span ' + showTooltip(statement_data.app_id, oauth_apps[statement_data.app_id]) + '>' + statement_data.ref + '</span>', statement_data.payout, localize(statement_data.action), '', statement_data.amount, statement_data.balance], columns, 'data');
 
 	        $statement_row.attr('class', 'open_contract_details');
 	        $statement_row.attr('contract_id', statement_data.id);
