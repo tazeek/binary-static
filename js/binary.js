@@ -81625,11 +81625,8 @@
 	        pending = false;
 
 	        var statement = response.statement;
-	        console.log(statement);
 	        current_batch = statement.transactions;
-	        console.log(current_batch);
 	        transactions_received += current_batch.length;
-	        console.log(transactions_received);
 
 	        if (current_batch.length < batch_size) {
 	            no_more_data = true;
@@ -81669,7 +81666,7 @@
 	                action_list.push(action);
 	            }
 	        });
-	        var opts = $('#action_list')[0].options;
+	        var opts = $('#action-list')[0].options;
 	        console.log(opts);
 	        $.each(action_list, function (i, action) {
 	            $('#action-list').append($('<option>', {
