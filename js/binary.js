@@ -81696,11 +81696,12 @@
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
 	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action) && $(this).attr('class') !== 'flex-tr') {
-	                $(this).show();
+	                console.log($(this).attr('class'));
+	                $(this).css('display', '');
 	                $('.no-record').css('display', 'none');
 	                foundRow = true;
 	            } else {
-	                $(this).hide();
+	                $(this).css('display', 'none');
 	            }
 	        });
 	        if (!foundRow) {
