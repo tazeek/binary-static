@@ -812,6 +812,10 @@ table td {
     padding-right: 5px !important;
   }
 }
+.table-container #statement-table, .table-container #profit-table {
+  width: '95%';
+  padding-left: '35px';
+}
 .table-container #statement-table tr > th.details, .table-container #statement-table tr > td.details, .table-container #profit-table tr > th.details, .table-container #profit-table tr > td.details {
   display: none !important;
 }
