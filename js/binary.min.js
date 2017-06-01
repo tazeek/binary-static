@@ -81688,6 +81688,7 @@
 	    };
 
 	    var filterTable = function filterTable() {
+	        var foundRow = false;
 	        var input_ref = $('#reference-input').val();
 	        var input_selected = $('#debit-credit-list').val();
 	        var input_action = $('#action-list').val();
@@ -81697,10 +81698,14 @@
 	            var action = $(this).find('.act').html();
 	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
 	                $(this).css('display', '');
+	                foundRow = true;
 	            } else {
 	                $(this).css('display', 'none');
 	            }
 	        });
+	        if (!foundRow) {
+	            console.log('NO ROWS FOUND!');
+	        }
 	    };
 
 	    var findRef = function findRef(input_ref, ref_id) {
