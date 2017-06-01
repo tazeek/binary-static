@@ -81636,7 +81636,7 @@
 	            var $header = StatementUI.createEmptyStatementTable();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
-	            '#statement-container'.css('width', '80%');
+	            $('#statement-container').css('width', '80%');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
 
