@@ -81877,7 +81877,6 @@
 	        if (statement_data.action === 'Deposit') {
 	            class_name = 'deposit_details';
 	        }
-	        console.log(statement_data.action);
 	        $statement_row.attr('class', class_name);
 	        $statement_row.attr('contract_id', statement_data.id);
 
