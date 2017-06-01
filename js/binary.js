@@ -81669,7 +81669,7 @@
 	        $.each(action_list, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
-	                text: action
+	                text: localize(action)
 	            }));
 	        });
 	    };
@@ -81874,9 +81874,7 @@
 
 	        var $statement_row = Table.createFlexTableRow([statement_data.date, '<span ' + showTooltip(statement_data.app_id, oauth_apps[statement_data.app_id]) + '>' + statement_data.ref + '</span>', statement_data.payout, localize(statement_data.action), '', statement_data.amount, statement_data.balance, ''], columns, 'data');
 	        var class_name = 'open_contract_details';
-	        if ($statement_row.childen('.act').html() === 'Deposit') {
-	            class_name = 'deposit_details';
-	        }
+	        console.log(statement_data.action);
 	        $statement_row.attr('class', class_name);
 	        $statement_row.attr('contract_id', statement_data.id);
 
