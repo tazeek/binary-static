@@ -81662,13 +81662,15 @@
 	    };
 
 	    var uniqueActionList = function uniqueActionList() {
-	        var action_list = [];
+	        var action_list = ['All'];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
 	            if (action_list.indexOf(action) === -1) {
 	                action_list.push(action);
 	            }
 	        });
+	        var opts = $('#action_list')[0].options;
+	        console.log(opts);
 	        $.each(action_list, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
