@@ -81695,7 +81695,7 @@
 	            var ref_id = $(this).find('.ref > span').html();
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
-	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
+	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action) && $(this).class() !== 'flex-tr') {
 	                $(this).show();
 	                $('.no-record').css('display', 'none');
 	                foundRow = true;
@@ -81706,9 +81706,9 @@
 	        if (!foundRow) {
 	            if ($('.no-record')) {
 	                $('#statement-table').find('tbody').append($('<tr/>', { class: 'flex-tr' }).append($('<td/>', { colspan: 7 }).append($('<p/>', { class: 'no-record center-text', text: localize('No Search Results found.') }))));
-	            } else {
-	                $('.no-record').css('display', '');
 	            }
+
+	            $('.no-record').css('display', '');
 	        }
 	    };
 
