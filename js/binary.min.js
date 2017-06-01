@@ -81882,9 +81882,14 @@
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
 	        $statement_row.hover(function () {
-	            $(this).css('background-color', '#E98024');$(this).css('cursor', 'pointer');
+	            var class_row = $(this).children('.act').html();
+	            if (class_row === 'Buy' || class_row === 'Sell') {
+	                $(this).css('background-color', '#E98024');
+	                $(this).css('cursor', 'pointer');
+	            }
 	        }, function () {
-	            $(this).css('background-color', 'white');$(this).css('cursor', 'auto');
+	            $(this).css('background-color', 'white');
+	            $(this).css('cursor', 'auto');
 	        });
 
 	        return $statement_row[0]; // return DOM instead of jquery object
