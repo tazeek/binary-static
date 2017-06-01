@@ -81636,7 +81636,6 @@
 	            var $header = StatementUI.createEmptyStatementTable();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
-	            // $('#statement-container').css('width', '95%');
 	            $('#statement-container').css('padding-left', '1%');
 	            $('#statement-container').css('padding-right', '1%');
 	            $('.act, .credit').addClass('nowrap');
@@ -81698,6 +81697,7 @@
 	            var action = $(this).find('.act').html();
 	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
 	                $(this).css('display', '');
+	                $('.no-record').hide();
 	                foundRow = true;
 	            } else {
 	                $(this).css('display', 'none');
@@ -81705,7 +81705,9 @@
 	        });
 	        if (!foundRow) {
 	            if ($('.no-record')) {
-	                console.log('DOES NOT EXIST!');
+	                $('#statement-table').find('tbody').append($('<tr/>', { class: 'flex-tr' }).append($('<td/>', { colspan: 7 }).append($('<p/>', { class: 'no-record center-text', text: localize('No Search Results found.') }))));
+	            } else {
+	                $('.no-record').show();
 	            }
 	        }
 	    };
