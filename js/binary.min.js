@@ -81704,7 +81704,9 @@
 	            }
 	        });
 	        if (!foundRow) {
-	            console.log('NO ROWS FOUND!');
+	            if ($('.no-record')) {
+	                console.log('DOES NOT EXIST!');
+	            }
 	        }
 	    };
 
