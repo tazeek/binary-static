@@ -81579,6 +81579,7 @@
 	        pending = void 0,
 	        current_batch = void 0,
 	        transactions_received = void 0,
+	        action_list = void 0,
 	        transactions_consumed = void 0;
 
 	    var tableExist = function tableExist() {
@@ -81659,15 +81660,13 @@
 	    };
 
 	    var uniqueActionList = function uniqueActionList() {
-	        var action_list = ['All'];
+	        // const action_list = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
 	            if (action_list.indexOf(action) === -1) {
 	                action_list.push(action);
 	            }
 	        });
-	        var opts = $('#action-list')[0].options;
-	        console.log(opts);
 	        $.each(action_list, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
