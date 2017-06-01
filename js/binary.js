@@ -81696,18 +81696,18 @@
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
 	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
-	                $(this).css('display', '');
-	                $('.no-record').hide();
+	                $(this).show();
+	                $('.no-record').css('display', 'none');
 	                foundRow = true;
 	            } else {
-	                $(this).css('display', 'none');
+	                $(this).hide();
 	            }
 	        });
 	        if (!foundRow) {
 	            if ($('.no-record')) {
 	                $('#statement-table').find('tbody').append($('<tr/>', { class: 'flex-tr' }).append($('<td/>', { colspan: 7 }).append($('<p/>', { class: 'no-record center-text', text: localize('No Search Results found.') }))));
 	            } else {
-	                $('.no-record').show();
+	                $('.no-record').css('display', '');
 	            }
 	        }
 	    };
