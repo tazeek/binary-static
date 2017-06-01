@@ -81768,7 +81768,7 @@
 	    };
 
 	    var initPage = function initPage() {
-	        batch_size = 200;
+	        batch_size = 20;
 	        chunk_size = batch_size / 2;
 	        no_more_data = false;
 	        pending = false; // serve as a lock to prevent ws request is sequential
