@@ -81691,14 +81691,13 @@
 	        var input_ref = $('#reference-input').val();
 	        var input_selected = $('#debit-credit-list').val();
 	        var input_action = $('#action-list').val();
+	        console.log($(undefined).attr('class'));
 	        $('#statement-table > tbody > tr').each(function () {
 	            var ref_id = $(this).find('.ref > span').html();
 	            var profit_loss_class = $(this).find('.credit').attr('class');
 	            var action = $(this).find('.act').html();
-	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action) && $(this).attr('class') !== 'flex-tr') {
-	                console.log($(this).attr('class'));
+	            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) && findAction(input_action, action) && $(this).attr('class') === 'open_contract_details') {
 	                $(this).css('display', '');
-	                $('.no-record').css('display', 'none');
 	                foundRow = true;
 	            } else {
 	                $(this).css('display', 'none');
@@ -81709,7 +81708,9 @@
 	                $('#statement-table').find('tbody').append($('<tr/>', { class: 'flex-tr' }).append($('<td/>', { colspan: 7 }).append($('<p/>', { class: 'no-record center-text', text: localize('No Search Results found.') }))));
 	            }
 
-	            $('.no-record').css('display', '');
+	            $('flex-tr').css('display', '');
+	        } else {
+	            $('flex-tr').css('display', 'none');
 	        }
 	    };
 
