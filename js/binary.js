@@ -81579,8 +81579,9 @@
 	        pending = void 0,
 	        current_batch = void 0,
 	        transactions_received = void 0,
-	        action_list = void 0,
 	        transactions_consumed = void 0;
+
+	    var action_list = [];
 
 	    var tableExist = function tableExist() {
 	        return document.getElementById('statement-table');
@@ -81653,13 +81654,13 @@
 	                    });
 	                }
 	            }
-	            uniqueActionList();
+	            updateActionList();
 	        }
 
 	        showLocalTimeOnHover('td.date');
 	    };
 
-	    var uniqueActionList = function uniqueActionList() {
+	    var updateActionList = function updateActionList() {
 	        // const action_list = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
@@ -81753,6 +81754,7 @@
 
 	            if (!finishedConsumed()) StatementUI.updateStatementTable(getNextChunkStatement());
 	            filterTable();
+	            updateActionList();
 	        });
 	    };
 
