@@ -28,6 +28,8 @@ const StatementInit = (() => {
         transactions_received,
         transactions_consumed;
 
+    let action_list = [];
+
     const tableExist = () => (document.getElementById('statement-table'));
 
     const finishedConsumed = () => (transactions_consumed === transactions_received);
@@ -79,6 +81,8 @@ const StatementInit = (() => {
             const $header = StatementUI.createEmptyStatementTable();
             headerEventHandler();
             $header.appendTo('#statement-container');
+            $('#statement-container').css('padding-left', '2%');
+            $('#statement-container').css('padding-right', '2%');
             $('.act, .credit').addClass('nowrap');
             StatementUI.updateStatementTable(getNextChunkStatement());
 
@@ -97,26 +101,27 @@ const StatementInit = (() => {
                                       .click(() => { StatementUI.exportCSV(); });
                 }
             }
-            uniqueActionList();
+            updateActionList();
         }
 
         showLocalTimeOnHover('td.date');
     };
 
-    const uniqueActionList = () => {
-        const action_list = [];
+    const updateActionList = () => {
+        const temp = [];
         $('#statement-table > tbody > tr').each(function () {
             const action = String($(this).find('.act').html());
-            if (action_list.indexOf(action) === -1) {
-                action_list.push(action);
+            if (action_list.indexOf(action) === -1 && temp.indexOf(action) === -1 && action !== 'undefined') {
+                temp.push(action);
             }
         });
-        $.each(action_list, function(i, action) {
+        $.each(temp, function(i, action) {
             $('#action-list').append($('<option>', {
                 value: action.toLowerCase(),
-                text : action,
+                text : localize(action),
             }));
         });
+        action_list = action_list.concat(temp);
     };
 
     const headerEventHandler = () => {
@@ -132,6 +137,7 @@ const StatementInit = (() => {
     };
 
     const filterTable = () => {
+        let foundRow = false;
         const input_ref = $('#reference-input').val();
         const input_selected = $('#debit-credit-list').val();
         const input_action = $('#action-list').val();
@@ -139,13 +145,25 @@ const StatementInit = (() => {
             const ref_id = $(this).find('.ref > span').html();
             const profit_loss_class = $(this).find('.credit').attr('class');
             const action = $(this).find('.act').html();
-            if (findRef(input_ref, ref_id) && findPL(input_selected, profit_loss_class) &&
-            findAction(input_action, action)) {
+            if ($(this).attr('class').indexOf('details') > -1 && findRef(input_ref, ref_id) &&
+            findPL(input_selected, profit_loss_class) && findAction(input_action, action)) {
                 $(this).css('display', '');
+                foundRow = true;
             } else {
                 $(this).css('display', 'none');
             }
         });
+        if (!foundRow) {
+            if ($('.no-record')) {
+                $('#statement-table').find('tbody').append($('<tr/>', { class: 'flex-tr' })
+                    .append($('<td/>', { colspan: 7 })
+                        .append($('<p/>', { class: 'no-record center-text', text: localize('No Search Results found.') }))));
+            }
+
+            $('flex-tr').css('display', '');
+        } else {
+            $('flex-tr').css('display', 'none');
+        }
     };
 
     const findRef = (input_ref, ref_id) => {
@@ -186,6 +204,8 @@ const StatementInit = (() => {
             }
 
             if (!finishedConsumed()) StatementUI.updateStatementTable(getNextChunkStatement());
+            filterTable();
+            updateActionList();
         });
     };
 
@@ -203,7 +223,7 @@ const StatementInit = (() => {
     };
 
     const initPage = () => {
-        batch_size = 200;
+        batch_size = 20;
         chunk_size = batch_size / 2;
         no_more_data = false;
         pending = false;            // serve as a lock to prevent ws request is sequential
