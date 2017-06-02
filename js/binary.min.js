@@ -81668,6 +81668,8 @@
 	                temp.push(action);
 	            }
 	        });
+	        console.log('TEMP LIST: ', temp);
+	        console.log('ACTION LIST: ', action_list);
 	        $.each(temp, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
