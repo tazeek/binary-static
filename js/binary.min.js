@@ -81664,7 +81664,7 @@
 	        var temp = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
-	            if (action_list.indexOf(action) === -1) {
+	            if (action_list.indexOf(action) === -1 && temp.indexOf(action) === -1) {
 	                temp.push(action);
 	            }
 	        });
