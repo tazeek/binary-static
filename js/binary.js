@@ -81890,8 +81890,8 @@
 	        $statement_row.children('.desc').html(localize(statement_data.desc) + '<br>');
 
 	        $statement_row.hover(function () {
-	            var class_row = $(this).children('.act').html();
-	            if (class_row === 'Buy' || class_row === 'Sell') {
+	            var class_row = $(this).attr('class');
+	            if (class_row === 'open_contract_details') {
 	                $(this).css('background-color', '#E98024');
 	                $(this).css('cursor', 'pointer');
 	            }
