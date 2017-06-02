@@ -81661,19 +81661,20 @@
 	    };
 
 	    var updateActionList = function updateActionList() {
-	        // const temp = [];
+	        var temp = [];
 	        $('#statement-table > tbody > tr').each(function () {
 	            var action = String($(this).find('.act').html());
 	            if (action_list.indexOf(action) === -1) {
-	                action_list.push(action);
+	                temp.push(action);
 	            }
 	        });
-	        $.each(action_list, function (i, action) {
+	        $.each(temp, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
 	                text: localize(action)
 	            }));
 	        });
+	        action_list = action_list.concat(temp);
 	    };
 
 	    var headerEventHandler = function headerEventHandler() {
