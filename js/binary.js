@@ -81638,8 +81638,8 @@
 	            var $header = StatementUI.createEmptyStatementTable();
 	            headerEventHandler();
 	            $header.appendTo('#statement-container');
-	            $('#statement-container').css('padding-left', '1%');
-	            $('#statement-container').css('padding-right', '1%');
+	            $('#statement-container').css('padding-left', '2%');
+	            $('#statement-container').css('padding-right', '2%');
 	            $('.act, .credit').addClass('nowrap');
 	            StatementUI.updateStatementTable(getNextChunkStatement());
 
@@ -81668,8 +81668,6 @@
 	                temp.push(action);
 	            }
 	        });
-	        console.log('TEMP LIST: ', temp);
-	        console.log('ACTION LIST: ', action_list);
 	        $.each(temp, function (i, action) {
 	            $('#action-list').append($('<option>', {
 	                value: action.toLowerCase(),
